@@ -1,8 +1,8 @@
 import {Router} from "express";
-import { getAllEvent } from "./eventController";
+import { getEventByUser } from "./eventController";
 
 const router:Router = Router();
 
-router.get("/event", getAllEvent);
+router.get("/event/:id", getEventByUser);
 
 export default router
