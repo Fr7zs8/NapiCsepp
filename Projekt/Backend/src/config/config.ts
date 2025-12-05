@@ -3,7 +3,7 @@ dotenv.config();
 
 class DBConfig{
     constructor(){
-        return {host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.PASSWORD, database: process.env.DATABASE}
+        return {host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.PASSWORD, database: process.env.DATABASE, multipleStatements: true}
     }
 }
 
