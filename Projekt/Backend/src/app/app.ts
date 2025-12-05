@@ -2,7 +2,8 @@ import router from "../routes/routes";
 import cors from "cors";
 import bodyParser from "body-parser";
 import express from "express";
-import eventRouter from "../events/routes"
+import eventRouter from "../events/routes";
+import userRouter from "../users/routes";
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use("/", router);
-app.use("/", eventRouter)
+app.use("/", eventRouter);
+app.use("/", userRouter);
 
 export default app;

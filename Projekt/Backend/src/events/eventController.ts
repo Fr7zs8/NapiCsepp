@@ -3,8 +3,8 @@ import mysql from "mysql2/promise"
 import { Request, Response } from "express";
 import config from "../config/config";
 
-export async function getEventByUser(req: Request, res: Response) {
-    const id = req.params.id;
+export async function getEventByUser(req: any, res: Response) {
+    const id = req.user.user_id;
     const connection = await mysql.createConnection(config.database);
 
     try {
@@ -22,7 +22,7 @@ export async function getEventByUser(req: Request, res: Response) {
     }
 }
 
-export async function postEvents(req:Request, res:Response){
+export async function postEvents(req:any, res:Response){
     const newelem:Event = req.body;
 
     if(!newelem){
@@ -38,7 +38,8 @@ export async function postEvents(req:Request, res:Response){
     const connection = await mysql.createConnection(config.database);
     try{
         const [results] = await connection.query("INSERT INTO events (event_name, event_start_time, event_end_time) VALUES (?,?,?)", [newelem.event_name, newelem.event_start_time, newelem.event_end_time]) as Array<any>
-        if(results.affectedRows > 0){
+        const [results2] = await connection.query("INSERT INTO users_events (user_id, event_id) VALUES (?,?)", [req.user.user_id, results.insertId]) as Array<any>
+        if(results.affectedRows > 0 && results2.affectedRows > 0){
             res.status(201).send("Sikeres adatrögzités!");
         }
     }
@@ -57,16 +58,11 @@ export const deleteDataFromId = async (req: Request, res: Response) => {
     const connection = await mysql.createConnection(config.database);
 
     try {
-        const [results] = await connection.query(
-        "DELETE FROM users_events WHERE event_id = ?; DELETE FROM events WHERE event_id = ?",
-        [id, id]
-        ) as any;
+        const [resultsevent] = await connection.query("DELETE FROM users_events WHERE event_id = ?", [id]) as Array<any>
+        const [results] = await connection.query("DELETE FROM events WHERE event_id = ?", [id]) as Array<any>;
 
-        const usersEventsResult = results[0];
-        const eventsResult = results[1];
-
-        if (usersEventsResult.affectedRows > 0 || eventsResult.affectedRows > 0) {
-            res.status(204).send("Sikeres törlés");
+        if(results.affectedRows > 0 && resultsevent.affectedRows > 0){
+            res.status(200).send("Sikeres törlés.");
             return;
         }
 
@@ -74,6 +70,6 @@ export const deleteDataFromId = async (req: Request, res: Response) => {
         console.log(err);
         
     }
-    // res.status(404).send("Sikertelen törlés")
+    res.status(404).send("Sikertelen törlés")
 
 }
