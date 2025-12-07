@@ -18,6 +18,28 @@ export function LoginView(){
                     </div>
                     <div className="login-form-div">
                         <LoginRegisterSwitch/>
+                        <label>Jelentkezz be a fiókodba</label>
+                    </div>
+                    <div className="login-form-input-div">
+                        <div className="input-label-row">
+                            <Mail size={20}/>
+                            <label>Email vagy felhasználónév</label><br />
+                        </div>
+                        <input type="text" />
+                    </div>
+                    <div className="login-form-input-div">
+                        <div className="input-label-row">
+                            <Lock size={20}/>
+                            <label>Jelszó</label><br />
+                        </div>
+                        <input type="text" />
+                    </div>
+                    <div className="login-button-div">
+                        <button>Belépés</button>
+                        <button>Vendég Mód</button>
+                    </div>
+                    <div>
+                        <label>Még nincs fiókod? <a href="">Regisztáció</a></label>
                     </div>
                 </div>
                 

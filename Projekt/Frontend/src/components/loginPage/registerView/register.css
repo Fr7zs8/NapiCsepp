@@ -1,0 +1,42 @@
+.register-conatiner{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    border-radius: 15px;
+}
+
+.register-image-div{
+    width: 50%;
+}
+
+.register-content-div{
+    width: 50%;
+    padding-left: 30px;
+}
+
+.register-image-div img{
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.input-label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 24px;
+  margin-bottom: 0.5rem;
+}
+
+.register-form-input-div input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.register-form-input-div {
+  margin-bottom: 1rem;
+}

@@ -1,5 +1,6 @@
 import './App.css'
 import { LoginView } from './components/loginPage/loginView/login'
+import { RegisterView } from './components/loginPage/registerView/register'
 
 
 function App() {

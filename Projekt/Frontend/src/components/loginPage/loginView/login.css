@@ -11,6 +11,7 @@
 
 .login-content-div{
     width: 50%;
+    padding-left: 30px
 }
 
 .login-image-div img{
@@ -19,3 +20,23 @@
     object-fit: cover;
 }
 
+.input-label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 24px;
+  margin-bottom: 0.5rem;
+}
+
+.login-form-input-div input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.login-form-input-div {
+  margin-bottom: 1rem;
+}
