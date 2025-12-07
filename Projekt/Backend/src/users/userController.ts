@@ -36,3 +36,48 @@ export async function signIn(req:Request, res:Response){
         return;
     }
 }
+
+export async function getUser(req: any, res: Response) {
+    const id = req.user.user_id;
+    const connection = await mysql.createConnection(config.database);
+
+    try {
+        const [results] = await connection.query(
+            "SELECT users.username, users.email, users.language, users.role, DATE_FORMAT(users.register_date, '%Y-%m-%d') AS register_date FROM users WHERE users.user_id = ?", [id]
+        ) as Array<any>
+
+        if (results.length > 0) {
+            res.status(200).send(results);
+            return
+        }
+        res.status(404).send("Nincs egy db user ezzel a névvel.")
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+export async function getAllUser(req: any, res: Response) {
+    const id = req.user.user_id;
+
+    if(id === 1){
+        const connection = await mysql.createConnection(config.database);
+
+        try {
+            const [results] = await connection.query(
+                "SELECT users.username, users.email, users.language, users.role, DATE_FORMAT(users.register_date, '%Y-%m-%d') AS register_date FROM users"
+            ) as Array<any>
+
+            if (results.length > 0) {
+                res.status(200).send(results);
+                return
+            }
+            res.status(404).send("Nincs egy db user ezzel a névvel.")
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    res.status(401).send("Csak admin kérheti le.");
+
+    
+}
