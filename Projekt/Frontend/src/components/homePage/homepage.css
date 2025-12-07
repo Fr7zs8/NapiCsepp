@@ -1,0 +1,194 @@
+section {
+    padding: 2rem;
+    background: #666667;
+}
+
+.info-text-div {
+    margin-bottom: 1.5rem;
+}
+
+.info-text-div h3 {
+    color: #2d2d2d;
+}
+
+.info-text-div p {
+    color: #767575;
+}
+
+.progress-view-div {
+    padding: 1.5rem;
+    background: #706f6f;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.text-carousel-div {
+    position: relative;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    background: #4ade80;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.sparkles-icon {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: #fff;
+}
+
+.carousel-text {
+    text-align: center;
+    margin: 1rem 0;
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.carousel-dots {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.dot.active {
+    width: 30px;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.main-content-wrapper {
+    display: flex;
+    gap: 2rem;
+}
+
+.quick-access-section,
+.todays-statistics-section {
+    flex: 1;
+}
+
+.quick-access-section h3,
+.todays-statistics-section h3 {
+    color: #2d2d2d;
+    margin-bottom: 1rem;
+}
+
+.quick-access-list-div {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.access-div {
+    position: relative;
+    padding: 1.5rem;
+    text-align: center;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.access-div.calendar {
+    background: #e9e5ff;
+}
+
+.access-div.tasks {
+    background: #e9e5ff;
+}
+
+.access-div.habits {
+    background: #ffe5f5;
+}
+
+.arrow-icon {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    color: #666;
+}
+
+.access-title {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: #2d2d2d;
+}
+
+.access-desc {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Statisztikák */
+.statistics-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.statistics-subtitle {
+    font-size: 0.9rem;
+    margin: 0.5rem 0 1.5rem 0;
+    color: #666;
+}
+
+.statistics-list-div {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.stat-div {
+    position: relative;
+    padding: 1.5rem;
+    text-align: center;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.stat-div.tasks {
+    background: #f3e5ff;
+}
+
+.stat-div.finished {
+    background: #d1fae5;
+}
+
+.stat-div.events {
+    background: #dfe7ff;
+}
+
+.stat-div.habits {
+    background: #ffe5f0;
+}
+
+.stat-label {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.stat-name {
+    margin-top: 0.5rem;
+    color: #2d2d2d;
+    font-weight: 600;
+}
+
+.stat-value {
+    margin-top: 0.25rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #2d2d2d;
+}

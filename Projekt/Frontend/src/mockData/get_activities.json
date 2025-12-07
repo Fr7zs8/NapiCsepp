@@ -1,0 +1,26 @@
+[
+    {
+        "activity_name": "Levinni a szemetet",
+        "type_name": "Házimunka",
+        "difficulty_name": "Könnyű",
+        "activity_achive": 1,
+        "activity_start_date": "2025-11-10",
+        "activity_end_date": "2025-11-10"
+    },
+    {
+        "activity_name": "2 liter viz",
+        "type_name": "Szokás",
+        "difficulty_name": "Könnyű",
+        "activity_achive": 0,
+        "activity_start_date": "2025-12-01",
+        "activity_end_date": "2025-12-30"
+    },
+    {
+        "activity_name": "Angol tz tanulni",
+        "type_name": "Tanulás",
+        "difficulty_name": "Közepes",
+        "activity_achive": 1,
+        "activity_start_date": "2025-11-01",
+        "activity_end_date": "2025-11-01"
+    }
+]
