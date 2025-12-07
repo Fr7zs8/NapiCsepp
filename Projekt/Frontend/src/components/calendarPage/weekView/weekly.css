@@ -1,0 +1,139 @@
+
+.header-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.navigation-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.navigation-buttons button {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.info-text-div p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d2d2d;
+}
+
+.view-switch-small {
+    position: relative;
+    display: flex;
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid #ddd;
+}
+
+.view-switch-small input[type="radio"] {
+    display: none;
+}
+
+.view-switch-small label {
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 0.85rem;
+}
+
+.switch-slider {
+    position: absolute;
+    width: calc(33.33% - 4px);
+    height: calc(100% - 8px);
+    background: #14142a;
+    opacity: 0.15;
+    border-radius: 6px;
+    transition: 0.3s ease;
+    left: 4px;
+    top: 4px;
+}
+
+#view-month:checked ~ .switch-slider {
+    left: 4px;
+}
+
+#view-week:checked ~ .switch-slider {
+    left: calc(33.33% + 0px);
+}
+
+#view-day:checked ~ .switch-slider {
+    left: calc(66.66% - 4px);
+}
+
+.weekly-view-div {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow-x: auto;
+}
+
+.week-grid {
+    display: flex;
+    min-width: 800px;
+}
+
+.time-column {
+    width: 80px;
+    flex-shrink: 0;
+}
+
+.day-column {
+    flex: 1;
+    min-width: 100px;
+}
+
+.day-header-cell {
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid #e0e0e0;
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+.day-header-cell.weekend {
+    background: #fef5f5;
+}
+
+.day-name {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.day-date {
+    font-size: 1.1rem;
+    color: #2d2d2d;
+    margin-top: 0.25rem;
+}
+
+.time-cell {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.hour-cell {
+    height: 60px;
+    border-bottom: 1px solid #e0e0e0;
+    border-left: 1px solid #e0e0e0;
+}
+
+.hour-cell.weekend {
+    background: #fafafa;
+}

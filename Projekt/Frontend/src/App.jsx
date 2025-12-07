@@ -16,14 +16,14 @@ function App() {
   return (
     <>
       <LoginView/>
-      <RegisterView/>
+      <RegisterView/> 
 
       <HomepageView/>
 
       <MonthlyView/>
       <WeeklyView/>
       <DailyView/>
-      <CombinedView/>
+      {/* <CombinedView/> telefonra később*/} 
 
       <TaskView/>
       <HabitView/>
