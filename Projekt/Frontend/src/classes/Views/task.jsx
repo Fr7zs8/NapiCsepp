@@ -1,30 +1,37 @@
 export default class Task{
-    constructor(taskId, taskName, difficultyName, dueDate, isCompleted, isActive){
+    constructor(taskId, taskName,typeName,difficultyName, isCompleted, startDate,  endDate,  isActive, ){
         this.taskId = taskId,
         this.taskName = taskName,
+        this.typeName = typeName,
         this.difficultyName = difficultyName,
-        this.dueDate = dueDate,
+        this.startDate = startDate,
+        this.endDate = endDate,
         this.isCompleted = isCompleted,
-        this.isActive = isActive
+        this.isActive = isActive;
     }
 
-    isActive(){
-
+    markCompleted(){
+        this.isCompleted = true;
     }
 
     toggleActivity(){
-
+        this.isActive = !this.isActive;
     }
 
     getDifficulty(){
-
+        return this.difficultyName;
     }
 
-    getDueDate(){
-
-    }
-
-    toJSON(){
-
+    toJSON() {
+        return {
+            taskId: this.taskId,
+            taskName: this.taskName,
+            typeName: this.typeName,
+            difficultyName: this.difficultyName,
+            startDate: this.startDate,
+            endDate: this.endDate,
+            isCompleted: this.isCompleted,
+            isActive: this.isActive
+        };
     }
 }
