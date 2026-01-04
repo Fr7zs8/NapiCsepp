@@ -16,12 +16,12 @@ export async function signIn(req:Request, res:Response){
         const [results] = await connection.query("SELECT login(?,?) as id", [email, password]) as Array<any>
 
         if(!results[0].id){
-            res.status(401).send({error: "Hiba"});
+            res.status(401).send({error: "Rossz az email vagy a jelszó"});
             return;
         }
 
         if(!config.jwtSecret){
-            res.status(400).send({error: "Hiba van a titkos kulcsal"});
+            res.status(401).send({error: "Hiba van a titkos kulcsal"});
             return;
         }
 

@@ -3,6 +3,6 @@ import { getTypes } from "./typeController";
 
 const router: Router = Router();
 
-router.get("/types", getTypes);
+router.get("/napicsepp/types", getTypes);
 
 export default router;

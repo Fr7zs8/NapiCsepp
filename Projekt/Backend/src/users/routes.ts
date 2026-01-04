@@ -4,8 +4,8 @@ import verifyToken from "../middleware/auth";
 
 const router: Router = Router();
 
-router.post("/login", signIn);
-router.get("/profile", verifyToken, getUser);
-router.get("/users", verifyToken, getAllUser);
+router.post("/napicsepp/login", signIn);
+router.get("/napicsepp/profile", verifyToken, getUser);
+router.get("/napicsepp/users", verifyToken, getAllUser);
 
 export default router;

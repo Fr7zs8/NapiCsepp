@@ -4,10 +4,10 @@ import verifyToken from "../middleware/auth";
 
 const router:Router = Router();
 
-router.get("/activities", verifyToken, getAllActivity);
-router.get("/activities/habits", verifyToken, getHabits);
-router.post("/activities", verifyToken, postActivity);
-router.delete("/activities/:id", verifyToken, deleteActivity);
-router.put("/activities/:id", verifyToken, putActivity);
+router.get("/napicsepp/activities", verifyToken, getAllActivity);
+router.get("/napicsepp/activities/habits", verifyToken, getHabits);
+router.post("/napicsepp/activities", verifyToken, postActivity);
+router.delete("/napicsepp/activities/:id", verifyToken, deleteActivity);
+router.put("/napicsepp/activities/:id", verifyToken, putActivity);
 
 export default router;

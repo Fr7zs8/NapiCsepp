@@ -35,7 +35,7 @@ export async function getHabits(req: any, res: Response) {
             res.status(200).send(results);
             return
         }
-        res.status(404).send("Nincs egy db activity se.")
+        res.status(404).send("Nincs egy db habit se.")
     } catch (err) {
         console.log(err);
     }
@@ -113,7 +113,7 @@ export async function putActivity(req:any, res:Response){
     }
 
     if (!activity) {
-        res.status(400).send({ error: 102, messege: "Nem küldte el az adatokat megfelelően!" })
+        res.status(400).send({ error: 400, messege: "Nem küldte el az adatokat megfelelően!" })
         return
     }
 
@@ -137,7 +137,7 @@ export async function putActivity(req:any, res:Response){
     try{
         const [results] = await connection.query(sql, values) as Array<any>
         if(results.affectedRows > 0){
-            res.status(201).send(`Sikeresen módosított ${results.affectedRows} elemet`)
+            res.status(200).send(`Sikeresen módosított ${results.affectedRows} elemet`)
             return
         }
         postActivity(req, res);

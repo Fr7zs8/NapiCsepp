@@ -4,9 +4,9 @@ import verifyToken from "../middleware/auth";
 
 const router:Router = Router();
 
-router.get("/event", verifyToken, getEvent);
-router.post("/event", verifyToken, postEvent);
-router.delete("/event/:id", verifyToken, deleteEvent);
-router.put("/event/:id", verifyToken, putEvent);
+router.get("/napicsepp/event", verifyToken, getEvent);
+router.post("/napicsepp/event", verifyToken, postEvent);
+router.delete("/napicsepp/event/:id", verifyToken, deleteEvent);
+router.put("/napicsepp/event/:id", verifyToken, putEvent);
 
 export default router

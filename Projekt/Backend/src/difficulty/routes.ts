@@ -3,6 +3,6 @@ import { getDifficulties } from "./difficultyController";
 
 const router: Router = Router();
 
-router.get("/difficulties", getDifficulties);
+router.get("/napicsepp/difficulties", getDifficulties);
 
 export default router;

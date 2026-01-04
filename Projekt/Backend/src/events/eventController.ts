@@ -85,7 +85,7 @@ export async function putEvent(req:Request, res:Response){
 
     if (!req.body) {
 
-        res.status(400).send({ error: 102, messege: "Nem küldte el az adatokat megfelelően!" })
+        res.status(400).send({ error: 400, messege: "Nem küldte el az adatokat megfelelően!" })
         return
     }
     
@@ -94,7 +94,7 @@ export async function putEvent(req:Request, res:Response){
     const keys = Object.keys(event).filter(key => allowedFields.includes(key))
     
     if (keys.length === 0 ) {
-        res.status(400).send({ error: 103, messege: "Nincs frissítendő mező!" })
+        res.status(400).send({ error: 400, messege: "Nincs frissítendő mező!" })
         return
     }
    
