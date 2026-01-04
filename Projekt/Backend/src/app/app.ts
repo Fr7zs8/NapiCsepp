@@ -5,6 +5,9 @@ import express from "express";
 import eventRouter from "../events/routes";
 import userRouter from "../users/routes";
 import activityRouter from "../activities/routes";
+import typesRouter from "../type/routes";
+import difficultyRouter from "../difficulty/routes";
+import overviewRouter from "../overview/routes";
 
 const app = express();
 
@@ -17,5 +20,8 @@ app.use("/", router);
 app.use("/", eventRouter);
 app.use("/", userRouter);
 app.use("/", activityRouter);
+app.use("/", typesRouter);
+app.use("/", difficultyRouter);
+app.use("/", overviewRouter);
 
 export default app;
