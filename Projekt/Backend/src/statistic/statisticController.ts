@@ -31,3 +31,26 @@ export async function systemStatistic(_req:any, res:Response){
         console.log(e);
     }
 }
+
+export async function profileStatistic(req:any, res:Response){
+    //{ "total_habits": 5, "completed": 10, "daily_tasks_count": 7,"monthly_events_count": 10, "hard_tasks": 4, "middle_tasks": 3,"easy_tasks": 8, "weekly_tasks": 20, "weekly_completed": 10 }
+    const id = req.user.user_id;
+
+    const connect = await mysql.createConnection(config.database);
+    try{
+        const stats = [];
+
+        const [total_activity] = await connect.query("SELECT COUNT(activities.activity_id) AS total_activity FROM activities JOIN users_activities ON activities.activity_id = users_activities.activity_id JOIN users ON users_activities.user_id = users.user_id WHERE users.user_id = ?", [id]) as Array<any>;
+
+        const [completed] = await connect.query("SELECT COUNT(activities.activity_id) AS completed FROM activities JOIN users_activities ON activities.activity_id = users_activities.activity_id JOIN users ON users_activities.user_id = users.user_id WHERE users.user_id = ? AND activities.activity_achive = 1 ", [id]) as Array<any>;
+
+        stats.push({
+            total_activity: total_activity[0].total_activity || 0,
+            completed: completed[0].completed || 0
+        });
+        res.status(200).send(stats)
+    }
+    catch (e){
+        console.log(e);
+    }
+}
