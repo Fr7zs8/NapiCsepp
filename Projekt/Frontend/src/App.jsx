@@ -1,4 +1,6 @@
+import "bootstrap/dist/css/bootstrap.css"
 import './App.css'
+
 import { HabitView } from './components/activityPage/habitView/habit'
 import { TaskView } from './components/activityPage/taskView/task'
 // import { CombinedView } from './components/calendarPage/combinedView/combined'
@@ -11,25 +13,66 @@ import { RegisterView } from './components/loginPage/registerView/register'
 import { ProfileView } from './components/profileView/profile'
 import { StatisticsView } from './components/statisticsView/statisticsView'
 
+import {RouterProvider, createBrowserRouter} from "react-router-dom"
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomepageView />
+  },
+  {
+    path: "/login",
+    element: <LoginView />
+  },
+  {
+    path: "/register",
+    element: <RegisterView />
+  },
+  {
+    path: "/profile",
+    element: <ProfileView />
+  },
+  {
+    path: "/statistics",
+    element: <StatisticsView />
+  },
+  {
+    path: "/calendar/monthly",
+    element: <MonthlyView />
+  },
+  {
+    path: "/calendar/weekly",
+    element: <WeeklyView />
+  },
+  {
+    path: "/calendar/daily",
+    element: <DailyView />
+  },
+  {
+    path: "/tasks",
+    element: <TaskView />
+  },
+  {
+    path: "/habits",
+    element: <HabitView />
+  }
+])
 
 function App() {
   return (
     <>
-      <LoginView/>
-      <RegisterView/> 
 
-      <HomepageView/>
+      <RouterProvider router={router} />
 
-      <MonthlyView/>
-      <WeeklyView/>
-      <DailyView/>
+
+
+
+
       {/* <CombinedView/> telefonra később*/} 
 
-      <TaskView/>
-      <HabitView/>
 
-      <StatisticsView/>
-      <ProfileView/>
+
+
       
       {/* <div class="container">
         <div class="switch4">
