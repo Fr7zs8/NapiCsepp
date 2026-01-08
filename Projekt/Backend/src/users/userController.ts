@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import mysql from "mysql2/promise";
 import config from "../config/config";
 import { Request, Response } from "express";
+import { User } from "./user";
 
 export async function signIn(req:Request, res:Response){
     const {email, password} = req.body;
@@ -80,4 +81,33 @@ export async function getAllUser(req: any, res: Response) {
     res.status(401).send("Csak admin kérheti le.");
 
     
+}
+
+export async function regiszter(req:any, res:Response){
+    //Validálni ha már létezik akkor ne hozza létre
+    const newuser: User = req.body;
+
+    if(!newuser){
+        res.status(400).send("Érvénytelen bemeneti adatok.");
+        return;
+    }
+
+    const connection = await mysql.createConnection(config.database);
+
+    const datum = new Date(Date.now()).toLocaleString("sv-SE");
+    const role = "user";
+
+    try{
+        const [results] = await connection.query("INSERT INTO users (username, email, password, language, role, register_date) VALUES (?,?,?,?,?,?)", [newuser.username, newuser.email, newuser.password, newuser.language, role, datum]) as Array<any>;
+
+        if(results.affectedRows > 0){
+            res.status(201).send("Sikeres adatrögzités!");
+        }
+    }
+    catch (e){
+        console.log(e);
+    }
+    
+
+
 }

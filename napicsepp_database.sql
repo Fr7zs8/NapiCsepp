@@ -34,7 +34,7 @@ CREATE TABLE `users` (
   `password` varchar(255) DEFAULT NULL,
   `language` varchar(100) DEFAULT NULL,
   `role` varchar(50) DEFAULT NULL,
-  `register_date` date DEFAULT NULL
+  `register_date` DATETIME DEFAULT NULL
 );
 
 CREATE TABLE `users_activities` (
