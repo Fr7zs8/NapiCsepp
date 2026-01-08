@@ -107,7 +107,4 @@ export async function regiszter(req:any, res:Response){
     catch (e){
         console.log(e);
     }
-    
-
-
 }

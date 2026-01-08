@@ -8,6 +8,7 @@ import activityRouter from "../activities/routes";
 import typesRouter from "../type/routes";
 import difficultyRouter from "../difficulty/routes";
 import overviewRouter from "../overview/routes";
+import statisticRouter from "../statistic/routes";
 
 const app = express();
 
@@ -23,5 +24,6 @@ app.use("/", activityRouter);
 app.use("/", typesRouter);
 app.use("/", difficultyRouter);
 app.use("/", overviewRouter);
+app.use("/", statisticRouter);
 
 export default app;
