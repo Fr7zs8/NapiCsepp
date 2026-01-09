@@ -4,8 +4,19 @@ export default class UserService{
         this.apiService = apiService;
     }
 
-    getAllActivities(){
+    async login(email, password){
+        const data = await this.apiService.post("/napicsepp/login", {email, password});
 
+        if (data.token){
+            localStorage.setItem("authToken", data.token);
+            localStorage.setItem("user", data.user);
+        }
+
+        return data;
+    }
+
+    getAllActivities(){
+        return this.apiService.get("/napicsepp/activities");
     }
 
     createTask(taskData){

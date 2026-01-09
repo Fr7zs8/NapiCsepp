@@ -11,13 +11,20 @@ import { LoginView } from './components/loginPage/loginView/login'
 import { RegisterView } from './components/loginPage/registerView/register'
 import { ProfileView } from './components/profileView/profile'
 import { StatisticsView } from './components/statisticsView/statisticsView'
+import { Layout } from './components/layout/layout'
 
 import {RouterProvider, createBrowserRouter} from "react-router-dom"
+
+import ApiService from "./classes/Services/apiService"
+import UserService from "./classes/Services/userService"
+
+const api = new ApiService("http://localhost:3000");
+export const appUserService = new UserService(api);
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomepageView />
+    element: <Layout><HomepageView /></Layout>
   },
   {
     path: "/login",
@@ -29,31 +36,31 @@ const router = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <ProfileView />
+    element: <Layout><ProfileView /></Layout>
   },
   {
     path: "/statistics",
-    element: <StatisticsView />
+    element: <Layout><StatisticsView /></Layout>
   },
   {
     path: "/calendar/monthly",
-    element: <MonthlyView />
+    element: <Layout><MonthlyView /></Layout>
   },
   {
     path: "/calendar/weekly",
-    element: <WeeklyView />
+    element: <Layout><WeeklyView /></Layout>
   },
   {
     path: "/calendar/daily",
-    element: <DailyView />
+    element: <Layout><DailyView /></Layout>
   },
   {
     path: "/tasks",
-    element: <TaskView />
+    element: <Layout><TaskView /></Layout>
   },
   {
     path: "/habits",
-    element: <HabitView />
+    element: <Layout><HabitView /></Layout>
   }
 ])
 

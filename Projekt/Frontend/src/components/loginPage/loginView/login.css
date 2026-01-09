@@ -40,3 +40,12 @@
 .login-form-input-div {
   margin-bottom: 1rem;
 }
+
+.error-message {
+  color: 'white';
+  background-color: '#d9534f';
+  padding: '10px';
+  border-radius: '5px';
+  margin-top: '10px';
+  font-size: '14px';
+}

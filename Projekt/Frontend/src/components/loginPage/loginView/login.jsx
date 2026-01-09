@@ -3,44 +3,81 @@ import image1 from "../../../assets/image1.jpg";
 import {Mail, Lock} from "lucide-react";
 import { LoginRegisterSwitch } from "../login-register-switch/login-register-switch";
 import { useNavigate } from 'react-router-dom'
+import { appUserService } from "../../../App";
+import { useState } from "react";
 
 
 export function LoginView(){
     const navigate = useNavigate();
 
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
+
+        try {
+            await appUserService.login(email, password);
+            navigate("/"); 
+        } catch (err) {
+            setError(err.message || "Hibás email vagy jelszó!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return(
         <section>
             <div className='login-conatiner'>
                 <div className="login-image-div">
-                    <img src={image1} alt=""/>
+                    <img src={image1} alt="Login kép"/>
                 </div>
                 <div className='login-content-div'>
                     <div className="login-header-div">
                         <h1>Üdvözülünk a NapiCsepp Weboldalán!</h1>
                         <h3>DailyDrop - A tökéletes szokáskövető mindennapi használatra!</h3>
                     </div>
-                    <div className="login-form-div">
-                        <LoginRegisterSwitch currentPage="login"/>
-                        <label>Jelentkezz be a fiókodba</label>
-                    </div>
-                    <div className="login-form-input-div">
-                        <div className="input-label-row">
-                            <Mail size={20}/>
-                            <label>Email</label><br />
+
+                    <form onSubmit={handleLogin}>
+                       <div className="login-form-div">
+                            <LoginRegisterSwitch currentPage="login"/>
+                            <label>Jelentkezz be a fiókodba</label>
+
+                            {error && <div className="error-message">{error}</div>}
                         </div>
-                        <input type="text" />
-                    </div>
-                    <div className="login-form-input-div">
-                        <div className="input-label-row">
-                            <Lock size={20}/>
-                            <label>Jelszó</label><br />
+
+                        <div className="login-form-input-div">
+                            <div className="input-label-row">
+                                <Mail size={20}/>
+                                <label>Email</label><br />
+                            </div>
+                            <input type="email" 
+                                placeholder="pelda@email.hu"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)} />
                         </div>
-                        <input type="text" />
-                    </div>
-                    <div className="login-button-div">
-                        <button>Belépés</button>
-                        <button onClick={() => navigate("/")}>Vendég Mód</button>
-                    </div>
+                        <div className="login-form-input-div">
+                            <div className="input-label-row">
+                                <Lock size={20}/>
+                                <label>Jelszó</label><br />
+                            </div>
+                            <input type="password" 
+                                placeholder="Jelszó"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)} />
+                        </div>
+                        <div className="login-button-div">
+                            <button type="submit" disabled={loading}>{loading?"Belépés...":"Belépés"}</button>
+                            <button type="button" onClick={() => navigate("/")}>Vendég Mód</button>
+                        </div> 
+                    </form>
+                    
                     <div>
                         <label>Még nincs fiókod? <a onClick={() => navigate("/register")} style={{cursor: 'pointer'}}>Regisztráció</a></label>
                     </div>

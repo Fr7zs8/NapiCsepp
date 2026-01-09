@@ -1,16 +1,51 @@
 import "./task.css";
-import { Plus, Pencil, Trash2, Check } from "lucide-react";
-import { useState } from "react";
+import { Plus, Pencil, Trash2, Check, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import Task from "../../../classes/Views/task.jsx";
+import { appUserService } from "../../../App.jsx";
 
 export function TaskView(){
 
     const [tasks, setTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    //
     const [taskName, setTaskName] = useState("");
     const [typeName, setTypeName] = useState("");
     const [difficultyName, setDifficultyName] = useState("");
-
     const [editId, setEditId] = useState(null);
+
+
+    useEffect(()=>{
+        const fetchInitialData = async ()=> {
+            try {
+                setLoading(true);
+                const data = await appUserService.getAllActivities();
+
+                const taskObject = data.map(item => new Task(
+                    item.activity_id || Math.random(),
+                    item.activity_name,
+                    item.type_name,
+                    item.difficulty_name,
+                    item.activity_achive === 1,
+                    item.activity_start_date,
+                    item.activity_end_date,
+                    true
+                ));
+
+                setTasks(taskObject);
+            }
+            catch (err){
+                setError(err.message || "Hiba az adatok betöltése során!");
+                console.error(err);
+            }
+            finally{
+                setLoading(false);
+            }
+        }
+        fetchInitialData();
+    }, []);
 
     function addTask() {
         if (!taskName || !typeName || !difficultyName) return;
@@ -56,6 +91,9 @@ export function TaskView(){
         resetForm();
     }
 
+    if (loading) {
+        return <div className="loading-state"><Loader2 className="animate-spin" /> Adatok szinkronizálása...</div>;
+    }
 
     return (
         <section className="tasks-section">
