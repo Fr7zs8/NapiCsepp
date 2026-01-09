@@ -1,9 +1,11 @@
 import "./homepage.css"
 import { Calendar, SquareCheckBig, Target, TrendingUp, CircleCheck, ArrowRight, Sparkles } from "lucide-react"
 import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom'
 
 export function HomepageView(){
     const [currentQuote, setCurrentQuote] = useState(0);
+    const navigate = useNavigate();
 
     const quotes = [
         "A siker nem végleges, a kudarc nem végzetes: a folytatáshoz szükséges bátorság az, ami számít.",
@@ -48,19 +50,19 @@ export function HomepageView(){
                 <section className="quick-access-section">
                     <h3>Gyors hozzáférés</h3>
                     <div className="quick-access-list-div">
-                        <div className="access-div calendar">
+                        <div className="access-div calendar" onClick={() => navigate("/calendar/monthly")}>
                             <ArrowRight className="arrow-icon"/>
                             <Calendar/>
                             <p className="access-title">Naptár</p>
                             <p className="access-desc">Események és találkozók kezelése</p>
                         </div>
-                        <div className="access-div tasks">
+                        <div className="access-div tasks" onClick={() => navigate("/tasks")}>
                             <ArrowRight className="arrow-icon"/>
                             <SquareCheckBig/>
                             <p className="access-title">Feladatok</p>
                             <p className="access-desc">Mai teendők és feladatok</p>
                         </div>
-                        <div className="access-div habits">
+                        <div className="access-div habits" onClick={() => navigate("/habits")}>
                             <ArrowRight className="arrow-icon"/>
                             <Target/>
                             <p className="access-title">Szokások</p>

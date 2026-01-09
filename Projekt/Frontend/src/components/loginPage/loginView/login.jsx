@@ -2,9 +2,12 @@ import "./login.css";
 import image1 from "../../../assets/image1.jpg";
 import {Mail, Lock} from "lucide-react";
 import { LoginRegisterSwitch } from "../login-register-switch/login-register-switch";
+import { useNavigate } from 'react-router-dom'
 
 
 export function LoginView(){
+    const navigate = useNavigate();
+
     return(
         <section>
             <div className='login-conatiner'>
@@ -17,13 +20,13 @@ export function LoginView(){
                         <h3>DailyDrop - A tökéletes szokáskövető mindennapi használatra!</h3>
                     </div>
                     <div className="login-form-div">
-                        <LoginRegisterSwitch/>
+                        <LoginRegisterSwitch currentPage="login"/>
                         <label>Jelentkezz be a fiókodba</label>
                     </div>
                     <div className="login-form-input-div">
                         <div className="input-label-row">
                             <Mail size={20}/>
-                            <label>Email vagy felhasználónév</label><br />
+                            <label>Email</label><br />
                         </div>
                         <input type="text" />
                     </div>
@@ -36,10 +39,10 @@ export function LoginView(){
                     </div>
                     <div className="login-button-div">
                         <button>Belépés</button>
-                        <button>Vendég Mód</button>
+                        <button onClick={() => navigate("/")}>Vendég Mód</button>
                     </div>
                     <div>
-                        <label>Még nincs fiókod? <a href="">Regisztáció</a></label>
+                        <label>Még nincs fiókod? <a onClick={() => navigate("/register")} style={{cursor: 'pointer'}}>Regisztráció</a></label>
                     </div>
                 </div>
                 

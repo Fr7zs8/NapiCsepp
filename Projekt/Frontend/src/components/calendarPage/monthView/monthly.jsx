@@ -1,8 +1,10 @@
 import "./monthly.css"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom'
 
 export function MonthlyView(){
+    const navigate = useNavigate();
 
     const [currentMonth] = useState(new Date(2025, 11));
     
@@ -58,9 +60,9 @@ export function MonthlyView(){
         <section className="monthly-calendar-view">
             <div className="header-div">
                 <div className="navigation-buttons">
-                    <button>Vissza</button>
-                    <button>{<ArrowLeft size={20}/>}</button>
-                    <button>{<ArrowRight size={20}/>}</button>
+                    <button onClick={() => navigate("/")}>Vissza</button>
+                    <button disabled>{<ArrowLeft size={20}/>}</button>
+                    <button onClick={() => navigate("/calendar/weekly")}>{<ArrowRight size={20}/>}</button>
                 </div>
                 <div className="info-text-div">
                     <p>2025. December</p>

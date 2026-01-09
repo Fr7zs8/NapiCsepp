@@ -1,8 +1,10 @@
 import "./weekly.css"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom'
 
 export function WeeklyView(){
+    const navigate = useNavigate();
     const [currentWeek] = useState(new Date(2025, 11, 7)); 
     
     const generateWeekDays = () => {
@@ -43,9 +45,9 @@ export function WeeklyView(){
             <div className="weekly-calendar-view">
                 <div className="header-div">
                     <div className="navigation-buttons">
-                        <button>Vissza</button>
-                        <button>{<ArrowLeft size={20}/>}</button>
-                        <button>{<ArrowRight size={20}/>}</button>
+                        <button onClick={() => navigate("/")}>Vissza</button>
+                        <button onClick={() => navigate("/calendar/monthly")}>{<ArrowLeft size={20}/>}</button>
+                        <button onClick={() => navigate("/calendar/daily")}>{<ArrowRight size={20}/>}</button>
                     </div>
                     <div className="info-text-div">
                         <p>2025. December</p>

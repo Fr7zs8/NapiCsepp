@@ -1,7 +1,9 @@
 import "./daily.css"
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useNavigate } from 'react-router-dom'
 
 export function DailyView(){
+    const navigate = useNavigate();
 
     const generateTimeSlots = () => {
         const slots = [];
@@ -17,9 +19,9 @@ export function DailyView(){
         <section className="day-calendar-section">
             <div className="header-div">
                 <div className="navigation-buttons">
-                    <button>Vissza</button>
-                    <button><ArrowLeft size={20}/></button>
-                    <button><ArrowRight size={20}/></button>
+                    <button onClick={() => navigate("/")}>Vissza</button>
+                    <button onClick={() => navigate("/calendar/weekly")}><ArrowLeft size={20}/></button>
+                    <button disabled><ArrowRight size={20}/></button>
                 </div>
                 <div className="info-text-div">
                     <p>2025. november</p>
