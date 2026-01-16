@@ -6,9 +6,17 @@ import { useNavigate } from 'react-router-dom'
 export function MonthlyView(){
     const navigate = useNavigate();
 
-    const [currentMonth] = useState(new Date(2025, 11));
+    const [currentMonth, setCurrentMonth] = useState(new Date());
     
     const daysOfWeek = ['H', 'K', 'Sz', 'Cs', 'P', 'Sz', 'V'];
+
+    const changeMonth = (direction) => {
+        setCurrentMonth(prev => {
+            const newDate = new Date(prev);
+            newDate.setMonth(prev.getMonth() + direction);
+            return newDate;
+        });
+    };
     
     
     const generateCalendarDays = () => {
@@ -23,14 +31,13 @@ export function MonthlyView(){
         
         const days = [];
         
-        // Previous month days
         const startDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
         for (let i = startDay; i > 0; i--) {
             const prevDate = new Date(year, month, 1 - i);
             days.push({ date: prevDate.getDate(), isCurrentMonth: false, isSunday: false });
         }
         
-        // Current month days
+
         for (let i = 1; i <= daysInMonth; i++) {
             const date = new Date(year, month, i);
             const dayOfWeek = date.getDay();
@@ -38,7 +45,6 @@ export function MonthlyView(){
             days.push({ date: i, isCurrentMonth: true, isSunday });
         }
         
-        // Next month days - only fill current row, not full week
         const currentLength = days.length;
         const daysInLastRow = currentLength % 7;
         
@@ -55,28 +61,29 @@ export function MonthlyView(){
     };
     
     const calendarDays = generateCalendarDays();
+    const monthName = currentMonth.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long' });
 
     return(
         <section className="monthly-calendar-view">
             <div className="header-div">
                 <div className="navigation-buttons">
                     <button onClick={() => navigate("/")}>Vissza</button>
-                    <button disabled>{<ArrowLeft size={20}/>}</button>
-                    <button onClick={() => navigate("/calendar/weekly")}>{<ArrowRight size={20}/>}</button>
+                    <button onClick={() => changeMonth(-1)}><ArrowLeft size={20}/></button>
+                    <button onClick={() => changeMonth(1)}><ArrowRight size={20}/></button>
                 </div>
                 <div className="info-text-div">
-                    <p>2025. December</p>
+                    <p>{monthName}</p>
                 </div>
                 <div className="view-switch-div">
                     <div className="view-switch-small">
-                        <input type="radio" id="view-month" name="view" defaultChecked/>
-                        <label htmlFor="view-month">Hónap</label>
+                        <input type="radio" id="view-month" name="view" checked readOnly/>
+                        <label htmlFor="view-month" onClick={() => navigate("/calendar/monthly")}>Hónap</label>
                         
                         <input type="radio" id="view-week" name="view"/>
-                        <label htmlFor="view-week">Hét</label>
+                        <label htmlFor="view-week" onClick={() => navigate("/calendar/weekly")}>Hét</label>
                         
                         <input type="radio" id="view-day" name="view"/>
-                        <label htmlFor="view-day">Nap</label>
+                        <label htmlFor="view-day" onClick={() => navigate("/calendar/daily")}>Nap</label>
                         
                         <span className="switch-slider"></span>
                     </div>

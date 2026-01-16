@@ -5,7 +5,15 @@ import { useNavigate } from 'react-router-dom'
 
 export function WeeklyView(){
     const navigate = useNavigate();
-    const [currentWeek] = useState(new Date(2025, 11, 7)); 
+    const [currentWeek, setCurrentWeek] = useState(new Date());
+
+    const changeWeek = (direction) => {
+        setCurrentWeek(prev => {
+            const newDate = new Date(prev);
+            newDate.setDate(prev.getDate() + (direction * 7));
+            return newDate;
+        });
+    };
     
     const generateWeekDays = () => {
         const days = [];
@@ -39,6 +47,8 @@ export function WeeklyView(){
     const weekDays = generateWeekDays();
     const timeSlots = generateTimeSlots();
 
+        const monthName = currentWeek.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long' });
+
 
     return(
         <section>
@@ -46,22 +56,22 @@ export function WeeklyView(){
                 <div className="header-div">
                     <div className="navigation-buttons">
                         <button onClick={() => navigate("/")}>Vissza</button>
-                        <button onClick={() => navigate("/calendar/monthly")}>{<ArrowLeft size={20}/>}</button>
-                        <button onClick={() => navigate("/calendar/daily")}>{<ArrowRight size={20}/>}</button>
+                        <button onClick={() => changeWeek(-1)}><ArrowLeft size={20}/></button>
+                        <button onClick={() => changeWeek(1)}><ArrowRight size={20}/></button>
                     </div>
                     <div className="info-text-div">
-                        <p>2025. December</p>
+                        <p>{monthName}</p>
                     </div>
                     <div className="view-switch-div">
                         <div className="view-switch-small">
-                            <input type="radio" id="view-month" name="view" defaultChecked/>
-                            <label htmlFor="view-month">Hónap</label>
+                            <input type="radio" id="view-month" name="view"/>
+                            <label htmlFor="view-month" onClick={() => navigate("/calendar/monthly")}>Hónap</label>
                             
-                            <input type="radio" id="view-week" name="view"/>
-                            <label htmlFor="view-week">Hét</label>
+                            <input type="radio" id="view-week" name="view" checked readOnly/>
+                            <label htmlFor="view-week" onClick={() => navigate("/calendar/weekly")}>Hét</label>
                             
                             <input type="radio" id="view-day" name="view"/>
-                            <label htmlFor="view-day">Nap</label>
+                            <label htmlFor="view-day" onClick={() => navigate("/calendar/daily")}>Nap</label>
                             
                             <span className="switch-slider"></span>
                         </div>

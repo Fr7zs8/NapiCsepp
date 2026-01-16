@@ -3,7 +3,7 @@ import image1 from "../../../assets/image1.jpg";
 import {Mail, Lock} from "lucide-react";
 import { LoginRegisterSwitch } from "../login-register-switch/login-register-switch";
 import { useNavigate } from 'react-router-dom'
-import { appUserService } from "../../../App";
+import { appUserService } from "../../../router/apiRouter";
 import { useState } from "react";
 
 

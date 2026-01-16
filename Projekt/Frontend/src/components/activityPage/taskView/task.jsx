@@ -2,7 +2,7 @@ import "./task.css";
 import { Plus, Pencil, Trash2, Check, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Task from "../../../classes/Views/task.jsx";
-import { appUserService } from "../../../App.jsx";
+import { appUserService } from "../../../router/apiRouter.jsx"
 
 export function TaskView(){
 
