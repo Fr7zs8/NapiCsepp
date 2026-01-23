@@ -28,9 +28,7 @@ export async function signIn(req:Request, res:Response){
 
         const token = jwt.sign({user_id:results[0].id}, config.jwtSecret, {expiresIn: "2h"});
 
-        const [resultsdata] = await connection.query("SELECT email, user_id FROM users WHERE user_id = ?", [results[0].id]) as Array<any>
-
-        res.status(200).send({token: token, data: resultsdata});
+        res.status(200).send({token: token});
     }
     catch(e){
         console.log(e);

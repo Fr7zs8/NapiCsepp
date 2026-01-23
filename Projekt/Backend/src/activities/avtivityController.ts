@@ -58,12 +58,9 @@ export async function postActivity(req:any, res:Response){
     try{
         //Kezelni kell majd  Figyelj rá hogyan küldesz adatot
         const [typeid] = await connection.query("SELECT types.type_id FROM types WHERE types.type_name LIKE ? ;", [newelem.activity_type_name]) as Array<any>;
-        console.log(newelem.activity_type_name)
-        console.log(typeid);
 
         //Kezelni kell majd
         const [difficultyid] = await connection.query("SELECT difficulties.difficulty_id FROM difficulties WHERE difficulties.difficulty_name LIKE ?;", [newelem.activity_difficulty_name]) as Array<any>;
-        console.log(difficultyid);
 
         //Activity achive kezelni
         const [results] = await connection.query("INSERT INTO `activities` (`activity_name`, `activity_type_id`, `activity_difficulty_id`, `activity_achive`, `activity_start_date`, `activity_end_date`) VALUES (?, ?, ?, ?, ?, ?)", [newelem.activity_name, typeid[0].type_id, difficultyid[0].difficulty_id, newelem.activity_achive, newelem.activity_start_date, newelem.activity_end_date]) as Array<any>
