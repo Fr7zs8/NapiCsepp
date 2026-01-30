@@ -1,0 +1,41 @@
+services:
+  backend:
+    build: ./backend
+    container_name: napicsepp-backend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: mysql://napicsepp:jelszo@db:3306/napicsepp
+    depends_on:
+      - db
+    networks:
+      - napicsepp-net
+
+  frontend:
+    build: ./frontend
+    container_name: napicsepp-frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - napicsepp-net
+
+  db:
+    image: mysql:8.0
+    container_name: napicsepp-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: napicsepp
+      MYSQL_USER: napicsepp
+      MYSQL_PASSWORD: jelszo
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - napicsepp-net
+
+networks:
+  napicsepp-net:
+    driver: bridge
+
+volumes:
+  db-data:
