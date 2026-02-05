@@ -2,13 +2,15 @@ import "./task.css";
 import { Plus, Pencil, Trash2, Check, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Task from "../../../classes/Views/task.jsx";
-import { appUserService } from "../../../router/apiRouter.jsx"
+import { activityService } from "../../../router/apiRouter.jsx"
 
 export function TaskView(){
 
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [difficulties, setDifficulties] = useState([]);
+    const [types, setTypes] = useState([]);
 
     //
     const [taskName, setTaskName] = useState("");
@@ -18,21 +20,23 @@ export function TaskView(){
 
 
     useEffect(()=>{
-        const fetchInitialData = async ()=> {
+        const fetchActivities = async ()=> {
             try {
                 setLoading(true);
-                const data = await appUserService.getAllActivities();
+                const data = await activityService.getAllActivities();
 
-                const taskObject = data.map(item => new Task(
-                    item.activity_id || Math.random(),
-                    item.activity_name,
-                    item.type_name,
-                    item.difficulty_name,
-                    item.activity_achive === 1,
-                    item.activity_start_date,
-                    item.activity_end_date,
-                    true
-                ));
+                const taskObject = data
+                    .filter(item => item.activity_type_id !== 4)
+                    .map(item => new Task(
+                        item.activity_id || Math.random(),
+                        item.activity_name,
+                        item.type_name,
+                        item.difficulty_name,
+                        item.activity_achive === 1,
+                        item.activity_start_date,
+                        item.activity_end_date,
+                        true
+                    ));
 
                 setTasks(taskObject);
             }
@@ -44,25 +48,90 @@ export function TaskView(){
                 setLoading(false);
             }
         }
-        fetchInitialData();
+        fetchActivities();
     }, []);
 
-    function addTask() {
+    useEffect(()=>{
+        async function fetchDifficulties(){
+            try{
+                setLoading(true);
+                const data = await activityService.getAllDifficulties();
+                
+                const diffObj = data.map(item => ({
+                    difficulty_id: item.difficulty_id,
+                    difficulty_name: item.difficulty_name
+                }));
+
+                setDifficulties(diffObj);
+            }
+            catch(err){
+                setError(err.message || "Hiba az adatok betöltése során!");
+                console.error(err);
+            }
+            finally{
+                setLoading(false);
+            }
+        }
+
+        fetchDifficulties();
+    },[]);
+
+    useEffect(()=>{
+        async function fetchTypes(){
+            try{
+                setLoading(true);
+                const data = await activityService.getAllTypes();
+                
+                const diffObj = data.map(item => ({
+                    type_id: item.type_id,
+                    type_name: item.type_name
+                }));
+                
+                setTypes(diffObj);
+            }
+            catch(err){
+                setError(err.message || "Hiba az adatok betöltése során!");
+                console.error(err);
+            }
+            finally{
+                setLoading(false);
+            }
+        }
+
+        fetchTypes();
+    },[]);
+
+    async function addTask() {
         if (!taskName || !typeName || !difficultyName) return;
 
-        const newTask = new Task(
-            Date.now(),
-            taskName,
-            typeName,
-            difficultyName,
-            0,
-            new Date().toISOString().split("T")[0],
-            new Date().toISOString().split("T")[0]
-        );
-
-        setTasks(prev => [...prev, newTask]);
-
-        resetForm();
+        try {
+            const taskData = {
+                activity_name: taskName,
+                activity_type_name: typeName,
+                activity_difficulty_name: difficultyName,
+                activity_start_date: new Date().toISOString().split("T")[0],
+                activity_end_date: new Date().toISOString().split("T")[0],
+                activity_achive: 0
+            };
+            await activityService.createTask(taskData);
+            
+            const data = await activityService.getAllActivities();
+            const taskObject = data.map(item => new Task(
+                item.activity_id || Math.random(),
+                item.activity_name,
+                item.type_name,
+                item.difficulty_name,
+                item.activity_achive === 1,
+                item.activity_start_date,
+                item.activity_end_date,
+                true
+            ));
+            setTasks(taskObject);
+            resetForm();
+        } catch (err) {
+            setError(err.message || "Hiba a feladat hozzáadása során!");
+            console.error(err);
+        }
     }
 
     function resetForm() {
@@ -72,8 +141,28 @@ export function TaskView(){
         setEditId(null);
     }
 
-    function deleteTask(id) {
-        setTasks(prev => prev.filter(t => t.taskId !== id));
+    async function deleteTask(id) {
+        try {
+            await activityService.deleteTask(id);
+            
+            const data = await activityService.getAllActivities();
+            const taskObject = data
+                .filter(item => item.activity_type_id !== 4)
+                .map(item => new Task(
+                    item.activity_id || Math.random(),
+                    item.activity_name,
+                    item.type_name,
+                    item.difficulty_name,
+                    item.activity_achive === 1,
+                    item.activity_start_date,
+                    item.activity_end_date,
+                    true
+                ));
+            setTasks(taskObject);
+        } catch (err) {
+            setError(err.message || "Hiba a feladat törlése során!");
+            console.error(err);
+        }
     }
 
     function startEditTask(task) {
@@ -83,16 +172,42 @@ export function TaskView(){
         setDifficultyName(task.difficultyName);
     }
 
-    function saveTask() {
-        setTasks(prev => {
-            console.log(prev)
-            return prev.map(t => t.taskId === editId ? { ...t, taskName, typeName, difficultyName }: t)
-        });
-        resetForm();
+    async function saveTask() {
+        try {
+            const updateData = {
+                activity_name: taskName,
+                activity_type_name: typeName,
+                activity_difficulty_name: difficultyName
+            };
+            await activityService.updateTask(editId, updateData);
+            
+            const data = await activityService.getAllActivities();
+            const taskObject = data
+                .filter(item => item.activity_type_id !== 4)
+                .map(item => new Task(
+                    item.activity_id || Math.random(),
+                    item.activity_name,
+                    item.type_name,
+                    item.difficulty_name,
+                    item.activity_achive === 1,
+                    item.activity_start_date,
+                    item.activity_end_date,
+                    true
+                ));
+            setTasks(taskObject);
+            resetForm();
+        } catch (err) {
+            setError(err.message || "Hiba a feladat szerkesztése során!");
+            console.error(err);
+        }
     }
 
     if (loading) {
         return <div className="loading-state"><Loader2 className="animate-spin" /> Adatok szinkronizálása...</div>;
+    }
+
+    if (error) {
+        return <div className="error-state">{error}</div>;
     }
 
     return (
@@ -118,10 +233,11 @@ export function TaskView(){
                     onChange={(e) => setTypeName(e.target.value)}
                 >
                     <option value="" disabled hidden>Feladat típusa</option>
-                    <option value="Tanulás">Tanulás</option>
-                    <option value="Mozgás">Mozgás</option>
-                    <option value="Munka">Munka</option>
-                    <option value="Egyéb">Egyéb</option>
+                    {types.map(type => (
+                        <option key={type.type_id} value={type.type_name}>
+                            {type.type_name}
+                        </option>
+                    ))}
                 </select>
 
                 <select 
@@ -130,9 +246,11 @@ export function TaskView(){
                     onChange={(e) => setDifficultyName(e.target.value)}
                 >
                     <option value="" disabled hidden>Nehézség típusa</option>
-                    <option value="Nehéz">Nehéz</option>
-                    <option value="Közepes">Közepes</option>
-                    <option value="Könnyű">Könnyű</option>
+                    {difficulties.map(difficulty => (
+                        <option key={difficulty.difficulty_id} value={difficulty.difficulty_name}>
+                            {difficulty.difficulty_name}
+                        </option>
+                    ))}
                 </select>
 
                 {editId === null ? (

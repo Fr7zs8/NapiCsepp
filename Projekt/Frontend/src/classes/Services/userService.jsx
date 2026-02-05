@@ -15,27 +15,20 @@ export default class UserService{
         return data;
     }
 
-    getAllActivities(){
-        return this.apiService.get("/napicsepp/activities");
+    register(username, email, password){
+        return this.apiService.post("/napicsepp/register", {username, email, password});
     }
 
-    createTask(taskData){
-
+    logout(){
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
     }
 
-    updateTask(taskId, data){
-
+    updateProfile(username, email, password){
+        return this.apiService.put("/napicsepp/user/profile", {username, email, password});
     }
 
-    deleteTask(taskId){
-
-    }
-
-    createHabit(habitData){
-
-    }
-
-    deleteHabit(habitId){
-
+    getStatistics(){
+        return this.apiService.get("/napicsepp/user/statistics");
     }
 }

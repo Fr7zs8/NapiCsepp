@@ -14,9 +14,11 @@ import {createBrowserRouter} from "react-router-dom"
 
 import ApiService from "../classes/Services/apiService"
 import UserService from "../classes/Services/userService"
+import ActivityService from '../classes/Services/activityService'
 
 const api = new ApiService("http://localhost:3000");
-export const appUserService = new UserService(api);
+export const activityService = new ActivityService(api);
+export const userService = new UserService(api);
 
 export const appRouter = createBrowserRouter([
   {

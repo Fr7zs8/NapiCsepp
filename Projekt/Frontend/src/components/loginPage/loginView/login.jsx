@@ -3,7 +3,7 @@ import image1 from "../../../assets/image1.jpg";
 import {Mail, Lock} from "lucide-react";
 import { LoginRegisterSwitch } from "../login-register-switch/login-register-switch";
 import { useNavigate } from 'react-router-dom'
-import { appUserService } from "../../../router/apiRouter";
+import { userService } from "../../../router/apiRouter";
 import { useState } from "react";
 
 
@@ -21,7 +21,7 @@ export function LoginView(){
         setLoading(true);
 
         try {
-            await appUserService.login(email, password);
+            await userService.login(email, password);
             navigate("/"); 
         } catch (err) {
             setError(err.message || "Hibás email vagy jelszó!");

@@ -6,9 +6,8 @@ export async function getDifficulties(_req: Request, res:Response){
     const connection = await mysql.createConnection(config.database);
 
     try{
-        const [results] = await connection.query("SELECT difficulties.difficulty_name FROM difficulties") as Array<any>;
-        const difficultyes = results.map((e: any) => e.difficulty_name)
-        res.status(200).send(difficultyes);
+        const [results] = await connection.query("SELECT * FROM difficulties") as Array<any>;
+        res.status(200).send(results);
     }
     catch (e){
         console.log(e);

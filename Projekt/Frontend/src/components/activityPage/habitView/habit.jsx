@@ -1,16 +1,21 @@
 import "./habit.css";
-import { Plus, Pencil, Trash2, Calendar } from "lucide-react";
-import { useState } from "react";
+import { Plus, Pencil, Trash2, Calendar, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import Habit from "../../../classes/Views/habit.jsx";
+import { activityService } from "../../../router/apiRouter.jsx"
 
 export function HabitView() {
     const [habits, setHabits] = useState([]);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
+
     const [habitName, setHabitName] = useState("");
     const [typeName, setTypeName] = useState("");
     const [difficultyName, setDifficultyName] = useState("");
     const [targetDays, setTargetDays] = useState("");
     const [startDate, setStartDate] = useState("");
     const [editId, setEditId] = useState(null);
+    
 
     function resetForm() {
         setHabitName("");
@@ -21,20 +26,35 @@ export function HabitView() {
         setEditId(null);
     }
 
-    function addHabit() {
+    async function addHabit() {
         if (!habitName || !typeName || !difficultyName || !targetDays || !startDate) return;
 
-        const newHabit = new Habit(
-            Date.now(),
-            habitName,
-            typeName,
-            difficultyName,
-            parseInt(targetDays),
-            startDate
-        );
-
-        setHabits(prev => [...prev, newHabit]);
-        resetForm();
+        try {
+            const habitData = {
+                activity_name: habitName,
+                activity_type_name: typeName,
+                activity_difficulty_name: difficultyName,
+                activity_start_date: startDate,
+                activity_end_date: new Date(new Date(startDate).getTime() + parseInt(targetDays) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                activity_achive: 0
+            };
+            await activityService.createHabit(habitData);
+            
+            const data = await activityService.getAllHabits();
+            const habitObj = data.map(item => new Habit(
+                item.activity_id,
+                item.activity_name,
+                item.type_name,
+                item.difficulty_name,
+                item.target_days,
+                item.activity_start_date
+            ));
+            setHabits(habitObj);
+            resetForm();
+        } catch (err) {
+            setError(err.message || "Hiba a szokás hozzáadása során!");
+            console.error(err);
+        }
     }
 
     function editHabit(id) {
@@ -49,18 +69,88 @@ export function HabitView() {
         setEditId(id);
     }
 
-    function saveHabit() {
-        setHabits(prev => {
-            console.log(prev)
-            return prev.map(h =>
-                h.habitId === editId ? new Habit(h.habitId, habitName, typeName, difficultyName, parseInt(targetDays), startDate): h
-            )
-        });
-        resetForm();
+    async function saveHabit() {
+        try {
+            const updateData = {
+                activity_name: habitName,
+                activity_type_name: typeName,
+                activity_difficulty_name: difficultyName,
+                activity_start_date: startDate,
+                activity_end_date: new Date(new Date(startDate).getTime() + parseInt(targetDays) * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+            };
+            await activityService.updateHabit(editId, updateData);
+            
+            const data = await activityService.getAllHabits();
+            const habitObj = data.map(item => new Habit(
+                item.activity_id,
+                item.activity_name,
+                item.type_name,
+                item.difficulty_name,
+                item.target_days,
+                item.activity_start_date
+            ));
+            setHabits(habitObj);
+            resetForm();
+        } catch (err) {
+            setError(err.message || "Hiba a szokás szerkesztése során!");
+            console.error(err);
+        }
     }
 
-    function deleteHabit(id) {
-        setHabits(prev => prev.filter(h => h.habitId !== id));
+    async function deleteHabit(id) {
+        try {
+            await activityService.deleteHabit(id);
+            
+            const data = await activityService.getAllHabits();
+            const habitObj = data.map(item => new Habit(
+                item.activity_id,
+                item.activity_name,
+                item.type_name,
+                item.difficulty_name,
+                item.target_days,
+                item.activity_start_date
+            ));
+            setHabits(habitObj);
+        } catch (err) {
+            setError(err.message || "Hiba a szokás törlése során!");
+            console.error(err);
+        }
+    }
+
+    useEffect(()=>{
+        async function fetchHabits(){
+            try{
+                setLoading(true);
+                const data = await activityService.getAllHabits();
+                
+                const habitObj = data.map(item => new Habit(
+                    item.activity_id,
+                    item.activity_name,
+                    item.type_name,
+                    item.difficulty_name,
+                    item.target_days,
+                    item.activity_start_date
+                ));
+                setHabits(habitObj);
+            }
+            catch(err){
+                setError(err.message || "Hiba az adatok betöltése során!");
+                console.error(err);
+            }
+            finally{
+                setLoading(false);
+            }
+        }
+
+        fetchHabits();
+    }, [])
+
+    if (loading) {
+        return <div className="loading-state"><Loader2 className="animate-spin" /> Adatok szinkronizálása...</div>;
+    }
+
+    if (error) {
+        return <div className="error-state">{error}</div>;
     }
 
     return (
