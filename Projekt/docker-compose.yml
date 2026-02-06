@@ -6,7 +6,11 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: development
-      DATABASE_URL: mysql://napicsepp:jelszo@db:3306/napicsepp
+      DB_HOST: db
+      DB_USER: napicsepp
+      DB_PASSWORD: jelszo
+      DATABASE: napicsepp
+      JWT_SECRET: secret
     depends_on:
       - db
     networks:
@@ -29,6 +33,7 @@ services:
       MYSQL_USER: napicsepp
       MYSQL_PASSWORD: jelszo
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - db-data:/var/lib/mysql
     networks:
       - napicsepp-net

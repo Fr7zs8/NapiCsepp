@@ -1,15 +1,21 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-class DBConfig{
-    constructor(){
-        return {host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.PASSWORD, database: process.env.DATABASE, multipleStatements: true}
-    }
+class DBConfig {
+  constructor() {
+    return {
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DATABASE,
+      multipleStatements: true,
+    };
+  }
 }
 
-const config: any =  {
-    jwtSecret: process.env.JWT_SECRET,
-    database: new DBConfig(),
-}
+const config: any = {
+  jwtSecret: process.env.JWT_SECRET,
+  database: new DBConfig(),
+};
 
 export default config;
