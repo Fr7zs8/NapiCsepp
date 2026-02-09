@@ -6,10 +6,11 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
-USE `napicsepp`;
+SET NAMES utf8mb4;
 
-CREATE DATABASE IF NOT EXISTS `napicsepp` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `napicsepp` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_hungarian_ci;
 
+USE napicsepp;
 
 -- ========================================================
 -- FUNCTIONS
@@ -24,7 +25,7 @@ END$$
 CREATE FUNCTION `login` (`email` VARCHAR(100), `pwd` VARCHAR(100)) RETURNS INT(11) DETERMINISTIC
 BEGIN
     DECLARE ok INT DEFAULT 0;
-    SELECT user_id INTO ok FROM users WHERE users.email = email AND users.password = pwd_encrypt(pwd);
+    SELECT user_id INTO ok FROM users WHERE users.email = email COLLATE utf8mb4_hungarian_ci AND users.password = pwd_encrypt(pwd);
     RETURN ok;
 END$$
 
@@ -38,13 +39,13 @@ CREATE TABLE `types` (
   `type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 CREATE TABLE `difficulties` (
   `difficulty_id` int(11) NOT NULL AUTO_INCREMENT,
   `difficulty_name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`difficulty_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 CREATE TABLE `activities` (
   `activity_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -59,7 +60,7 @@ CREATE TABLE `activities` (
   KEY `activity_difficulty_id` (`activity_difficulty_id`),
   CONSTRAINT `activities_ibfk_1` FOREIGN KEY (`activity_type_id`) REFERENCES `types` (`type_id`) ON DELETE CASCADE,
   CONSTRAINT `activities_ibfk_2` FOREIGN KEY (`activity_difficulty_id`) REFERENCES `difficulties` (`difficulty_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -70,7 +71,7 @@ CREATE TABLE `users` (
   `role` varchar(50) DEFAULT NULL,
   `register_date` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 CREATE TABLE `events` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -78,7 +79,7 @@ CREATE TABLE `events` (
   `event_start_time` datetime DEFAULT NULL,
   `event_end_time` datetime DEFAULT NULL,
   PRIMARY KEY (`event_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 CREATE TABLE `users_activities` (
   `user_id` int(11) NOT NULL,
@@ -87,7 +88,7 @@ CREATE TABLE `users_activities` (
   KEY `activity_id` (`activity_id`),
   CONSTRAINT `users_activities_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   CONSTRAINT `users_activities_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`activity_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 CREATE TABLE `users_events` (
   `user_id` int(11) NOT NULL,
@@ -96,7 +97,7 @@ CREATE TABLE `users_events` (
   KEY `event_id` (`event_id`),
   CONSTRAINT `users_events_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   CONSTRAINT `users_events_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 -- ========================================================
 -- TRIGGERS
