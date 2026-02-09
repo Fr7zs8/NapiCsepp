@@ -15,10 +15,11 @@ import {createBrowserRouter} from "react-router-dom"
 import ApiService from "../classes/Services/apiService"
 import UserService from "../classes/Services/userService"
 import ActivityService from '../classes/Services/activityService'
+import { ProtectedRouter } from './protectedRouter';
 
 const api = new ApiService("http://localhost:3000");
 export const activityService = new ActivityService(api);
-export const userService = new UserService(api);
+export const clientService = new UserService(api);
 
 export const appRouter = createBrowserRouter([
   {
@@ -35,30 +36,58 @@ export const appRouter = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <Layout><ProfileView /></Layout>
+    element: (
+      <ProtectedRouter>
+        <Layout><ProfileView /></Layout>
+      </ProtectedRouter>
+    )
   },
   {
     path: "/statistics",
-    element: <Layout><StatisticsView /></Layout>
+    element: (
+      <ProtectedRouter>
+        <Layout><StatisticsView /></Layout>
+      </ProtectedRouter>
+    )
   },
   {
     path: "/calendar/monthly",
-    element: <Layout><MonthlyView /></Layout>
+    element: (
+      <ProtectedRouter>
+        <Layout><MonthlyView /></Layout>
+      </ProtectedRouter>
+    )
   },
   {
     path: "/calendar/weekly",
-    element: <Layout><WeeklyView /></Layout>
+    element: (
+      <ProtectedRouter>
+        <Layout><WeeklyView /></Layout>
+      </ProtectedRouter>
+    )
   },
   {
     path: "/calendar/daily",
-    element: <Layout><DailyView /></Layout>
+    element: (
+      <ProtectedRouter>
+        <Layout><DailyView /></Layout>
+      </ProtectedRouter>
+    )
   },
   {
     path: "/tasks",
-    element: <Layout><TaskView /></Layout>
+    element: (
+      <ProtectedRouter>
+        <Layout><TaskView /></Layout>
+      </ProtectedRouter>
+    )
   },
   {
     path: "/habits",
-    element: <Layout><HabitView /></Layout>
+    element: (
+      <ProtectedRouter>
+        <Layout><HabitView /></Layout>
+      </ProtectedRouter>
+    )
   }
 ])

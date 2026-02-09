@@ -53,7 +53,7 @@
     justify-content: center;
 }
 
-.profile-info h3 {
+.profile-info h2 {
     margin: 0 0 0.25rem 0;
     font-size: 1.5rem;
 }
@@ -78,7 +78,7 @@
 }
 
 .data-item {
-    background: #cacacc;
+    background: #fff;
     padding: 1.5rem;
     border-radius: 12px;
 }
@@ -128,22 +128,32 @@
     gap: 1rem;
 }
 
+/* ⚠️ FIX: Helyes sorrend */
 .stat-item {
     background: #f5f5f5;
     padding: 1.5rem;
     border-radius: 8px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.stat-label {
-    margin: 0 0 0.5rem 0;
-    color: #666;
-    font-size: 0.9rem;
+.stat-icon {
+    color: #10b981;
+    margin-bottom: 0.5rem;
 }
 
 .stat-value {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
     color: #2d2d2d;
+}
+
+.stat-label {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
 }

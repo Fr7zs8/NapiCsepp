@@ -9,26 +9,24 @@ export default class UserService{
 
         if (data.token){
             localStorage.setItem("authToken", data.token);
-            localStorage.setItem("user", data.user);
         }
 
         return data;
     }
 
-    register(username, email, password){
-        return this.apiService.post("/napicsepp/register", {username, email, password});
+    register(username, email, password, language, role, registrationDate){
+        return this.apiService.post("/napicsepp/regisztrate", {username, email, password, language, role, registrationDate});
     }
 
     logout(){
         localStorage.removeItem("authToken");
-        localStorage.removeItem("user");
     }
 
-    updateProfile(username, email, password){
-        return this.apiService.put("/napicsepp/user/profile", {username, email, password});
+    getProfile(){
+        return this.apiService.get("/napicsepp/profile");
     }
 
     getStatistics(){
-        return this.apiService.get("/napicsepp/user/statistics");
+        return this.apiService.get("/napicsepp/stats");
     }
 }

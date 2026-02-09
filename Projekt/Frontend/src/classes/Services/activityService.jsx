@@ -18,14 +18,17 @@ export default class ActivityService{
         return this.apiService.get("/napicsepp/events");
     }
 
+    //megy
     getAllDifficulties(){
         return this.apiService.get("/napicsepp/difficulties");
     }
 
+    //megy
     getAllTypes(){
         return this.apiService.get("/napicsepp/types");
     }
 
+    //mukodik
     createTask(taskData){
         return this.apiService.post("/napicsepp/activities", taskData);
     }
@@ -34,6 +37,7 @@ export default class ActivityService{
         return this.apiService.put(`/napicsepp/activities/${taskId}`, data);
     }
 
+    //mukodik
     deleteTask(taskId){
         return this.apiService.delete(`/napicsepp/activities/${taskId}`);
     }
@@ -50,6 +54,7 @@ export default class ActivityService{
         return this.apiService.put(`/napicsepp/events/${eventId}`, data);
     }
 
+    //mukodik
     createHabit(habitData){
         return this.apiService.post("/napicsepp/activities", habitData);
     }
@@ -58,6 +63,7 @@ export default class ActivityService{
         return this.apiService.put(`/napicsepp/activities/${habitId}`, data);
     }
 
+    //mukodik
     deleteHabit(habitId){
         return this.apiService.delete(`/napicsepp/activities/${habitId}`);
     }

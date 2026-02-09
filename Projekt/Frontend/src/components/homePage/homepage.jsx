@@ -1,11 +1,40 @@
 import "./homepage.css"
-import { Calendar, SquareCheckBig, Target, TrendingUp, CircleCheck, ArrowRight, Sparkles } from "lucide-react"
+import { Calendar, SquareCheckBig, Target, TrendingUp, CircleCheck, ArrowRight, Sparkles, Loader2 } from "lucide-react"
 import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import { clientService } from "../../router/apiRouter";
 
 export function HomepageView(){
     const [currentQuote, setCurrentQuote] = useState(0);
+    const [profile, setProfile] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [stats, setStats] = useState(null);
+
     const navigate = useNavigate();
+
+    useEffect(()=>{
+        fetchData();
+    },[]);
+    
+    const fetchData = async () => {
+        try{
+            setLoading(true);
+    
+            const profileData = await clientService.getProfile();
+            setProfile(Array.isArray(profileData) ? profileData[0] : profileData);
+            
+            const statsData = await clientService.getStatistics();
+            setStats(Array.isArray(statsData) ? statsData[0] : statsData);
+        }
+        catch(error){
+            setError(error.message || "Hiba az adatok betöltése során.");
+            console.log(error);
+        }
+        finally{
+            setLoading(false);
+        }
+    }        
 
     const quotes = [
         "A siker nem végleges, a kudarc nem végzetes: a folytatáshoz szükséges bátorság az, ami számít.",
@@ -25,10 +54,36 @@ export function HomepageView(){
         return () => clearInterval(interval);
     }, []);
 
+    if (loading) {
+        return (
+            <div className="loading-state">
+                <Loader2 size={48} className="animate-spin"/>
+                <p>Adatok betöltése...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="error-state">
+                <p>{error}</p>
+                <button onClick={fetchData}>Újrapróbálkozás</button>
+            </div>
+        )
+    };
+
+    if (!profile) {
+        return (
+            <div className="error-state">
+                <p>Profil adatok nem elérhetők.</p>
+            </div>
+        );
+    }
+
     return(
         <section>
             <div className="info-text-div">
-                <h3>Szia Vendég!</h3>
+                <h3>Szia {profile.username}!</h3>
                 <p>December van</p>
             </div>
             <div className="progress-view-div">

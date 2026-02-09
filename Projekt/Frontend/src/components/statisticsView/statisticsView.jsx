@@ -1,19 +1,78 @@
+import { useEffect, useState } from "react";
 import "./statisticsView.css"
-import { Calendar, SquareCheckBigIcon, Target, Award, TrendingUp, Activity } from "lucide-react"
+import { Calendar, SquareCheckBigIcon, Target, Award, TrendingUp, Activity, Loader2 } from "lucide-react"
+import { clientService } from "../../router/apiRouter";
 
 export function StatisticsView(){
 
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(()=>{
+        fetchStatistics();
+    },[])
+
+    const fetchStatistics = async () => {
+        try {
+            setLoading(true);
+            const data = await clientService.getStatistics();
+            setStats(Array.isArray(data) ? data[0] : data);
+        } catch (err) {
+            setError(err.message || "Hiba az adatok betöltése során!");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+     if (loading) {
+        return (
+            <div className="loading-state">
+                <Loader2 size={48} className="animate-spin"/>
+                <p>Statisztikák betöltése...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="error-state">
+                <p>{error}</p>
+                <button onClick={fetchStatistics}>Újrapróbálkozás</button>
+            </div>
+        );
+    }
+
+    if (!stats) {
+        return (
+            <div className="error-state">
+                <p>Nincs betöltött statisztika</p>
+                <button onClick={fetchStatistics}>Újrapróbálkozás</button>
+            </div>
+        );
+    }
+
+    const totalTasks = stats.total_activity || 0;
+    const completed = stats.completed || 0;
+    const pending = totalTasks - completed;
+    const completionRate = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
+
+    const weeklyTotal = stats.weekly_tasks || 0;
+    const weeklyCompleted = stats.weekly_tasks_completed || 0;
+    const weeklyAverage = weeklyTotal > 0 ? Math.round(weeklyTotal / 7) : 0;
+
     const weekData = [
-        { day: 'H', completed: 12, pending: 3 },
-        { day: 'K', completed: 8, pending: 4 },
-        { day: 'Sze', completed: 15, pending: 3 },
-        { day: 'Cs', completed: 10, pending: 4 },
-        { day: 'P', completed: 14, pending: 1 },
-        { day: 'Szo', completed: 6, pending: 2 },
-        { day: 'V', completed: 4, pending: 3 }
+        { day: 'H', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
+        { day: 'K', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
+        { day: 'Sze', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
+        { day: 'Cs', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
+        { day: 'P', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
+        { day: 'Szo', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
+        { day: 'V', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) }
     ];
     
-    const maxValue = Math.max(...weekData.map(d => d.completed + d.pending));
+    const maxValue = Math.max(...weekData.map(d => d.completed + d.pending), 1);
 
     return (
         <section className="statistics-section">
@@ -21,32 +80,34 @@ export function StatisticsView(){
                 <p>Statisztikák</p>
                 <p>Részletes betekintés a teljesítményedbe</p>
             </div>
+
             <div className="counters-div">
                 <div className="counter-div allTasks">
                     <p className="counter-label">Összes feladat</p>
                     <SquareCheckBigIcon size={32}/>
-                    <p className="counter-value">0</p>
+                    <p className="counter-value">{totalTasks}</p>
                     <p className="counter-desc">Teendők + Szokások</p>
                 </div>
                 <div className="counter-div completed">
                     <p className="counter-label">Befejezett</p>
                     <Award size={32}/>
-                    <p className="counter-value">0</p>
+                    <p className="counter-value">{completed}</p>
                     <p className="counter-desc">Elvégzett feladatok</p>
                 </div>
                 <div className="counter-div events">
                     <p className="counter-label">Összes feladat</p>
                     <Calendar size={32}/>
-                    <p className="counter-value">0</p>
+                    <p className="counter-value">{stats.monthly_events_count || 0}</p>
                     <p className="counter-desc">Naptári események</p>
                 </div>
                 <div className="counter-div active">
-                    <p className="counter-label">Szokások</p>
+                    <p className="counter-label">Mai feladatok</p>
                     <Target size={32}/>
-                    <p className="counter-value">0</p>
+                    <p className="counter-value">{stats.daily_tasks_count || 0}</p>
                     <p className="counter-desc">Aktív szokások</p>
                 </div>
             </div>
+
             <div className="averages-div">
                 <div className="explanation-div">
                     <TrendingUp size={20}/>
@@ -56,20 +117,20 @@ export function StatisticsView(){
                 <div className="progress-section">
                     <div className="progress-header">
                         <p>Teljesítés</p>
-                        <p className="progress-percent">0%</p>
+                        <p className="progress-percent">{completionRate}%</p>
                     </div>
                     <div className="progress-bar">
-                        <div className="progress-fill" style={{width: '0%'}}></div>
+                        <div className="progress-fill" style={{width: `${completionRate}%`}}></div>
                     </div>
                 </div>
                 <div className="ratio-div">
                     <div className="completed-div">
                         <p>Befejezett</p>
-                        <p className="ratio-value">0</p>
+                        <p className="ratio-value">{completed}</p>
                     </div>
                     <div className="pending-div">
                         <p>Függőben lévő</p>
-                        <p className="ratio-value">0</p>
+                        <p className="ratio-value">{pending}</p>
                     </div>
                 </div>
             </div>
@@ -81,37 +142,37 @@ export function StatisticsView(){
                     </div>
                     <div className="priority-item high-difficulty">
                         <p>Magas nehézség</p>
-                        <p className="priority-value">0</p>
+                        <p className="priority-value">{stats.hard_tasks || 0}</p>
                     </div>
                     <div className="priority-item mid-difficulty">
                         <p>Közepes nehézség</p>
-                        <p className="priority-value">0</p>
+                        <p className="priority-value">{stats.middle_tasks || 0}</p>
                     </div>
                     <div className="priority-item low-difficulty">
                         <p>Alacsony nehézség</p>
-                        <p className="priority-value">0</p>
+                        <p className="priority-value">{stats.easy_tasks || 0}</p>
                     </div>
                 </div>
                 <div className="habit-stats-div">
                     <div className="explanation-div">
                         <Target size={20}/>
-                        <p className="section-title">Szokások részletei</p>
+                        <p className="section-title">Heti összesítő</p>
                     </div>
                     <div className="habit-counter-display">
-                        <p>Összes szokás</p>
-                        <p className="habit-value">0</p>
+                        <p>Heti összes feladat</p>
+                        <p className="habit-value">{weeklyTotal}</p>
                     </div>
                     <div className="habit-counter-display">
-                        <p>Aktív szokások</p>
-                        <p className="habit-value">0</p>
+                        <p>Heti befejezett</p>
+                        <p className="habit-value">{weeklyCompleted}</p>
                     </div>
                     <div className="habit-counter-display">
-                        <p>Inaktív szokások</p>
-                        <p className="habit-value">0</p>
+                        <p>Heti függőben</p>
+                        <p className="habit-value">{weeklyTotal - weeklyCompleted}</p>
                     </div>
                     <div className="habit-average-display">
-                        <p>Átlagos haladás</p>
-                        <p className="habit-avg-value">0%</p>
+                        <p>Napi átlag</p>
+                        <p className="habit-avg-value">{weeklyAverage}</p>
                     </div>
                 </div>
             </div>
@@ -125,14 +186,14 @@ export function StatisticsView(){
                 <div className="diagram-div">
                     <div className="chart-container">
                         <div className="y-axis">
-                            {[16, 12, 8, 4, 0].map((value, index) => (
+                            {[maxValue, Math.floor(maxValue * 0.75), Math.floor(maxValue * 0.5), Math.floor(maxValue * 0.25), 0].map((value, index) => (
                                 <span key={index} className="y-axis-label">{value}</span>
                             ))}
                         </div>
                         <div className="chart-content">
                             {weekData.map((data, index) => {
-                                const completedHeight = (data.completed / maxValue) * 100;
-                                const pendingHeight = (data.pending / maxValue) * 100;
+                                const completedHeight = maxValue > 0 ? (data.completed / maxValue) * 100 : 0;
+                                const pendingHeight = maxValue > 0 ? (data.pending / maxValue) * 100 : 0;
                                 
                                 return (
                                     <div key={index} className="chart-bar-group">
@@ -166,15 +227,15 @@ export function StatisticsView(){
                 <div className="diagram-counters-div">
                     <div className="weekly-stat-display">
                         <p>Heti összes</p>
-                        <p className="weekly-value">89</p>
+                        <p className="weekly-value">{weeklyTotal}</p>
                     </div>
                     <div className="weekly-stat-display">
                         <p>Elvégzett</p>
-                        <p className="weekly-value">71</p>
+                        <p className="weekly-value">{weeklyCompleted}</p>
                     </div>
                     <div className="weekly-stat-display">
                         <p>Átlag / nap</p>
-                        <p className="weekly-value">13</p>
+                        <p className="weekly-value">{weeklyAverage}</p>
                     </div>
                 </div>
             </div>

@@ -26,7 +26,9 @@ export function TaskView(){
                 const data = await activityService.getAllActivities();
 
                 const taskObject = data
-                    .filter(item => item.activity_type_id !== 4)
+                    .filter( item => 
+                        item.activity_type_id !== 4
+                    )
                     .map(item => new Task(
                         item.activity_id || Math.random(),
                         item.activity_name,
@@ -116,7 +118,11 @@ export function TaskView(){
             await activityService.createTask(taskData);
             
             const data = await activityService.getAllActivities();
-            const taskObject = data.map(item => new Task(
+            const taskObject = data
+            .filter( item => 
+                        item.activity_type_id !== 4
+                    )
+            .map(item => new Task(
                 item.activity_id || Math.random(),
                 item.activity_name,
                 item.type_name,
@@ -147,7 +153,7 @@ export function TaskView(){
             
             const data = await activityService.getAllActivities();
             const taskObject = data
-                .filter(item => item.activity_type_id !== 4)
+                .filter(item => item.activity_type_id !== 4 )
                 .map(item => new Task(
                     item.activity_id || Math.random(),
                     item.activity_name,
@@ -179,7 +185,7 @@ export function TaskView(){
                 activity_type_name: typeName,
                 activity_difficulty_name: difficultyName
             };
-            await activityService.updateTask(editId, updateData);
+            //await activityService.updateTask(editId, updateData); <-- ez még nem működik, mert a backend nem fogadja el a type és difficulty nevet, csak id-t
             
             const data = await activityService.getAllActivities();
             const taskObject = data
@@ -206,9 +212,6 @@ export function TaskView(){
         return <div className="loading-state"><Loader2 className="animate-spin" /> Adatok szinkronizálása...</div>;
     }
 
-    if (error) {
-        return <div className="error-state">{error}</div>;
-    }
 
     return (
         <section className="tasks-section">
@@ -233,7 +236,7 @@ export function TaskView(){
                     onChange={(e) => setTypeName(e.target.value)}
                 >
                     <option value="" disabled hidden>Feladat típusa</option>
-                    {types.map(type => (
+                    {types.filter(type => type.type_name !== "Szokás").map(type => (
                         <option key={type.type_id} value={type.type_name}>
                             {type.type_name}
                         </option>
@@ -302,7 +305,9 @@ export function TaskView(){
                     </div>
                 ))}
             </div>
-
+            <div>
+                {error && <div className="error-state">{error}</div>}
+            </div>
         </section>
     );
 }

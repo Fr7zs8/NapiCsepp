@@ -10,12 +10,25 @@ export function HabitView() {
     const [loading, setLoading] = useState(true);
 
     const [habitName, setHabitName] = useState("");
-    const [typeName, setTypeName] = useState("");
     const [difficultyName, setDifficultyName] = useState("");
     const [targetDays, setTargetDays] = useState("");
     const [startDate, setStartDate] = useState("");
     const [editId, setEditId] = useState(null);
-    
+     const [difficulties, setDifficulties] = useState([]);
+
+    useEffect(()=>{
+        async function fetchDifficulties(){
+            try{
+                const data = await activityService.getAllDifficulties();
+                setDifficulties(data);
+            }
+            catch(err){
+                setError(err.message || "Hiba az adatok betöltése során!");
+                console.error(err);
+            }
+        }
+        fetchDifficulties();
+    },[]);
 
     function resetForm() {
         setHabitName("");
@@ -27,12 +40,12 @@ export function HabitView() {
     }
 
     async function addHabit() {
-        if (!habitName || !typeName || !difficultyName || !targetDays || !startDate) return;
+        if (!habitName || !difficultyName || !targetDays || !startDate) return;
 
         try {
             const habitData = {
                 activity_name: habitName,
-                activity_type_name: typeName,
+                activity_type_name: "Szokás",
                 activity_difficulty_name: difficultyName,
                 activity_start_date: startDate,
                 activity_end_date: new Date(new Date(startDate).getTime() + parseInt(targetDays) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -73,12 +86,12 @@ export function HabitView() {
         try {
             const updateData = {
                 activity_name: habitName,
-                activity_type_name: typeName,
+                activity_type_name: "Szokás",
                 activity_difficulty_name: difficultyName,
                 activity_start_date: startDate,
                 activity_end_date: new Date(new Date(startDate).getTime() + parseInt(targetDays) * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
             };
-            await activityService.updateHabit(editId, updateData);
+            await activityService.updateHabit(editId, updateData); 
             
             const data = await activityService.getAllHabits();
             const habitObj = data.map(item => new Habit(
@@ -149,10 +162,6 @@ export function HabitView() {
         return <div className="loading-state"><Loader2 className="animate-spin" /> Adatok szinkronizálása...</div>;
     }
 
-    if (error) {
-        return <div className="error-state">{error}</div>;
-    }
-
     return (
         <section className="tasks-section">
             <div className="info-text-div">
@@ -171,25 +180,15 @@ export function HabitView() {
 
                 <select
                     className="priority-btn"
-                    value={typeName}
-                    onChange={(e) => setTypeName(e.target.value)}
-                >
-                    <option value="" disabled hidden>Szokás típusa</option>
-                    <option value="Tanulás">Tanulás</option>
-                    <option value="Mozgás">Mozgás</option>
-                    <option value="Munka">Munka</option>
-                    <option value="Egyéb">Egyéb</option>
-                </select>
-
-                <select
-                    className="priority-btn"
                     value={difficultyName}
                     onChange={(e) => setDifficultyName(e.target.value)}
                 >
-                    <option value="" disabled hidden>Nehézség</option>
-                    <option value="Könnyű">Könnyű</option>
-                    <option value="Közepes">Közepes</option>
-                    <option value="Nehéz">Nehéz</option>
+                    <option value="" disabled hidden>Nehézség típusa</option>
+                    {difficulties.map(difficulty => (
+                        <option key={difficulty.difficulty_id} value={difficulty.difficulty_name}>
+                            {difficulty.difficulty_name}
+                        </option>
+                    ))}
                 </select>
 
                 <select
@@ -278,6 +277,9 @@ export function HabitView() {
                         </div>
                     </div>
                 ))}
+            </div>
+            <div>
+                {error && <div className="error-state">{error}</div>}
             </div>
         </section>
     );
