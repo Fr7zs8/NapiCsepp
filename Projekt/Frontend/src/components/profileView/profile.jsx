@@ -116,8 +116,10 @@ export function ProfileView(){
             
             {stats && (
                 <div className="profile-stats-div">
-                    <p className="stats-title">Profil statisztikák</p>
-                    <p className="stats-subtitle">Az általános használati statisztikáid</p>
+                    <div className="stats-header">
+                        <p className="stats-title">Profil statisztikák</p>
+                        <p className="stats-subtitle">Az általános használati statisztikáid</p>
+                    </div>
                     <div className="stats-grid">
                         <div className="stat-item">
                             <div className="stat-icon">

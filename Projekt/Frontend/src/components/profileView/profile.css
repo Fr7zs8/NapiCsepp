@@ -105,12 +105,30 @@
 
 .profile-stats-div {
     background: #fff;
-    padding: 2rem;
+    padding: 2.5rem 2rem; 
+    position: relative; 
     border-radius: 12px;
 }
 
+/* Reset any absolutely/fixed positioned children inside the stats card so they
+   can't float to the card corners and overlap the header. This is defensive
+   — the stats card doesn't need absolutely positioned children. */
+.profile-stats-div * {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+}
+
 .stats-title {
-    margin: 0 0 0.25rem 0;
+    margin: 0 0 0.75rem 0; 
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: 0 !important;
+    display: block;
+    width: 100%;
+    text-align: left; 
     font-weight: 600;
     font-size: 1.1rem;
     color: #2d2d2d;
@@ -122,13 +140,22 @@
     font-size: 0.9rem;
 }
 
+.profile-stats-div .stats-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    justify-content: flex-start;
+    gap: 0.25rem;
+    width: 100%;
+}
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
 }
 
-/* ⚠️ FIX: Helyes sorrend */
+
 .stat-item {
     background: #f5f5f5;
     padding: 1.5rem;

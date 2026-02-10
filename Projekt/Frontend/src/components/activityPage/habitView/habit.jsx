@@ -32,7 +32,6 @@ export function HabitView() {
 
     function resetForm() {
         setHabitName("");
-        setTypeName("");
         setDifficultyName("");
         setTargetDays("");
         setStartDate("");
@@ -75,7 +74,6 @@ export function HabitView() {
         if (!h) return;
 
         setHabitName(h.habitName);
-        setTypeName(h.typeName);
         setDifficultyName(h.difficultyName);
         setTargetDays(h.targetDays);
         setStartDate(h.startDate);
