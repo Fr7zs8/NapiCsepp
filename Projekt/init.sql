@@ -171,6 +171,37 @@ INSERT INTO `users_events` (`user_id`, `event_id`) VALUES
 -- ========================================================
 DELIMITER $$
 
+CREATE PROCEDURE `overview`()
+BEGIN
+    	SELECT
+d.date,
+  SUM(d.activity_count) AS activity_count,
+  SUM(d.habit_count) AS habit_count,
+  SUM(d.event_count) AS event_count
+FROM (
+  SELECT
+    DATE_Format(a.activity_start_date , '%Y-%m-%d %H:%i')
+     AS date,
+    SUM(t.type_name <> 'Szokás') AS activity_count,
+    SUM(t.type_name = 'Szokás') AS habit_count,
+    0 AS event_count
+  FROM activities a
+  JOIN types t ON t.type_id = a.activity_type_id
+  GROUP BY a.activity_start_date
+ 
+  UNION ALL
+ 
+  SELECT
+    DATE_Format(e.event_start_time, '%Y-%m-%d %H:%i') AS date,
+    0, 0,
+    COUNT(*) AS event_count
+  FROM events e
+  GROUP BY DATE_Format(e.event_start_time, '%Y-%m-%d %H:%i')
+) d
+GROUP BY d.date
+ORDER BY d.date;
+End$$
+
 CREATE PROCEDURE `pr_pullactivities` (IN `user_id` INT)
 BEGIN
     SELECT activities.activity_name, types.type_name, difficulties.difficulty_name, activities.activity_achive,
