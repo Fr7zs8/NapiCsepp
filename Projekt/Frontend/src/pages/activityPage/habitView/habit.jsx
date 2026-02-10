@@ -232,7 +232,7 @@ export function HabitView() {
                                 <div className="labels">
                                     <span className="label">{habit.typeName}</span>
                                     <span className="label">{habit.difficultyName}</span>
-                                    <span className="label">
+                                    <span className="label date-label">
                                         <Calendar size={12} style={{ marginRight: "4px" }} />
                                         {habit.startDate}
                                     </span>
@@ -277,7 +277,10 @@ export function HabitView() {
                 ))}
             </div>
             <div>
-                {error && <div className="error-state">{error}</div>}
+                {(() => {
+                    const isNoDataError = error && /nincs.*(habit|szoká|szokas|feladat|task)/i.test(error);
+                    return isNoDataError ? "" : <div className="error-state">{error}</div>;
+                })()}
             </div>
         </section>
     );

@@ -1,13 +1,14 @@
-import { HabitView } from '../components/activityPage/habitView/habit'
-import { TaskView } from '../components/activityPage/taskView/task'
-import { DailyView } from '../components/calendarPage/dayView/daily'
-import { MonthlyView } from '../components/calendarPage/monthView/monthly'
-import { WeeklyView } from '../components/calendarPage/weekView/weekly'
-import { HomepageView } from '../components/homePage/homepage'
-import { LoginView } from '../components/loginPage/loginView/login'
-import { RegisterView } from '../components/loginPage/registerView/register'
-import { ProfileView } from '../components/profileView/profile'
-import { StatisticsView } from '../components/statisticsView/statisticsView'
+import { HabitView } from '../pages/activityPage/habitView/habit'
+import { TaskView } from '../pages/activityPage/taskView/task'
+import { DailyView } from '../pages/calendarPage/dayView/daily'
+import { MonthlyView } from '../pages/calendarPage/monthView/monthly'
+import { WeeklyView } from '../pages/calendarPage/weekView/weekly'
+import { CombinedView } from '../pages/calendarPage/combinedView/combined'
+import { HomepageView } from '../pages/homePage/homepage'
+import { LoginView } from '../pages/loginPage/loginView/login'
+import { RegisterView } from '../pages/loginPage/registerView/register'
+import { ProfileView } from '../pages/profileView/profile'
+import { StatisticsView } from '../pages/statisticsView/statisticsView'
 import { Layout } from '../components/layout/layout'
 
 import {createBrowserRouter} from "react-router-dom"
@@ -47,6 +48,14 @@ export const appRouter = createBrowserRouter([
     element: (
       <ProtectedRouter>
         <Layout><StatisticsView /></Layout>
+      </ProtectedRouter>
+    )
+  },
+  {
+    path: "/calendar",
+    element: (
+      <ProtectedRouter>
+        <Layout><CombinedView /></Layout>
       </ProtectedRouter>
     )
   },

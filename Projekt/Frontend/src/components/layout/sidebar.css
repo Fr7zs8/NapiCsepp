@@ -29,7 +29,9 @@
 }
 
 .sidebar-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     padding: 0.75rem 1.5rem;
     color: #ccc;
     text-decoration: none;
@@ -55,10 +57,94 @@
     color: #777;
 }
 
+/* divider */
+.sidebar-divider {
+    height: 1px;
+    background: #333;
+    margin: 0.5rem 0;
+}
+
 /* footer */
 .sidebar-footer {
     padding: 1rem 1.5rem;
     border-top: 1px solid #333;
     font-size: 0.85rem;
     color: #aaa;
+}
+
+/* Hamburger Button - hidden on desktop */
+.hamburger-btn {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    background: #111;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+    padding: 0.5rem;
+}
+
+/* Backdrop for mobile menu */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Mobile/Tablet Responsiveness */
+@media (max-width: 768px) {
+    .hamburger-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -220px;
+        width: 220px;
+        height: 100vh;
+        transition: left 0.3s ease-in-out;
+        z-index: 1000;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .sidebar-backdrop {
+        display: block;
+    }
+
+    .sidebar-backdrop.hidden {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .sidebar-link {
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .sidebar-header {
+        padding: 1rem 1rem;
+    }
+
+    .hamburger-btn {
+        left: 0.5rem;
+        top: 0.5rem;
+    }
 }

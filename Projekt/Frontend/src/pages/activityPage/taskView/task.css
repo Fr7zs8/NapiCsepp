@@ -1,6 +1,6 @@
 .tasks-section {
     padding: 2rem;
-    background: #e8ebf3;
+    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
 }
 
 .info-text-div {
@@ -120,6 +120,17 @@
     font-size: 0.85rem;
 }
 
+.label.date-label {
+    display: none;
+}
+
+@media (max-width: 720px) {
+    .label.date-label {
+        display: inline-flex;
+        align-items: center;
+    }
+}
+
 .right-section {
     display: flex;
     gap: 0.75rem;
@@ -136,4 +147,13 @@
 .delete-btn {
     background: #d32f2f;
     color: white;
+}
+
+/* Responsive rules */
+@media (max-width: 720px) {
+    .task-form-div { flex-direction: column; }
+    .priority-btn, .add-btn { width: 100%; }
+    .task-list-div { padding: 0.5rem; }
+    .task-item { flex-direction: column; align-items: flex-start; }
+    .right-section { align-self: stretch; display: flex; justify-content: space-between; width: 100%; margin-top: 0.5rem; }
 }

@@ -7,6 +7,14 @@ export function WeeklyView(){
     const navigate = useNavigate();
     const [currentWeek, setCurrentWeek] = useState(new Date());
 
+    const handleWeeklyNavigation = () => {
+        // On mobile, go to combined view (/calendar)
+        // On desktop, stay at weekly view
+        if (window.innerWidth <= 600) {
+            navigate("/calendar");
+        }
+    };
+
     const changeWeek = (direction) => {
         setCurrentWeek(prev => {
             const newDate = new Date(prev);
@@ -23,13 +31,17 @@ export function WeeklyView(){
         const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
         startOfWeek.setDate(diff);
         
+        const today = new Date();
+        
         for (let i = 0; i < 7; i++) {
             const date = new Date(startOfWeek);
             date.setDate(startOfWeek.getDate() + i);
+            const isToday = date.toDateString() === today.toDateString();
             days.push({
                 dayName: ['hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat', 'vasárnap'][i],
                 date: date.getDate(),
-                isWeekend: i >= 5
+                isWeekend: i >= 5,
+                isToday: isToday
             });
         }
         
@@ -68,7 +80,7 @@ export function WeeklyView(){
                             <label htmlFor="view-month" onClick={() => navigate("/calendar/monthly")}>Hónap</label>
                             
                             <input type="radio" id="view-week" name="view" checked readOnly/>
-                            <label htmlFor="view-week" onClick={() => navigate("/calendar/weekly")}>Hét</label>
+                            <label htmlFor="view-week" onClick={() => handleWeeklyNavigation()}>Hét</label>
                             
                             <input type="radio" id="view-day" name="view"/>
                             <label htmlFor="view-day" onClick={() => navigate("/calendar/daily")}>Nap</label>
@@ -87,7 +99,7 @@ export function WeeklyView(){
                         </div>
                         {weekDays.map((day, dayIndex) => (
                             <div key={dayIndex} className="day-column">
-                                <div className={`day-header-cell ${day.isWeekend ? 'weekend' : ''}`}>
+                                <div className={`day-header-cell ${day.isWeekend ? 'weekend' : ''} ${day.isToday ? 'current-day' : ''}`}>
                                     <span className="day-name">{day.dayName}</span>
                                     <span className="day-date">{day.date}</span>
                                 </div>

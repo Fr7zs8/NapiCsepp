@@ -1,6 +1,6 @@
 section {
     padding: 2rem;
-    background: #d1d4dd;
+    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
 }
 
 
@@ -18,7 +18,7 @@ section {
 
 .progress-view-div {
     padding: 1.5rem;
-    background: #706f6f;
+    background: #fff;
     border-radius: 12px;
     margin-bottom: 2rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -28,9 +28,10 @@ section {
     position: relative;
     padding: 2rem;
     margin-bottom: 2rem;
-    background: #4ade80;
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    color: white;
 }
 
 .sparkles-icon {
@@ -40,11 +41,21 @@ section {
     color: #fff;
 }
 
+@keyframes fadeInCarousel {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 .carousel-text {
     text-align: center;
     margin: 1rem 0;
     color: #fff;
     font-size: 1.1rem;
+    animation: fadeInCarousel 0.6s ease-in-out;
 }
 
 .carousel-dots {
@@ -59,12 +70,25 @@ section {
     height: 10px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.5);
+    transition: all 0.4s ease-in-out;
 }
 
 .dot.active {
     width: 30px;
     border-radius: 5px;
     background: #fff;
+    animation: expandDot 0.4s ease-in-out;
+}
+
+@keyframes expandDot {
+    from {
+        width: 10px;
+        border-radius: 50%;
+    }
+    to {
+        width: 30px;
+        border-radius: 5px;
+    }
 }
 
 .main-content-wrapper {
@@ -192,4 +216,139 @@ section {
     font-size: 1.25rem;
     font-weight: bold;
     color: #2d2d2d;
+}
+
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+    section {
+        padding: 1.5rem;
+    }
+
+    .main-content-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-access-list-div {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .statistics-list-div {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .progress-view-div {
+        margin-bottom: 1.5rem;
+    }
+
+    .text-carousel-div {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .carousel-text {
+        font-size: 1rem;
+    }
+
+    .access-div {
+        padding: 1.25rem;
+    }
+
+    .stat-div {
+        padding: 1.25rem;
+    }
+
+    .stat-value {
+        font-size: 1.1rem;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+    section {
+        padding: 1rem;
+    }
+
+    .info-text-div h3 {
+        font-size: 1.35rem;
+        margin: 0 0 0.35rem 0;
+    }
+
+    .info-text-div p {
+        font-size: 0.9rem;
+    }
+
+    .progress-view-div {
+        padding: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .progress-view-div div {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .progress-view-div span {
+        font-size: 1.5rem;
+    }
+
+    .text-carousel-div {
+        padding: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .carousel-text {
+        font-size: 0.9rem;
+        margin: 0.5rem 0;
+    }
+
+    .quick-access-list-div {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .access-div {
+        padding: 1rem;
+    }
+
+    .access-title {
+        font-size: 0.85rem;
+        margin-top: 0.75rem;
+    }
+
+    .access-desc {
+        font-size: 0.75rem;
+    }
+
+    .arrow-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .statistics-list-div {
+        gap: 0.5rem;
+    }
+
+    .stat-div {
+        padding: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1rem;
+    }
+
+    .stat-name {
+        font-size: 0.9rem;
+    }
+
+    .stat-label {
+        font-size: 0.65rem;
+    }
+
+    .sparkles-icon {
+        width: 18px;
+        height: 18px;
+    }
 }

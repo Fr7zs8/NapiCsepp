@@ -1,0 +1,405 @@
+.combined-calendar-view {
+    padding: 2rem;
+    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
+}
+
+.header-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.navigation-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.navigation-buttons button {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.navigation-buttons button:hover {
+    background: #f5f5f5;
+}
+
+.info-text-div p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d2d2d;
+}
+
+.view-switch-small {
+    position: relative;
+    display: flex;
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid #ddd;
+}
+
+.view-switch-small input[type="radio"] {
+    display: none;
+}
+
+.view-switch-small label {
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 0.85rem;
+}
+
+.switch-slider {
+    position: absolute;
+    width: calc(33.33% - 4px);
+    height: calc(100% - 8px);
+    background: #14142a;
+    opacity: 0.15;
+    border-radius: 6px;
+    transition: 0.3s ease;
+    left: 4px;
+    top: 4px;
+}
+
+#view-month:checked ~ .switch-slider {
+    left: 4px;
+}
+
+#view-week:checked ~ .switch-slider {
+    left: calc(33.33% + 0px);
+}
+
+#view-day:checked ~ .switch-slider {
+    left: calc(66.66% - 4px);
+}
+
+/* Main combined layout */
+.combined-layout {
+    display: grid;
+    grid-template-columns: 120px 1fr 300px;
+    gap: 1rem;
+}
+
+/* Week toggle - left side */
+.week-toggle-div {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: fit-content;
+}
+
+.week-toggle-btn {
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.week-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.week-toggle-btn.back {
+    background: #fff;
+    color: #2d2d2d;
+    border: 1px solid #ddd;
+}
+
+.week-toggle-btn.back:hover {
+    background: #f5f5f5;
+    box-shadow: none;
+}
+
+/* Weekly overview - center */
+.weekly-overview-div {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.week-grid {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+.day-card {
+    flex: 1;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.day-card:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.day-card.current-day {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.day-card.current-day .day-name {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.day-card.current-day .day-date {
+    color: white;
+}
+
+.day-card.weekend {
+    background: #fef5f5;
+}
+
+.day-card.weekend.current-day {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+}
+
+.day-name {
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.day-date {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d2d2d;
+}
+
+/* Daily schedule - right side */
+.daily-schedule-div {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.schedule-header {
+    font-weight: 600;
+    color: #2d2d2d;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.time-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.time-slot {
+    padding: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #666;
+    border-left: 3px solid #10b981;
+}
+
+.time-slot.filled {
+    background: #e8f5e9;
+    border-left-color: #10b981;
+}
+
+/* Responsive - Tablet */
+@media (max-width: 1024px) {
+    .combined-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .week-toggle-div {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        height: auto;
+    }
+
+    .week-toggle-btn {
+        flex: 1;
+    }
+
+    .daily-schedule-div {
+        max-height: 400px;
+    }
+}
+
+/* Responsive - Medium - Merge week & day view */
+@media (max-width: 768px) {
+    .combined-calendar-view {
+        padding: 1.5rem;
+    }
+
+    .header-div {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .navigation-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .info-text-div {
+        text-align: center;
+    }
+
+    .info-text-div p {
+        font-size: 1.25rem;
+    }
+
+    .view-switch-div {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .combined-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .week-toggle-div {
+        display: none;
+    }
+
+    .daily-schedule-div {
+        max-height: none;
+    }
+
+    .week-grid {
+        gap: 0.5rem;
+    }
+
+    .day-card {
+        padding: 0.75rem;
+    }
+
+    .day-name {
+        font-size: 0.75rem;
+    }
+
+    .day-date {
+        font-size: 1.25rem;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+    .combined-calendar-view {
+        padding: 1rem;
+    }
+
+    .header-div {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .navigation-buttons {
+        gap: 0.35rem;
+    }
+
+    .navigation-buttons button {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .info-text-div p {
+        font-size: 1rem;
+    }
+
+    .view-switch-small {
+        font-size: 0.7rem;
+    }
+
+    .view-switch-small label {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.65rem;
+    }
+
+    .combined-layout {
+        gap: 0.75rem;
+    }
+
+    .weekly-overview-div {
+        padding: 1rem;
+    }
+
+    .week-grid {
+        gap: 0.4rem;
+    }
+
+    .day-card {
+        padding: 0.5rem;
+    }
+
+    .day-name {
+        font-size: 0.65rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .day-date {
+        font-size: 1rem;
+    }
+
+    .daily-schedule-div {
+        padding: 0.75rem;
+    }
+
+    .schedule-header {
+        font-size: 0.85rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .time-slot {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    /* Hide daily view option on mobile - only show monthly and weekly */
+    #view-day {
+        display: none;
+    }
+
+    #view-day ~ label {
+        display: none;
+    }
+
+    /* Adjust slider width for 2 options instead of 3 */
+    .switch-slider {
+        width: calc(50% - 4px);
+    }
+
+    #view-month:checked ~ .switch-slider {
+        left: 4px;
+    }
+
+    #view-week:checked ~ .switch-slider {
+        left: calc(50% + 0px);
+    }
+}

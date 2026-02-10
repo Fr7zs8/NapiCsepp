@@ -10,6 +10,16 @@ export function MonthlyView(){
     
     const daysOfWeek = ['H', 'K', 'Sz', 'Cs', 'P', 'Sz', 'V'];
 
+    const handleWeeklyNavigation = () => {
+        // On mobile, go to combined view (/calendar shows weekly + daily)
+        // On desktop, go to weekly view
+        if (window.innerWidth <= 600) {
+            navigate("/calendar");
+        } else {
+            navigate("/calendar/weekly");
+        }
+    };
+
     const changeMonth = (direction) => {
         setCurrentMonth(prev => {
             const newDate = new Date(prev);
@@ -29,12 +39,13 @@ export function MonthlyView(){
         const firstDayOfWeek = firstDay.getDay();
         const daysInMonth = lastDay.getDate();
         
+        const today = new Date();
         const days = [];
         
         const startDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
         for (let i = startDay; i > 0; i--) {
             const prevDate = new Date(year, month, 1 - i);
-            days.push({ date: prevDate.getDate(), isCurrentMonth: false, isSunday: false });
+            days.push({ date: prevDate.getDate(), isCurrentMonth: false, isSunday: false, isToday: false });
         }
         
 
@@ -42,7 +53,8 @@ export function MonthlyView(){
             const date = new Date(year, month, i);
             const dayOfWeek = date.getDay();
             const isSunday = dayOfWeek === 0;
-            days.push({ date: i, isCurrentMonth: true, isSunday });
+            const isToday = date.toDateString() === today.toDateString();
+            days.push({ date: i, isCurrentMonth: true, isSunday, isToday });
         }
         
         const currentLength = days.length;
@@ -53,7 +65,7 @@ export function MonthlyView(){
             for (let i = 1; i <= remainingDays; i++) {
                 const nextDate = new Date(year, month + 1, i);
                 const isSunday = nextDate.getDay() === 0;
-                days.push({ date: i, isCurrentMonth: false, isSunday });
+                days.push({ date: i, isCurrentMonth: false, isSunday, isToday: false });
             }
         }
         
@@ -80,7 +92,7 @@ export function MonthlyView(){
                         <label htmlFor="view-month" onClick={() => navigate("/calendar/monthly")}>Hónap</label>
                         
                         <input type="radio" id="view-week" name="view"/>
-                        <label htmlFor="view-week" onClick={() => navigate("/calendar/weekly")}>Hét</label>
+                        <label htmlFor="view-week" onClick={() => handleWeeklyNavigation()}>Hét</label>
                         
                         <input type="radio" id="view-day" name="view"/>
                         <label htmlFor="view-day" onClick={() => navigate("/calendar/daily")}>Nap</label>
@@ -99,7 +111,7 @@ export function MonthlyView(){
                     {calendarDays.map((day, index) => (
                         <div 
                             key={index} 
-                            className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isSunday ? 'sunday' : ''}`}
+                            className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isSunday ? 'sunday' : ''} ${day.isToday ? 'current-day' : ''}`}
                         >
                             {day.date}
                         </div>

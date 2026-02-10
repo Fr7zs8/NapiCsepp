@@ -1,0 +1,77 @@
+/* Basic styles for habits mirror task styles with responsive rules */
+.tasks-section {
+    padding: 2rem;
+    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
+}
+
+.info-text-div {
+    margin-bottom: 2rem;
+}
+
+.info-text-div p:first-child {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d2d2d;
+    margin: 0 0 0.5rem 0;
+}
+
+.info-text-div p:last-child {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.task-form-div {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.task-name-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #c9c8cf;
+}
+
+.task-name-input:focus { outline: none; border-color: #3b82f6; }
+
+.priority-btn { padding: 0.75rem 1.5rem; border: 1px solid #ddd; border-radius: 8px; background: #f5f5f5; cursor: pointer; font-size: 0.95rem; color: #2d2d2d; }
+.priority-btn:hover { background: #e5e5e5; }
+
+.add-btn { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: #000; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 500; }
+.add-btn:hover { background: #333; }
+
+.task-list-div { background: #e3e0e0; border-radius: 12px; padding: 1rem; min-height: 200px; }
+
+.task-item { background: white; border-radius: 14px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; color: #000; }
+
+.left-section { display: flex; gap: 1rem; align-items: center; }
+
+.color-bar { width: 4px; height: 40px; background: #ffc107; border-radius: 4px; }
+
+.task-name { font-weight: 600; margin: 0; }
+
+.labels { display: flex; gap: 0.5rem; }
+
+.label { background: #eee; padding: 4px 12px; border-radius: 50px; font-size: 0.85rem; }
+
+.label.date-label { display: none; }
+
+.right-section { display: flex; gap: 0.75rem; }
+
+.edit-btn, .delete-btn { padding: 0.5rem 1rem; border-radius: 10px; border: none; cursor: pointer; }
+.delete-btn { background: #d32f2f; color: white; }
+
+/* Show date label only on mobile */
+@media (max-width: 720px) {
+    .label.date-label { display: inline-block; }
+    .labels { flex-direction: column; }
+    .task-form-div { flex-direction: column; }
+    .priority-btn, .add-btn { width: 100%; }
+    .task-list-div { padding: 0.5rem; }
+    .task-item { flex-direction: column; align-items: flex-start; }
+    .right-section { align-self: stretch; display: flex; justify-content: space-between; width: 100%; margin-top: 0.5rem; }
+}

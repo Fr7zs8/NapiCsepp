@@ -5,13 +5,26 @@
 
 .main-content {
     flex: 1;
-    margin-left: 220px; 
+    margin-left: 220px;
     padding: 1.5rem;
-    background-color: #f2f2f2;
+    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
     min-height: 100vh;
 }
 
-
 .main-content:only-child {
     margin-left: 0;
+}
+
+/* Mobile responsive - remove left margin when sidebar becomes mobile menu */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 0.75rem;
+    }
 }

@@ -1,6 +1,6 @@
 .statistics-section {
     padding: 2rem;
-    background: #e8ebf3;
+    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
 }
 
 .info-text-div {
@@ -347,4 +347,131 @@
     font-size: 0.85rem;
     color: #666;
     text-align: right;
+}
+
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+    .statistics-section {
+        padding: 1.5rem;
+    }
+
+    .counters-div {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .averages-div {
+        padding: 1.5rem;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+
+    .chart-bars {
+        height: 150px;
+    }
+
+    .diagram-counters-div {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    .counter-value {
+        font-size: 1.75rem;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+    .statistics-section {
+        padding: 1rem;
+    }
+
+    .counters-div {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .counter-div {
+        padding: 1rem;
+    }
+
+    .counter-value {
+        font-size: 1.5rem;
+    }
+
+    .counter-label {
+        font-size: 0.8rem;
+    }
+
+    .averages-div {
+        padding: 1rem;
+    }
+
+    .ratio-div {
+        grid-template-columns: 1fr;
+    }
+
+    .progress-section {
+        margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+        gap: 0.75rem;
+    }
+
+    .priority-stats-div,
+    .habit-stats-div {
+        padding: 1rem;
+    }
+
+    .priority-item {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .habit-counter-display,
+    .habit-average-display {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .chart-container {
+        height: 150px;
+        padding: 0.5rem;
+    }
+
+    .chart-bars {
+        height: 100px;
+    }
+
+    .chart-bar {
+        width: 16px;
+    }
+
+    .chart-label {
+        font-size: 0.8rem;
+    }
+
+    .diagram-counters-div {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .weekly-stat-display {
+        padding: 0.75rem;
+    }
+
+    .section-title {
+        font-size: 1rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.85rem;
+    }
 }

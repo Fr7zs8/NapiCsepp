@@ -32,6 +32,9 @@ export function DailyView(){
         day: 'numeric' 
     });
 
+    const today = new Date();
+    const isToday = currentDay.toDateString() === today.toDateString();
+
     return(
         <section className="day-calendar-section">
             <div className="header-div">

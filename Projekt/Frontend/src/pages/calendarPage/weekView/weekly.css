@@ -1,0 +1,301 @@
+
+.header-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.navigation-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.navigation-buttons button {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.info-text-div p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d2d2d;
+}
+
+.view-switch-small {
+    position: relative;
+    display: flex;
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid #ddd;
+}
+
+.view-switch-small input[type="radio"] {
+    display: none;
+}
+
+.view-switch-small label {
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 0.85rem;
+}
+
+.switch-slider {
+    position: absolute;
+    width: calc(33.33% - 4px);
+    height: calc(100% - 8px);
+    background: #14142a;
+    opacity: 0.15;
+    border-radius: 6px;
+    transition: 0.3s ease;
+    left: 4px;
+    top: 4px;
+}
+
+#view-month:checked ~ .switch-slider {
+    left: 4px;
+}
+
+#view-week:checked ~ .switch-slider {
+    left: calc(33.33% + 0px);
+}
+
+#view-day:checked ~ .switch-slider {
+    left: calc(66.66% - 4px);
+}
+
+.weekly-view-div {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow-x: auto;
+}
+
+.week-grid {
+    display: flex;
+    min-width: 800px;
+}
+
+.time-column {
+    width: 80px;
+    flex-shrink: 0;
+}
+
+.day-column {
+    flex: 1;
+    min-width: 100px;
+}
+
+.day-header-cell {
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid #e0e0e0;
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+.day-header-cell.weekend {
+    background: #fef5f5;
+}
+
+.day-name {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.day-date {
+    font-size: 1.1rem;
+    color: #2d2d2d;
+    margin-top: 0.25rem;
+}
+
+.time-cell {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.hour-cell {
+    height: 60px;
+    border-bottom: 1px solid #e0e0e0;
+    border-left: 1px solid #e0e0e0;
+}
+
+.hour-cell.weekend {
+    background: #fafafa;
+}
+
+.day-header-cell.current-day {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    color: white;
+}
+
+.day-header-cell.current-day .day-name {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.day-header-cell.current-day .day-date {
+    color: white;
+}
+
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+    .header-div {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .navigation-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .info-text-div {
+        text-align: center;
+    }
+
+    .info-text-div p {
+        font-size: 1.25rem;
+    }
+
+    .view-switch-div {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .week-grid {
+        min-width: 600px;
+    }
+
+    .time-column {
+        width: 70px;
+    }
+
+    .day-column {
+        min-width: 80px;
+    }
+
+    .day-header-cell {
+        height: 50px;
+        font-size: 0.85rem;
+    }
+
+    .day-date {
+        font-size: 0.95rem;
+    }
+
+    .time-cell {
+        height: 50px;
+        font-size: 0.8rem;
+    }
+
+    .hour-cell {
+        height: 50px;
+    }
+}
+
+/* Responsive - Mobile - Merge weekly & day view */
+@media (max-width: 600px) {
+    .header-div {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .navigation-buttons {
+        gap: 0.35rem;
+    }
+
+    .navigation-buttons button {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .info-text-div p {
+        font-size: 1rem;
+    }
+
+    .view-switch-small {
+        font-size: 0.7rem;
+    }
+
+    .view-switch-small label {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.65rem;
+    }
+
+    .weekly-view-div {
+        padding: 0.5rem;
+    }
+
+    .week-grid {
+        min-width: 100%;
+    }
+
+    .time-column {
+        width: 50px;
+    }
+
+    .day-column {
+        min-width: 50px;
+    }
+
+    .day-header-cell {
+        height: 45px;
+        font-size: 0.7rem;
+    }
+
+    .day-name {
+        font-size: 0.65rem;
+    }
+
+    .day-date {
+        font-size: 0.8rem;
+        margin-top: 0.1rem;
+    }
+
+    .time-cell {
+        height: 45px;
+        font-size: 0.7rem;
+    }
+
+    .hour-cell {
+        height: 45px;
+    }
+
+    /* Hide daily view option on mobile - only show monthly and weekly */
+    #view-day {
+        display: none;
+    }
+
+    #view-day ~ label {
+        display: none;
+    }
+
+    /* Adjust slider width for 2 options instead of 3 */
+    .switch-slider {
+        width: calc(50% - 4px);
+    }
+
+    #view-month:checked ~ .switch-slider {
+        left: 4px;
+    }
+
+    #view-week:checked ~ .switch-slider {
+        left: calc(50% + 0px);
+    }
+}

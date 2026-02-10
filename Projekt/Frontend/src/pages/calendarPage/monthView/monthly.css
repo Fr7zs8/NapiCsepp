@@ -113,6 +113,12 @@
     color: #e53e3e;
 }
 
+.calendar-day.current-day {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    color: white;
+    font-weight: 600;
+}
+
 .explanation-div {
     background: #fff;
     border-radius: 12px;
@@ -168,4 +174,149 @@
     margin: 0;
     font-size: 0.9rem;
     color: #666;
+}
+
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+    .header-div {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .navigation-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .info-text-div {
+        text-align: center;
+    }
+
+    .info-text-div p {
+        font-size: 1.25rem;
+    }
+
+    .view-switch-div {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .month-view-div {
+        padding: 1rem;
+    }
+
+    .calendar-day {
+        padding: 0.75rem;
+        min-height: 60px;
+        font-size: 0.9rem;
+    }
+
+    .day-header {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .explanation-div {
+        padding: 1rem;
+    }
+
+    .legend-items {
+        gap: 1rem;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+    .header-div {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .navigation-buttons {
+        gap: 0.35rem;
+    }
+
+    .navigation-buttons button {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .info-text-div p {
+        font-size: 1rem;
+    }
+
+    .view-switch-small {
+        font-size: 0.75rem;
+    }
+
+    .view-switch-small label {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .month-view-div {
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .calendar-grid {
+        gap: 0;
+    }
+
+    .day-header {
+        padding: 0.35rem;
+        font-size: 0.75rem;
+    }
+
+    .calendar-day {
+        padding: 0.5rem;
+        min-height: 50px;
+        font-size: 0.8rem;
+    }
+
+    .explanation-div {
+        padding: 0.75rem;
+    }
+
+    .explanation-title {
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .legend-items {
+        gap: 0.5rem;
+        flex-direction: column;
+    }
+
+    .legend-item {
+        gap: 0.4rem;
+    }
+
+    .legend-item p {
+        font-size: 0.8rem;
+    }
+
+    /* Hide daily view option on mobile - only show monthly and weekly */
+    #view-day {
+        display: none;
+    }
+
+    #view-day ~ label {
+        display: none;
+    }
+
+    /* Adjust slider width for 2 options instead of 3 */
+    .switch-slider {
+        width: calc(50% - 4px);
+    }
+
+    #view-month:checked ~ .switch-slider {
+        left: 4px;
+    }
+
+    #view-week:checked ~ .switch-slider {
+        left: calc(50% + 0px);
+    }
 }

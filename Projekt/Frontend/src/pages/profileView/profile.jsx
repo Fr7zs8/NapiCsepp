@@ -72,7 +72,6 @@ export function ProfileView(){
             </div>
 
             <div className="data-list-div">
-                
                 <div className="data-item">
                     <div className="data-icon-label">
                         <Lock size={20} />
@@ -105,7 +104,7 @@ export function ProfileView(){
                     <p className="data-value">{profile.register_date}</p>
                 </div>
 
-                <div className="data-item">
+                <div className="data-item centered">
                     <div className="data-icon-label">
                         <Database size={20} />
                         <p className="data-label">Adatok tárolása</p>

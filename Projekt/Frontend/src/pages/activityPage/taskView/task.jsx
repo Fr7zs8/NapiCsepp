@@ -1,5 +1,5 @@
 import "./task.css";
-import { Plus, Pencil, Trash2, Check, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Check, Loader2, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import Task from "../../../classes/Views/task.jsx";
 import { activityService } from "../../../router/apiRouter.jsx"
@@ -27,7 +27,7 @@ export function TaskView(){
 
                 const taskObject = data
                     .filter( item => 
-                        item.activity_type_id !== 4
+                        item.activity_type_id
                     )
                     .map(item => new Task(
                         item.activity_id || Math.random(),
@@ -270,6 +270,12 @@ export function TaskView(){
             </div>
 
             <div className="task-list-div">
+                {tasks.length === 0 && (
+                    <p style={{ textAlign: "center", color: "#777", padding: "1rem" }}>
+                        Még nincsenek feladatok.
+                    </p>
+                )}
+
                 {tasks.map(task => (
                     <div className="task-item" key={task.taskId}>
                         <div className="left-section">
@@ -283,6 +289,10 @@ export function TaskView(){
                                 <div className="labels">
                                     <span className="label">{task.typeName}</span>
                                     <span className="label">{task.difficultyName}</span>
+                                    <span className="label date-label">
+                                        <Calendar size={12} style={{ marginRight: "4px" }} />
+                                        {task.startDate}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -306,7 +316,10 @@ export function TaskView(){
                 ))}
             </div>
             <div>
-                {error && <div className="error-state">{error}</div>}
+                {(() => {
+                    const isNoDataError = error && /nincs.*(task|feladat|nincsenek|nincs)/i.test(error);
+                    return isNoDataError ? "" : <div className="error-state">{error}</div>;
+                })()}
             </div>
         </section>
     );
