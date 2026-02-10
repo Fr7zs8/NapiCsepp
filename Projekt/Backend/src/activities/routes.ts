@@ -1,12 +1,12 @@
 import { Router } from "express";
+import { putActivity } from "./avtivityController";
+import verifyToken from "../middleware/auth";
 import {
-  deleteActivity,
+  getAllActivity,
   getHabits,
   postActivity,
-  putActivity,
-} from "./avtivityController";
-import verifyToken from "../middleware/auth";
-import { getAllActivity } from "../src2/Controllers/activity_controller";
+  deleteActivity,
+} from "../src2/Controllers/activity_controller";
 
 const router: Router = Router();
 
