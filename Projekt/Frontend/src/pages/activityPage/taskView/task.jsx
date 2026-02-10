@@ -27,7 +27,7 @@ export function TaskView(){
 
                 const taskObject = data
                     .filter( item => 
-                        item.activity_type_id
+                        item.type_name && item.type_name !== "Szokás"
                     )
                     .map(item => new Task(
                         item.activity_id || Math.random(),
