@@ -1,4 +1,4 @@
-import router from "../routes/routes";
+import router from "../src2/testRoute/routes";
 import cors from "cors";
 import bodyParser from "body-parser";
 import express from "express";
