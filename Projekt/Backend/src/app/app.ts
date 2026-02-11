@@ -6,7 +6,7 @@ import eventRouter from "../events/routes";
 import userRouter from "../users/routes";
 import activityRouter from "../src2/Routes/activity_routes";
 import typesRouter from "../type/routes";
-import difficultyRouter from "../difficulty/routes";
+import difficultyRouter from "../src2/Routes/difficulty_routes";
 import overviewRouter from "../overview/routes";
 import statisticRouter from "../statistic/routes";
 
