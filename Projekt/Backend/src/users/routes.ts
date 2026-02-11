@@ -1,6 +1,6 @@
-import {Router} from "express";
+import { Router } from "express";
 import { getUser, signIn, getAllUser, regiszter } from "./userController";
-import verifyToken from "../middleware/auth";
+import verifyToken from "../src2/middleware/auth";
 
 const router: Router = Router();
 

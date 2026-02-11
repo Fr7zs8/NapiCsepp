@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import config from "../../config/config";
+import config from "../config/config";
 import { Activity } from "../Models/activity_model";
 
 export class ActivityRepository {
