@@ -11,7 +11,7 @@ export class UserService {
   }
 
   async login(email: string, password: string) {
-    const user_id = this.repository.login(email, password);
+    const user_id = await this.repository.login(email, password);
 
     if (!user_id) {
       throw new Error("Rossz az email vagy a jelszó");

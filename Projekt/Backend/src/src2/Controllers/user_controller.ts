@@ -13,7 +13,7 @@ export class UserController {
         res.status(400).send({ error: "Nem megfelelők az adatok." });
         return;
       }
-      const token = service.login(email, password);
+      const token = await service.login(email, password);
       res.status(200).send({ token: token });
     } catch (err: any) {
       res.status(404).send({ message: err.message });
