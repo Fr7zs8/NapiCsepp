@@ -3,7 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import express from "express";
 import eventRouter from "../events/routes";
-import userRouter from "../users/routes";
+import userRouter from "../src2/Routes/user_routes";
 import activityRouter from "../src2/Routes/activity_routes";
 import typesRouter from "../src2/Routes/type_routes";
 import difficultyRouter from "../src2/Routes/difficulty_routes";
