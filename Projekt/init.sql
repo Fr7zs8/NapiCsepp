@@ -204,7 +204,7 @@ End$$
 
 CREATE PROCEDURE `pr_pullactivities` (IN `user_id` INT)
 BEGIN
-    SELECT activities.activity_name, types.type_name, difficulties.difficulty_name, activities.activity_achive,
+    SELECT activities.activity_id, activities.activity_name, types.type_name, difficulties.difficulty_name, activities.activity_achive,
            DATE_FORMAT(activities.activity_start_date, '%Y-%m-%d') AS activity_start_date,
            DATE_FORMAT(activities.activity_end_date, '%Y-%m-%d') AS activity_end_date
     FROM activities
@@ -232,19 +232,30 @@ BEGIN
     WHERE users.user_id = user_id;
 END$$
 
-CREATE PROCEDURE `pr_pullhabits` (IN `user_id` INT)
+CREATE PROCEDURE pr_pullhabits (IN p_user_id INT)
 BEGIN
-    SELECT activities.activity_name,
-           DATE_FORMAT(activities.activity_start_date, '%Y-%m-%d') AS activity_start_date,
-           DATE_FORMAT(activities.activity_end_date, '%Y-%m-%d') AS activity_end_date,
-           activities.activity_achive, users.username, types.type_name, difficulties.difficulty_name
+    SELECT 
+        activities.activity_id, 
+        activities.activity_name,
+        DATE_FORMAT(activities.activity_start_date, '%Y-%m-%d') AS activity_start_date,
+        DATE_FORMAT(activities.activity_end_date, '%Y-%m-%d') AS activity_end_date,
+        activities.activity_achive, 
+        users.username, 
+        types.type_name, 
+        difficulties.difficulty_name
     FROM activities
-    JOIN users_activities ON activities.activity_id = users_activities.activity_id
-    JOIN users ON users.user_id = users_activities.user_id
-    JOIN types ON activities.activity_type_id = types.type_id
-    JOIN difficulties ON difficulties.difficulty_id = activities.activity_difficulty_id
-    WHERE users.user_id = user_id AND types.type_name LIKE 'szokas';
+    JOIN users_activities 
+        ON activities.activity_id = users_activities.activity_id
+    JOIN users 
+        ON users.user_id = users_activities.user_id
+    JOIN types 
+        ON activities.activity_type_id = types.type_id
+    JOIN difficulties 
+        ON difficulties.difficulty_id = activities.activity_difficulty_id
+    WHERE users.user_id = p_user_id
+      AND types.type_name = 'szokas';
 END$$
+
 
 CREATE PROCEDURE `pr_pullprofile` (IN `user_id` INT)
 BEGIN
