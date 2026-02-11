@@ -68,7 +68,6 @@ export function HabitView() {
             item.activity_start_date,
           ),
       );
-      console.log(habitObj);
       setHabits(habitObj);
       resetForm();
     } catch (err) {

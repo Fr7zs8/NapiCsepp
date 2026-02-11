@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import eventRouter from "../events/routes";
 import userRouter from "../users/routes";
-import activityRouter from "../activities/routes";
+import activityRouter from "../src2/Routes/activity_routes";
 import typesRouter from "../type/routes";
 import difficultyRouter from "../difficulty/routes";
 import overviewRouter from "../overview/routes";
@@ -12,10 +12,10 @@ import statisticRouter from "../statistic/routes";
 
 const app = express();
 
-app.use(cors({origin: "*"}));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/", router);
 app.use("/", eventRouter);

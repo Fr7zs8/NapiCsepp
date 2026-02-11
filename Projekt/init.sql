@@ -217,13 +217,13 @@ END$$
 
 CREATE PROCEDURE `pr_pullallusers` ()
 BEGIN
-    SELECT username, email, language, role, DATE_FORMAT(register_date, '%Y-%m-%d') AS register_date
+    SELECT users.user_id, username, email, language, role, DATE_FORMAT(register_date, '%Y-%m-%d') AS register_date
     FROM users;
 END$$
 
 CREATE PROCEDURE `pr_pullevent` (IN `user_id` INT)
 BEGIN
-    SELECT events.event_name,
+    SELECT events.event_id, events.event_name,
            DATE_FORMAT(events.event_start_time, '%Y-%m-%d %H:%i') AS event_start_time,
            DATE_FORMAT(events.event_end_time, '%Y-%m-%d %H:%i') AS event_end_time
     FROM events
