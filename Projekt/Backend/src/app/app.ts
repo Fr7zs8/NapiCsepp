@@ -8,7 +8,7 @@ import activityRouter from "../src2/Routes/activity_routes";
 import typesRouter from "../src2/Routes/type_routes";
 import difficultyRouter from "../src2/Routes/difficulty_routes";
 import overviewRouter from "../src2/Routes/overview_routes";
-import statisticRouter from "../statistic/routes";
+import statisticRouter from "../src2/Routes/statistic_routes";
 
 const app = express();
 
