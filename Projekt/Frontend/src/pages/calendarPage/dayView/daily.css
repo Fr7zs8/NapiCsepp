@@ -1,6 +1,25 @@
+.event-block-daily {
+    position: relative;
+    border: none;
+    border-radius: 8px;
+    background: #2196f3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    width: 90%;
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 30px;
+    transition: height 0.2s;
+}
 .day-calendar-section {
     padding: 2rem;
-    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
+    background: #fff;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .header-div {
@@ -113,11 +132,42 @@
     left: calc(66.66% - 4px);
 }
 
-.hour-list-div {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
+.day-timeline {
+    position: relative;
+    height: 1440px; /* 24h * 60px */
+    border-left: 2px solid #e5e7eb;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            #f9f9f9 0px,
+            #f9f9f9 59px,
+            #e5e7eb 60px
+        );
 }
+
+.event-absolute {
+    position: absolute;
+    padding: 8px;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.8rem;
+    overflow: hidden;
+    cursor: pointer;
+    animation: eventAppear 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+@keyframes eventAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 
 .hour-slot {
     display: flex;

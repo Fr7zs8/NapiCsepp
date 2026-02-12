@@ -139,13 +139,25 @@ export function DailyView(){
                                     const startTime = new Date(event.event_start_time);
                                     const endTime = new Date(event.event_end_time);
                                     const startHour = startTime.getHours();
+                                    const endHour = endTime.getHours();
+                                    const duration = endHour - startHour + (endTime.getMinutes() > 0 ? 1 : 0);
                                     if (index === startHour) {
                                         return (
                                             <div
                                                 key={eventIdx}
                                                 className="event-block-daily"
                                                 style={{
-                                                    backgroundColor: event.event_color || '#0090ff'
+                                                    backgroundColor: event.event_color || '#0090ff',
+                                                    height: `${duration * 48}px`,
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    overflow: 'hidden'
+                                                }}
+                                                onClick={e => {
+                                                    setSelectedHour(index);
+                                                    setShowEventPopup(true);
                                                 }}
                                             >
                                                 <div className="event-name">{event.event_name}</div>

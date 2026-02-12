@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 import { activityService } from "../../../router/apiRouter";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
+import { eventService } from "../../../router/apiRouter";
 
 export function MonthlyView(){
     const navigate = useNavigate();
@@ -37,7 +38,7 @@ export function MonthlyView(){
     const fetchData = async () => {
         try {
             const [eventsData, activitiesData, habitsData] = await Promise.all([
-                activityService.getAllEvents(),
+                eventService.getOverview(),
                 activityService.getAllActivities(),
                 activityService.getAllHabits()
             ]);
@@ -72,7 +73,7 @@ export function MonthlyView(){
 
     const handleSaveEvent = async (eventData) => {
         try {
-            await activityService.createEvent(eventData);
+            await eventService.createEvent(eventData);
             fetchData();
         } catch (err) {
             console.error("Error creating event:", err);

@@ -1,7 +1,33 @@
+.event-block-combined {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: auto;
+    margin: 0;
+    border: none;
+    border-radius: 8px;
+    background: #2196f3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 2;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 28px;
+    padding: 6px 10px;
+    font-size: 0.95em;
+    transition: height 0.2s;
+}
 .combined-calendar-view {
     padding: 2rem;
     background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
 }
+
+.hour-cell {
+    position: relative;
+}
+
 
 .header-div {
     display: flex;

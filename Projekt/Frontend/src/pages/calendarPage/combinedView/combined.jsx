@@ -2,15 +2,24 @@ import "./combined.css"
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
-
+import { eventService } from "../../../router/apiRouter";
+import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 
 export function CombinedView(){
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
     const [currentWeek, setCurrentWeek] = useState(new Date());
     const [selectedDay, setSelectedDay] = useState(new Date());
+    const [events, setEvents] = useState([]);
 
-
+    const [miniPopupEvent, setMiniPopupEvent] = useState(null);
+    const [miniPopupPosition, setMiniPopupPosition] = useState({ x: 0, y: 0 });
+    const handleEditEvent = (event) => {
+        setMiniPopupEvent(null);
+    };
+    const handleDeleteEvent = (eventId) => {
+        setMiniPopupEvent(null);
+    };
     useEffect(() => {
         const handleResize = () => {
             const mobileStatus = window.innerWidth <= 900;
@@ -22,12 +31,26 @@ export function CombinedView(){
             window.addEventListener('resize', handleResize);
             return () => window.removeEventListener('resize', handleResize);
     }, [isMobile, navigate]);
-    
-    const handleWeeklyNavigation = () => {
-        if (window.innerWidth > 600) {
-            navigate("/calendar/weekly");
+
+    useEffect(() => {
+        fetchEvents();
+    }, []);
+
+    const fetchEvents = async () => {
+        try {
+            const data = await eventService.getOverview();
+            setEvents(data || []);
+        } catch (err) {
+            console.error("Error fetching events:", err);
         }
     };
+
+    
+    // const handleWeeklyNavigation = () => {
+    //     if (window.innerWidth > 600) {
+    //         navigate("/calendar/weekly");
+    //     }
+    // };
 
     const changeWeek = (direction) => {
         setCurrentWeek(prev => {
@@ -37,13 +60,13 @@ export function CombinedView(){
         });
     };
 
-    const changeDay = (direction) => {
-        setSelectedDay(prev => {
-            const newDate = new Date(prev);
-            newDate.setDate(prev.getDate() + direction);
-            return newDate;
-        });
-    };
+    // const changeDay = (direction) => {
+    //     setSelectedDay(prev => {
+    //         const newDate = new Date(prev);
+    //         newDate.setDate(prev.getDate() + direction);
+    //         return newDate;
+    //     });
+    // };
     
     const generateWeekDays = () => {
         const days = [];
@@ -90,10 +113,40 @@ export function CombinedView(){
     };
 
     const today = new Date();
-    const isSelectedToday = selectedDay.toDateString() === today.toDateString();
+    // const isSelectedToday = selectedDay.toDateString() === today.toDateString();
+
+    const getEventsForHour = (hour) => {
+        const dateStr = selectedDay.toISOString().split('T')[0];
+
+        return events.filter(event => {
+            const start = new Date(event.event_start_time);
+            const end = new Date(event.event_end_time);
+
+            const eventDate = start.toISOString().split('T')[0];
+            if (eventDate !== dateStr) return false;
+
+            const startHour = start.getHours();
+            const endHour = end.getHours();
+            const endMinutes = end.getMinutes();
+
+            return hour >= startHour &&
+                (hour < endHour || (hour === endHour && endMinutes === 0));
+        });
+    };
+
 
     return(
         <section className="combined-calendar-view">
+            {/* Mini popup state */}
+            {miniPopupEvent && (
+                <EventMiniPopup
+                    event={miniPopupEvent}
+                    position={miniPopupPosition}
+                    onEdit={handleEditEvent}
+                    onDelete={handleDeleteEvent}
+                    onClose={() => setMiniPopupEvent(null)}
+                />
+            )}
             <div className="header-div">
                 <div className="navigation-buttons">
                     <button onClick={() => navigate("/")}>Vissza</button>
@@ -165,12 +218,57 @@ export function CombinedView(){
                         {selectedDayString}
                     </div>
                     <div className="time-slots">
-                        {timeSlots.map((time, index) => (
-                            <div key={index} className="time-slot">
-                                {time}
-                            </div>
-                        ))}
+                        <div style={{ position: "relative", height: `${timeSlots.length * 48}px` }}>
+                            {/* Render hour labels */}
+                            {timeSlots.map((time, index) => (
+                                <div key={index} style={{ position: "absolute", top: `${index * 48}px`, left: 0, width: "100%", height: "48px", borderBottom: "1px solid #e0e0e0", zIndex: 1, background: "transparent" }}>
+                                    <span style={{ paddingLeft: 8, fontSize: "0.9em", color: "#666" }}>{time}</span>
+                                </div>
+                            ))}
+                            {/* Render event blocks spanning all hours */}
+                            {events.map((event, i) => {
+                                const start = new Date(event.event_start_time);
+                                const end = new Date(event.event_end_time);
+                                const startHour = start.getHours();
+                                const endHour = end.getHours();
+                                const duration = endHour - startHour + (end.getMinutes() > 0 ? 1 : 0);
+                                const dateStr = start.toISOString().split('T')[0];
+                                if (dateStr !== selectedDay.toISOString().split('T')[0]) return null;
+                                return (
+                                    <div
+                                        key={i}
+                                        className="event-block-combined"
+                                        style={{
+                                            backgroundColor: event.event_color || "#2196f3",
+                                            position: "absolute",
+                                            top: `${startHour * 48}px`,
+                                            height: `${(endHour - startHour + (end.getMinutes() > 0 ? 1 : 0)) * 48}px`,
+                                            left: 0,
+                                            right: 0,
+                                            zIndex: 2,
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            overflow: "hidden"
+                                        }}
+                                        onClick={e => {
+                                            setMiniPopupEvent(event);
+                                            setMiniPopupPosition({ x: e.clientX, y: e.clientY });
+                                        }}
+                                    >
+                                        <div style={{ fontWeight: "bold", fontSize: "1.1em" }}>{event.event_name}</div>
+                                        <div>
+                                            {start.toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})}
+                                            {" - "}
+                                            {end.toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
+
                 </div>
             </div>
         </section>

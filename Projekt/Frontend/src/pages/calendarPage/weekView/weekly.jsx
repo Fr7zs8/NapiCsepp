@@ -179,8 +179,8 @@ export function WeeklyView(){
                                                 const endHour = endTime.getHours();
                                                 const endMinutes = endTime.getMinutes();
                                                 if (timeIndex === startHour) {
-                                                    const duration = (endHour - startHour) + (endMinutes / 60);
-                                                    const height = duration * 60; 
+                                                    const duration = endHour - startHour + (endMinutes > 0 ? 1 : 0);
+                                                    const height = duration * 48;
                                                     return (
                                                         <div
                                                             key={eventIdx}
@@ -188,7 +188,22 @@ export function WeeklyView(){
                                                             style={{
                                                                 backgroundColor: event.event_color || '#0090ff',
                                                                 height: `${height}px`,
-                                                                minHeight: '30px'
+                                                                minHeight: '30px',
+                                                                position: 'absolute',
+                                                                top: `${startHour * 48}px`,
+                                                                left: 0,
+                                                                right: 0,
+                                                                zIndex: 2,
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center',
+                                                                overflow: 'hidden'
+                                                            }}
+                                                            onClick={e => {
+                                                                setSelectedDate(day.fullDate);
+                                                                setSelectedHour(timeIndex);
+                                                                setShowEventPopup(true);
                                                             }}
                                                         >
                                                             <div className="event-name">{event.event_name}</div>
