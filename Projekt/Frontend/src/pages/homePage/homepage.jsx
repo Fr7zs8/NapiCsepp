@@ -80,6 +80,8 @@ export function HomepageView(){
         );
     }
 
+    const completionRate = stats && stats.total_activity ? Math.round(((stats.completed||0) / stats.total_activity) * 100) : 0;
+
     return(
         <section>
             <div className="info-text-div">
@@ -89,7 +91,7 @@ export function HomepageView(){
             <div className="progress-view-div">
                 <div>
                     <p>Mai haladás</p>
-                    <span>0%</span>
+                    <span>{completionRate}%</span>
                 </div>
             </div>
             <div className="text-carousel-div">
@@ -137,25 +139,25 @@ export function HomepageView(){
                             <p className="stat-label">Összes</p>
                             <SquareCheckBig/>
                             <p className="stat-name">Feladatok</p>
-                            <p className="stat-value">0 db</p>
+                            <p className="stat-value">{stats?.total_activity || 0} db</p>
                         </div>
                         <div className="stat-div finished">
                             <p className="stat-label">Kész</p>
                             <CircleCheck/>
                             <p className="stat-name">Befejezett</p>
-                            <p className="stat-value">0 /0</p>
+                            <p className="stat-value">{(stats?.completed||0)} / {(stats?.total_activity||0)}</p>
                         </div>
                         <div className="stat-div events">
                             <p className="stat-label">Ma</p>
                             <Calendar/>
                             <p className="stat-name">Események</p>
-                            <p className="stat-value">0 db</p>
+                            <p className="stat-value">{stats?.monthly_events_count || 0} db</p>
                         </div>
                         <div className="stat-div habits">
                             <p className="stat-label">Aktív</p>
                             <Target/>
                             <p className="stat-name">Szokások</p>
-                            <p className="stat-value">0 db</p>
+                            <p className="stat-value">{stats?.daily_tasks_count || 0} db</p>
                         </div>
                     </div>
             </section>

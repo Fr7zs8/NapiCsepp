@@ -1,23 +1,97 @@
 import { useEffect, useState } from "react";
 import "./statisticsView.css"
 import { Calendar, SquareCheckBigIcon, Target, Award, TrendingUp, Activity, Loader2 } from "lucide-react"
-import { clientService } from "../../router/apiRouter";
+import { clientService, activityService } from "../../router/apiRouter";
 
 export function StatisticsView(){
 
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [weeklyPerDay, setWeeklyPerDay] = useState([]);
+    const [activeHabitsCount, setActiveHabitsCount] = useState(0);
+    const [savedFlash, setSavedFlash] = useState(false);
 
     useEffect(()=>{
         fetchStatistics();
     },[])
 
+    useEffect(() => {
+        const handler = () => {
+            setSavedFlash(true);
+            setTimeout(() => setSavedFlash(false), 2000);
+            fetchStatistics();
+        };
+        window.addEventListener('itemSaved', handler);
+        return () => window.removeEventListener('itemSaved', handler);
+    }, []);
+
+    const getWeekRange = (ref = new Date()) => {
+        const d = new Date(ref);
+        const dayIndex = (d.getDay() + 6) % 7;
+        const monday = new Date(d);
+        monday.setDate(d.getDate() - dayIndex);
+        monday.setHours(0,0,0,0);
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        sunday.setHours(23,59,59,999);
+        return { monday, sunday };
+    }
+
     const fetchStatistics = async () => {
         try {
             setLoading(true);
-            const data = await clientService.getStatistics();
-            setStats(Array.isArray(data) ? data[0] : data);
+            const [statsRes, allActivities, allHabits] = await Promise.all([
+                clientService.getStatistics(),
+                activityService.getAllActivities(),
+                activityService.getAllHabits()
+            ]);
+
+            const statsObj = Array.isArray(statsRes) ? statsRes[0] : statsRes;
+            setStats(statsObj);
+
+            const { monday, sunday } = getWeekRange(new Date());
+            const perDay = Array.from({length:7}, (_,i)=>({ completed:0, pending:0 }));
+
+            (allActivities || []).forEach(a => {
+                const startStr = a.activity_start_date || a.activity_date || a.date;
+                const endStr = a.activity_end_date || startStr;
+                if (!startStr) return;
+                try {
+                    const sd = new Date(startStr + 'T00:00:00');
+                    const ed = new Date((endStr || startStr) + 'T00:00:00');
+                    for (let d = new Date(sd); d <= ed; d.setDate(d.getDate() + 1)) {
+                        if (d >= monday && d <= sunday) {
+                            const idx = (d.getDay() + 6) % 7;
+                            const done = a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1";
+                            if (done) perDay[idx].completed++;
+                            else perDay[idx].pending++;
+                        }
+                    }
+                } catch(e) {
+                    // ignore parse errors
+                }
+            });
+
+            setWeeklyPerDay(perDay.map((d, i) => ({ day: ['H','K','Sze','Cs','P','Szo','V'][i], ...d })));
+
+            const activeFromServer = statsObj.daily_tasks_count || statsObj.active_habits_count || statsObj.active_habits;
+            if (typeof activeFromServer === 'number') {
+                setActiveHabitsCount(activeFromServer);
+            } else {
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const activeCount = (allHabits || []).filter(h => {
+                    try {
+                        const sd = h.activity_start_date ? new Date(h.activity_start_date + 'T00:00:00') : null;
+                        const ed = h.activity_end_date ? new Date(h.activity_end_date + 'T23:59:59') : sd;
+                        if (!sd || !ed) return false;
+                        return sd <= today && ed >= today;
+                    } catch(e) { return false }
+                }).length;
+                setActiveHabitsCount(activeCount);
+            }
+
         } catch (err) {
             setError(err.message || "Hiba az adatok betöltése során!");
             console.error(err);
@@ -58,18 +132,12 @@ export function StatisticsView(){
     const pending = totalTasks - completed;
     const completionRate = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
 
-    const weeklyTotal = stats.weekly_tasks || 0;
-    const weeklyCompleted = stats.weekly_tasks_completed || 0;
+    const weeklyTotal = weeklyPerDay.reduce((s,d)=>s + d.completed + d.pending, 0);
+    const weeklyCompleted = weeklyPerDay.reduce((s,d)=>s + d.completed, 0);
     const weeklyAverage = weeklyTotal > 0 ? Math.round(weeklyTotal / 7) : 0;
 
-    const weekData = [
-        { day: 'H', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
-        { day: 'K', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
-        { day: 'Sze', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
-        { day: 'Cs', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
-        { day: 'P', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
-        { day: 'Szo', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) },
-        { day: 'V', completed: Math.floor(weeklyCompleted / 7), pending: Math.floor((weeklyTotal - weeklyCompleted) / 7) }
+    const weekData = weeklyPerDay.length ? weeklyPerDay : [
+        { day: 'H', completed:0, pending:0 },{ day: 'K', completed:0, pending:0 },{ day: 'Sze', completed:0, pending:0 },{ day: 'Cs', completed:0, pending:0 },{ day: 'P', completed:0, pending:0 },{ day: 'Szo', completed:0, pending:0 },{ day: 'V', completed:0, pending:0 }
     ];
     
     const maxValue = Math.max(...weekData.map(d => d.completed + d.pending), 1);
@@ -89,24 +157,28 @@ export function StatisticsView(){
                     <p className="counter-desc">Teendők + Szokások</p>
                 </div>
                 <div className="counter-div completed">
-                    <p className="counter-label">Befejezett</p>
+                    <p className="counter-label">Befejezett feladatok</p>
                     <Award size={32}/>
                     <p className="counter-value">{completed}</p>
                     <p className="counter-desc">Elvégzett feladatok</p>
                 </div>
                 <div className="counter-div events">
-                    <p className="counter-label">Összes feladat</p>
+                    <p className="counter-label">Összes események</p>
                     <Calendar size={32}/>
                     <p className="counter-value">{stats.monthly_events_count || 0}</p>
                     <p className="counter-desc">Naptári események</p>
                 </div>
                 <div className="counter-div active">
-                    <p className="counter-label">Mai feladatok</p>
+                    <p className="counter-label">Összes szokások</p>
                     <Target size={32}/>
-                    <p className="counter-value">{stats.daily_tasks_count || 0}</p>
+                    <p className="counter-value">{activeHabitsCount || stats.daily_tasks_count || 0}</p>
                     <p className="counter-desc">Aktív szokások</p>
                 </div>
             </div>
+
+            {savedFlash && (
+                <div className="saved-flash">Mentés sikeres!</div>
+            )}
 
             <div className="averages-div">
                 <div className="explanation-div">

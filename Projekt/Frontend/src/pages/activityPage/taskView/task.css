@@ -72,6 +72,19 @@
     background: #333;
 }
 
+/* save button flash animation - more noticeable */
+.flash {
+    animation: saveFlash 1s ease-in-out;
+}
+
+@keyframes saveFlash {
+    0% { box-shadow: 0 0 0 rgba(34,197,94,0); transform: scale(1); background: #000; }
+    20% { box-shadow: 0 0 15px rgba(34,197,94,0.4); transform: scale(1.1); background: #22c55e; }
+    50% { box-shadow: 0 8px 25px rgba(34,197,94,0.3); transform: scale(1.08); background: #16a34a; }
+    80% { box-shadow: 0 4px 12px rgba(34,197,94,0.2); transform: scale(1.04); background: #0d9488; }
+    100% { box-shadow: 0 0 0 rgba(34,197,94,0); transform: scale(1); background: #000; }
+}
+
 .task-list-div {
     background: #e3e0e0;
     border-radius: 12px;
@@ -108,6 +121,19 @@
     margin: 0;
 }
 
+.task-name.completed {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.habit-task {
+    background: #fffaf3;
+}
+
+.habit-task .delete-btn {
+    background: #e07a5f;
+}
+
 .labels {
     display: flex;
     gap: 0.5rem;
@@ -121,13 +147,14 @@
 }
 
 .label.date-label {
+    /* hidden on mobile by default */
     display: none;
 }
 
-@media (max-width: 720px) {
+/* show only on desktop */
+@media (min-width: 1024px) {
     .label.date-label {
-        display: inline-flex;
-        align-items: center;
+        display: inline-block;
     }
 }
 

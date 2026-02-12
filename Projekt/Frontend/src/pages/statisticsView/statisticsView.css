@@ -3,6 +3,20 @@
     background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
 }
 
+.saved-flash {
+    position: fixed;
+    right: 20px;
+    top: 80px;
+    background: #22c55e;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    z-index: 9999;
+    font-weight: 600;
+}
+
+
 .info-text-div {
     margin-bottom: 2rem;
 }

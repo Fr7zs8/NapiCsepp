@@ -7,7 +7,6 @@ function App() {
   return (
     <>
       <RouterProvider router={appRouter} />
-      {/* <CombinedView/> telefonra később*/}
     </>
   )
 }

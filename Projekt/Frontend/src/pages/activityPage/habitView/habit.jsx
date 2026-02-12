@@ -15,6 +15,7 @@ export function HabitView() {
   const [startDate, setStartDate] = useState("");
   const [editId, setEditId] = useState(null);
   const [difficulties, setDifficulties] = useState([]);
+  const [flashSave, setFlashSave] = useState(false);
 
   useEffect(() => {
     async function fetchDifficulties() {
@@ -48,28 +49,58 @@ export function HabitView() {
         activity_start_date: startDate,
         activity_end_date: new Date(
           new Date(startDate).getTime() +
-            parseInt(targetDays) * 24 * 60 * 60 * 1000,
+            (Math.max(1, parseInt(targetDays, 10)) - 1) * 24 * 60 * 60 * 1000,
         )
           .toISOString()
           .split("T")[0],
         activity_achive: 0,
       };
       await activityService.createHabit(habitData);
-
       const data = await activityService.getAllHabits();
-      const habitObj = data.map(
-        (item) =>
-          new Habit(
-            item.activity_id,
-            item.activity_name,
-            item.type_name,
-            item.difficulty_name,
-            item.target_days,
-            item.activity_start_date,
-          ),
-      );
+      const allActivities = await activityService.getAllActivities();
+      const habitObj = data.map((item) => {
+        const checkedCount = allActivities.filter(
+          (a) =>
+            a.type_name === "Szokás" &&
+            a.activity_name === item.activity_name &&
+            (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
+        ).length;
+
+        let targetDaysVal = null;
+        if (item.target_days || item.target_days === 0) {
+          targetDaysVal = Number(item.target_days);
+        } else if (item.activity_start_date && item.activity_end_date) {
+          try {
+            const sd = new Date(item.activity_start_date);
+            const ed = new Date(item.activity_end_date);
+            sd.setHours(0,0,0,0);
+            ed.setHours(0,0,0,0);
+            const diff = Math.floor((ed - sd) / (1000*60*60*24));
+            targetDaysVal = Math.max(0, diff + 1);
+          } catch(e) {
+            targetDaysVal = 0;
+          }
+        } else {
+          targetDaysVal = 0;
+        }
+
+        return new Habit(
+          item.activity_id,
+          item.activity_name,
+          item.type_name,
+          item.difficulty_name,
+          targetDaysVal,
+          item.activity_start_date,
+          item.activity_end_date,
+          checkedCount,
+        );
+      });
       setHabits(habitObj);
       resetForm();
+      try { 
+        window.dispatchEvent(new Event('activitiesUpdated'));
+        window.dispatchEvent(new Event('itemSaved'));
+      } catch(e){}
     } catch (err) {
       setError(err.message || "Hiba a szokás hozzáadása során!");
       console.error(err);
@@ -82,9 +113,12 @@ export function HabitView() {
 
     setHabitName(h.habitName);
     setDifficultyName(h.difficultyName);
-    setTargetDays(h.targetDays);
+    const td = h.targetDays ?? h.totalDays ?? "";
+    setTargetDays(td === "" ? "" : String(td));
     setStartDate(h.startDate);
     setEditId(id);
+    setFlashSave(true);
+    setTimeout(() => setFlashSave(false), 1200);
   }
 
   async function saveHabit() {
@@ -96,27 +130,57 @@ export function HabitView() {
         activity_start_date: startDate,
         activity_end_date: new Date(
           new Date(startDate).getTime() +
-            parseInt(targetDays) * 24 * 60 * 60 * 1000,
+            (Math.max(1, parseInt(targetDays, 10)) - 1) * 24 * 60 * 60 * 1000,
         )
           .toISOString()
           .split("T")[0],
       };
       await activityService.updateHabit(editId, updateData);
-
       const data = await activityService.getAllHabits();
-      const habitObj = data.map(
-        (item) =>
-          new Habit(
-            item.activity_id,
-            item.activity_name,
-            item.type_name,
-            item.difficulty_name,
-            item.target_days,
-            item.activity_start_date,
-          ),
-      );
+      const allActivities = await activityService.getAllActivities();
+      const habitObj = data.map((item) => {
+        const checkedCount = allActivities.filter(
+          (a) =>
+            a.type_name === "Szokás" &&
+            a.activity_name === item.activity_name &&
+            (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
+        ).length;
+
+        let targetDaysVal = null;
+        if (item.target_days || item.target_days === 0) {
+          targetDaysVal = Number(item.target_days);
+        } else if (item.activity_start_date && item.activity_end_date) {
+          try {
+            const sd = new Date(item.activity_start_date);
+            const ed = new Date(item.activity_end_date);
+            sd.setHours(0,0,0,0);
+            ed.setHours(0,0,0,0);
+            const diff = Math.floor((ed - sd) / (1000*60*60*24));
+            targetDaysVal = Math.max(0, diff + 1);
+          } catch (e) {
+            targetDaysVal = 0;
+          }
+        } else {
+          targetDaysVal = 0;
+        }
+
+        return new Habit(
+          item.activity_id,
+          item.activity_name,
+          item.type_name,
+          item.difficulty_name,
+          targetDaysVal,
+          item.activity_start_date,
+          item.activity_end_date,
+          checkedCount,
+        );
+      });
       setHabits(habitObj);
       resetForm();
+      try { 
+        window.dispatchEvent(new Event('activitiesUpdated'));
+        window.dispatchEvent(new Event('itemSaved'));
+      } catch(e){}
     } catch (err) {
       setError(err.message || "Hiba a szokás szerkesztése során!");
       console.error(err);
@@ -126,20 +190,50 @@ export function HabitView() {
   async function deleteHabit(id) {
     try {
       await activityService.deleteHabit(id);
-
       const data = await activityService.getAllHabits();
-      const habitObj = data.map(
-        (item) =>
-          new Habit(
-            item.activity_id,
-            item.activity_name,
-            item.type_name,
-            item.difficulty_name,
-            item.target_days,
-            item.activity_start_date,
-          ),
-      );
+      const allActivities = await activityService.getAllActivities();
+      const habitObj = data.map((item) => {
+        const checkedCount = allActivities.filter(
+          (a) =>
+            a.type_name === "Szokás" &&
+            a.activity_name === item.activity_name &&
+            (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
+        ).length;
+
+        let targetDaysVal = null;
+        if (item.target_days || item.target_days === 0) {
+          targetDaysVal = Number(item.target_days);
+        } else if (item.activity_start_date && item.activity_end_date) {
+          try {
+            const sd = new Date(item.activity_start_date);
+            const ed = new Date(item.activity_end_date);
+            sd.setHours(0,0,0,0);
+            ed.setHours(0,0,0,0);
+            const diff = Math.floor((ed - sd) / (1000*60*60*24));
+            targetDaysVal = Math.max(0, diff + 1);
+          } catch (e) {
+            targetDaysVal = 0;
+          }
+        } else {
+          targetDaysVal = 0;
+        }
+
+        return new Habit(
+          item.activity_id,
+          item.activity_name,
+          item.type_name,
+          item.difficulty_name,
+          targetDaysVal,
+          item.activity_start_date,
+          item.activity_end_date,
+          checkedCount,
+        );
+      });
       setHabits(habitObj);
+      try { 
+        window.dispatchEvent(new Event('activitiesUpdated'));
+        window.dispatchEvent(new Event('itemSaved'));
+      } catch(e){}
     } catch (err) {
       setError(err.message || "Hiba a szokás törlése során!");
       console.error(err);
@@ -151,18 +245,45 @@ export function HabitView() {
       try {
         setLoading(true);
         const data = await activityService.getAllHabits();
+        const allActivities = await activityService.getAllActivities();
 
-        const habitObj = data.map(
-          (item) =>
-            new Habit(
-              item.activity_id,
-              item.activity_name,
-              item.type_name,
-              item.difficulty_name,
-              item.target_days,
-              item.activity_start_date,
-            ),
-        );
+        const habitObj = data.map((item) => {
+          const checkedCount = allActivities.filter(
+            (a) =>
+              a.type_name === "Szokás" &&
+              a.activity_name === item.activity_name &&
+              (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
+          ).length;
+
+          let targetDaysVal = null;
+          if (item.target_days || item.target_days === 0) {
+            targetDaysVal = Number(item.target_days);
+          } else if (item.activity_start_date && item.activity_end_date) {
+            try {
+              const sd = new Date(item.activity_start_date);
+              const ed = new Date(item.activity_end_date);
+              sd.setHours(0,0,0,0);
+              ed.setHours(0,0,0,0);
+              const diff = Math.floor((ed - sd) / (1000*60*60*24));
+              targetDaysVal = Math.max(0, diff + 1);
+            } catch (e) {
+              targetDaysVal = 0;
+            }
+          } else {
+            targetDaysVal = 0;
+          }
+
+          return new Habit(
+            item.activity_id,
+            item.activity_name,
+            item.type_name,
+            item.difficulty_name,
+            targetDaysVal,
+            item.activity_start_date,
+            item.activity_end_date,
+            checkedCount,
+          );
+        });
         setHabits(habitObj);
       } catch (err) {
         setError(err.message || "Hiba az adatok betöltése során!");
@@ -173,6 +294,9 @@ export function HabitView() {
     }
 
     fetchHabits();
+    const handler = () => fetchHabits();
+    window.addEventListener('activitiesUpdated', handler);
+    return () => window.removeEventListener('activitiesUpdated', handler);
   }, []);
 
   if (loading) {
@@ -228,6 +352,9 @@ export function HabitView() {
           <option value="7">1 hét</option>
           <option value="30">1 hónap</option>
           <option value="365">1 év</option>
+          {targetDays && !["7","30","365"].includes(String(targetDays)) && (
+            <option value={String(targetDays)}>{String(targetDays)} nap</option>
+          )}
         </select>
 
         <input
@@ -238,7 +365,7 @@ export function HabitView() {
           placeholder="Kezdés dátuma"
         />
 
-        <button className="add-btn" onClick={editId ? saveHabit : addHabit}>
+        <button className={`add-btn ${flashSave ? 'flash' : ''}`} onClick={editId ? saveHabit : addHabit}>
           <Plus size={20} />
           {editId ? "Mentés" : "Hozzáadás"}
         </button>
@@ -257,7 +384,7 @@ export function HabitView() {
               <div className="color-bar"></div>
 
               <div className="task-texts">
-                <p className="task-name">{habit.habitName}</p>
+                <p className={`task-name ${habit.isCompleted() ? 'completed' : ''}`}>{habit.habitName}</p>
 
                 <div className="labels">
                   <span className="label">{habit.typeName}</span>
@@ -270,9 +397,9 @@ export function HabitView() {
 
                 <div className="progress-container">
                   <div className="progress-info">
-                    <span className="progress-text">
-                      {habit.getDaysElapsed()} / {habit.targetDays} nap
-                    </span>
+                          <span className="progress-text">
+                            {habit.getCheckedDays()} / {habit.totalDays || habit.targetDays} nap
+                          </span>
                     <span className="progress-percent">
                       {habit.getProgress()}%
                     </span>

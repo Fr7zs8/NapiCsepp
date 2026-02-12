@@ -10,6 +10,7 @@ section {
 
 .info-text-div h3 {
     color: #2d2d2d;
+    font-size: 1.6rem;
 }
 
 .info-text-div p {
@@ -23,6 +24,9 @@ section {
     margin-bottom: 2rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
+
+.progress-view-div p { font-size: 0.95rem; margin: 0; color: #666; }
+.progress-view-div span { font-size: 1.25rem; font-weight: 700; }
 
 .text-carousel-div {
     position: relative;
@@ -120,19 +124,12 @@ section {
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 6px solid transparent;
 }
 
-.access-div.calendar {
-    background: #e9e5ff;
-}
-
-.access-div.tasks {
-    background: #e9e5ff;
-}
-
-.access-div.habits {
-    background: #ffe5f5;
-}
+.access-div.calendar { border-left-color: #3b82f6; }
+.access-div.tasks { border-left-color: #a855f7; }
+.access-div.habits { border-left-color: #ec4899; }
 
 .arrow-icon {
     position: absolute;
@@ -182,19 +179,23 @@ section {
 }
 
 .stat-div.tasks {
-    background: #f3e5ff;
+    background: linear-gradient(135deg, #e9d5ff 0%, #f3e5ff 100%);
+    border-left: 5px solid #a855f7;
 }
 
 .stat-div.finished {
-    background: #d1fae5;
+    background: linear-gradient(135deg, #a7f3d0 0%, #d1fae5 100%);
+    border-left: 5px solid #10b981;
 }
 
 .stat-div.events {
-    background: #dfe7ff;
+    background: linear-gradient(135deg, #bfdbfe 0%, #dfe7ff 100%);
+    border-left: 5px solid #3b82f6;
 }
 
 .stat-div.habits {
-    background: #ffe5f0;
+    background: linear-gradient(135deg, #fbcfe8 0%, #ffe5f0 100%);
+    border-left: 5px solid #ec4899;
 }
 
 .stat-label {
