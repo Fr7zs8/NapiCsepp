@@ -132,12 +132,13 @@ INSERT INTO `activities` (`activity_id`, `activity_name`, `activity_type_id`, `a
 (1, 'Levinni a szemetet', 1, 1, 1, '2025-11-10', '2025-11-10'),
 (2, 'Mosás', 1, 1, 0, '2025-11-12', '2025-11-12'),
 (3, 'Angol tz tanulni', 2, 2, 1, '2025-11-01', '2025-11-01'),
-(4, '2 liter viz', 4, 1, 0, '2025-12-01', '2025-12-30'),
+(4, '2 liter viz', 4, 1, 0, '2026-02-12', '2026-02-19'),
 (5, 'Diétá követés', 4, 3, 0, '2025-11-10', '2025-12-10'),
 (6, 'Mosogatás', 1, 1, 1, '2026-01-02', '2026-01-02'),
-(7, 'Mosogatás', 1, 1, 1, '2026-01-23', '2026-01-23'),
-(8, 'Mosogatás', 1, 1, 1, '2026-01-25', '2026-01-25'),
-(9, 'Mosogatás', 1, 1, 1, '2026-01-18', '2026-01-19');
+(7, 'Mosás', 1, 1, 0, '2026-02-13', '2026-02-13'),
+(8, 'Project bemutatás', 2, 3, 0, '2026-02-13', '2026-02-13'),
+(9, 'Fogmosás', 1, 1, 1, '2026-02-13', '2026-02-13'),
+(10, '8000 lépés naponta', 5, 2, 0, '2026-02-13', '2026-02-13');
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `language`, `role`, `register_date`) VALUES
 (1, 'admin', 'admin@gmail.com', 'admin123', 'hu', 'admin', '2025-11-27 00:00:00'),
@@ -146,9 +147,9 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `language`, `ro
 
 INSERT INTO `events` (`event_id`, `event_name`, `event_start_time`, `event_end_time`) VALUES
 (1, 'Anya szülinap', '2025-10-15 15:00:00', '2025-10-15 16:00:00'),
-(2, 'Vezetés', '2025-11-20 15:00:00', '2025-11-20 16:40:00'),
+(2, 'Vezetés', '2026-02-13 15:00:00', '2025-02-13 16:40:00'),
 (3, 'Nyaralás', '2025-06-25 08:00:00', '2025-07-01 16:00:00'),
-(4, 'Baráti találka', '2026-01-23 15:00:00', '2026-01-23 16:00:00');
+(4, 'Baráti találka', '2026-02-13 15:00:00', '2026-02-13 16:00:00');
 
 INSERT INTO `users_activities` (`user_id`, `activity_id`) VALUES
 (2, 1),
