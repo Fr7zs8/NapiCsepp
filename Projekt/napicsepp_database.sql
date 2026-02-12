@@ -154,17 +154,17 @@ BEGIN
         (SELECT COUNT(a.activity_id)
          FROM activities a
          JOIN users_activities ua ON a.activity_id = ua.activity_id
-         WHERE ua.user_id = p_user_id) AS total_activity,
+         WHERE ua.user_id = p_user_id AND activities.activity_start_date = CURDATE()) AS total_activity,
 
         (SELECT COUNT(a.activity_id)
          FROM activities a
          JOIN users_activities ua ON a.activity_id = ua.activity_id
-         WHERE ua.user_id = p_user_id AND a.activity_achive = 1) AS completed,
+         WHERE ua.user_id = p_user_id AND a.activity_achive = 1 AND activities.activity_start_date = CURDATE()) AS completed,
 
         (SELECT COUNT(a.activity_id)
          FROM activities a
          JOIN users_activities ua ON a.activity_id = ua.activity_id
-         WHERE ua.user_id = p_user_id AND a.activity_start_date = CURRENT_DATE()) AS daily_tasks_count,
+         WHERE ua.user_id = p_user_id AND activities.activity_type_id != 4 AND a.activity_start_date = CURRENT_DATE()) AS daily_tasks_count,
 
         (SELECT COUNT(e.event_id)
          FROM events e
@@ -175,19 +175,19 @@ BEGIN
          FROM activities a
          JOIN difficulties d ON a.activity_difficulty_id = d.difficulty_id
          JOIN users_activities ua ON a.activity_id = ua.activity_id
-         WHERE ua.user_id = p_user_id AND d.difficulty_name = 'Nehéz') AS hard_tasks,
+         WHERE ua.user_id = p_user_id AND d.difficulty_name = 'Nehéz' AND activities.activity_start_date = CURDATE()) AS hard_tasks,
 
         (SELECT COUNT(a.activity_id)
          FROM activities a
          JOIN difficulties d ON a.activity_difficulty_id = d.difficulty_id
          JOIN users_activities ua ON a.activity_id = ua.activity_id
-         WHERE ua.user_id = p_user_id AND d.difficulty_name = 'Közepes') AS middle_tasks,
+         WHERE ua.user_id = p_user_id AND d.difficulty_name = 'Közepes' AND activities.activity_start_date = CURDATE()) AS middle_tasks,
 
         (SELECT COUNT(a.activity_id)
          FROM activities a
          JOIN difficulties d ON a.activity_difficulty_id = d.difficulty_id
          JOIN users_activities ua ON a.activity_id = ua.activity_id
-         WHERE ua.user_id = p_user_id AND d.difficulty_name = 'Könnyű') AS easy_tasks,
+         WHERE ua.user_id = p_user_id AND d.difficulty_name = 'Könnyű' AND activities.activity_start_date = CURDATE()) AS easy_tasks,
 
         (SELECT COUNT(a.activity_id)
          FROM activities a
