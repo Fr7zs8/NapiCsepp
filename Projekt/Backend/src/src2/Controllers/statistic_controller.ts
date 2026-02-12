@@ -4,9 +4,10 @@ import { Response } from "express";
 const service: StatisticService = new StatisticService();
 
 export class StatisticController {
-  async systemStatistic(_req: any, res: Response) {
+  async systemStatistic(req: any, res: Response) {
+    const id = req.user.user_id
     try {
-      const results = await service.systemStatistic();
+      const results = await service.systemStatistic(id);
       res.status(200).send(results);
     } catch (err: any) {
       res.status(404).send({ message: err.message });

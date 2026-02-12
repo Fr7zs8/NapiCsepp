@@ -7,7 +7,10 @@ export class StatisticService {
     this.repository = new StatisticRepository();
   }
 
-  async systemStatistic() {
+  async systemStatistic(user_id:number) {
+    if (user_id != 1) {
+      throw new Error("Csak az admin kérheti le!");
+    }
     const results = await this.repository.systemStatistic();
     if (!results || results.length === 0) {
       throw new Error("Nincs egy db statisztika se.");
