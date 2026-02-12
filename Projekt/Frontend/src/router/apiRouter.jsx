@@ -17,6 +17,7 @@ import ApiService from "../classes/Services/apiService";
 import UserService from "../classes/Services/userService";
 import ActivityService from "../classes/Services/activityService";
 import { ProtectedRouter } from "./protectedRouter";
+import EventService from "../classes/Services/eventService";
 
 const api = new ApiService("http://localhost:3000");
 export const activityService = new ActivityService(api);
