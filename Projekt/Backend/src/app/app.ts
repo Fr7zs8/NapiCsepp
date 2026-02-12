@@ -1,14 +1,14 @@
-import router from "../src2/testRoute/routes";
+import router from "../testRoute/routes";
 import cors from "cors";
 import bodyParser from "body-parser";
 import express from "express";
-import eventRouter from "../events/routes";
-import userRouter from "../src2/Routes/user_routes";
-import activityRouter from "../src2/Routes/activity_routes";
-import typesRouter from "../src2/Routes/type_routes";
-import difficultyRouter from "../src2/Routes/difficulty_routes";
-import overviewRouter from "../src2/Routes/overview_routes";
-import statisticRouter from "../src2/Routes/statistic_routes";
+import eventRouter from "../Routes/event_routes";
+import userRouter from "../Routes/user_routes";
+import activityRouter from "../Routes/activity_routes";
+import typesRouter from "../Routes/type_routes";
+import difficultyRouter from "../Routes/difficulty_routes";
+import overviewRouter from "../Routes/overview_routes";
+import statisticRouter from "../Routes/statistic_routes";
 
 const app = express();
 
