@@ -1,24 +1,55 @@
 import "./monthly.css"
 import { ArrowLeft, ArrowRight } from "lucide-react"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
+import { activityService } from "../../../router/apiRouter";
+import { EventPopup } from "../../../components/EventPopup/EventPopup";
 
 export function MonthlyView(){
     const navigate = useNavigate();
 
     const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [showEventPopup, setShowEventPopup] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [events, setEvents] = useState([]);
+    const [activities, setActivities] = useState([]);
+    const [habits, setHabits] = useState([]);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
     
     const daysOfWeek = ['H', 'K', 'Sz', 'Cs', 'P', 'Sz', 'V'];
 
-    const handleWeeklyNavigation = () => {
-        // On mobile, go to combined view (/calendar shows weekly + daily)
-        // On desktop, go to weekly view
-        if (window.innerWidth <= 600) {
-            navigate("/calendar");
-        } else {
-            navigate("/calendar/weekly");
+    useEffect(() => {
+        const handleResize = () => {
+            const mobileStatus = window.innerWidth <= 900;
+            if (mobileStatus !== isMobile) {
+                setIsMobile(mobileStatus);
+                navigate('/calendar/monthly');
+            }
+        };
+            window.addEventListener('resize', handleResize);
+            return () => window.removeEventListener('resize', handleResize);
+    }, [isMobile, navigate]);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const [eventsData, activitiesData, habitsData] = await Promise.all([
+                activityService.getAllEvents(),
+                activityService.getAllActivities(),
+                activityService.getAllHabits()
+            ]);
+            setEvents(eventsData || []);
+            setActivities(activitiesData || []);
+            setHabits(habitsData || []);
+        } catch (err) {
+            console.error("Error fetching data:", err);
         }
     };
+
+    
 
     const changeMonth = (direction) => {
         setCurrentMonth(prev => {
@@ -27,7 +58,64 @@ export function MonthlyView(){
             return newDate;
         });
     };
-    
+
+    const handleDayClick = (day, isCurrentMonth) => {
+        if (!isCurrentMonth) return;
+        
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+        const clickedDate = new Date(year, month, day);
+        
+        setSelectedDate(clickedDate);
+        setShowEventPopup(true);
+    };
+
+    const handleSaveEvent = async (eventData) => {
+        try {
+            await activityService.createEvent(eventData);
+            fetchData();
+        } catch (err) {
+            console.error("Error creating event:", err);
+            alert("Hiba történt az esemény létrehozása során!");
+        }
+    };
+
+    const getCountsForDay = (day, isCurrentMonth) => {
+        if (!isCurrentMonth) return { events: 0, tasks: 0, habits: 0 };
+
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+        const dateStr = new Date(year, month, day).toISOString().split('T')[0];
+
+        const eventCount = events.filter(e => {
+            const eventDate = new Date(e.event_start_time).toISOString().split('T')[0];
+            return eventDate === dateStr;
+        }).length;
+
+        const taskCount = activities.filter(a => {
+            const startDate = a.activity_start_date || a.activity_date || a.date;
+            if (!startDate) return false;
+            const actDate = new Date(startDate + 'T00:00:00').toISOString().split('T')[0];
+            return actDate === dateStr;
+        }).length;
+
+        const habitCount = habits.filter(h => {
+            const startDate = h.activity_start_date || h.startDate;
+            const endDate = h.activity_end_date || h.endDate;
+            if (!startDate) return false;
+            
+            try {
+                const sd = new Date(startDate + 'T00:00:00');
+                const ed = endDate ? new Date(endDate + 'T23:59:59') : sd;
+                const checkDate = new Date(dateStr + 'T00:00:00');
+                return checkDate >= sd && checkDate <= ed;
+            } catch(e) {
+                return false;
+            }
+        }).length;
+
+        return { events: eventCount, tasks: taskCount, habits: habitCount };
+    };
     
     const generateCalendarDays = () => {
         const year = currentMonth.getFullYear();
@@ -47,7 +135,6 @@ export function MonthlyView(){
             const prevDate = new Date(year, month, 1 - i);
             days.push({ date: prevDate.getDate(), isCurrentMonth: false, isSunday: false, isToday: false });
         }
-        
 
         for (let i = 1; i <= daysInMonth; i++) {
             const date = new Date(year, month, i);
@@ -87,17 +174,26 @@ export function MonthlyView(){
                     <p>{monthName}</p>
                 </div>
                 <div className="view-switch-div">
-                    <div className="view-switch-small">
-                        <input type="radio" id="view-month" name="view" checked readOnly/>
-                        <label htmlFor="view-month" onClick={() => navigate("/calendar/monthly")}>Hónap</label>
-                        
-                        <input type="radio" id="view-week" name="view"/>
-                        <label htmlFor="view-week" onClick={() => handleWeeklyNavigation()}>Hét</label>
-                        
-                        <input type="radio" id="view-day" name="view"/>
-                        <label htmlFor="view-day" onClick={() => navigate("/calendar/daily")}>Nap</label>
-                        
-                        <span className="switch-slider"></span>
+                    <div className={`view-switch-small ${isMobile ? 'is-mobile' : ''}`}>
+                        <input type="radio" id="view-month" name="view"
+                            checked={window.location.pathname.includes('monthly')}
+                            onChange={() => navigate('/calendar/monthly')} />
+                        <label htmlFor="view-month">Hónap</label>
+
+                        <input type="radio" id="view-week" name="view"
+                            checked={isMobile ? window.location.pathname.includes('combined') : window.location.pathname.includes('weekly')}
+                            onChange={() => isMobile ? navigate('/calendar/combined') : navigate('/calendar/weekly')} />
+                        <label htmlFor="view-week">Hét</label>
+
+                        {!isMobile && (
+                            <>
+                                <input type="radio" id="view-day" name="view"
+                                    checked={window.location.pathname.includes('daily')}
+                                    onChange={() => navigate('/calendar/daily')} />
+                                <label htmlFor="view-day">Nap</label>
+                            </>
+                        )}
+                        <div className="switch-slider"></div>
                     </div>
                 </div>
             </div>
@@ -108,41 +204,49 @@ export function MonthlyView(){
                             {day}
                         </div>
                     ))}
-                    {calendarDays.map((day, index) => (
-                        <div 
-                            key={index} 
-                            className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isSunday ? 'sunday' : ''} ${day.isToday ? 'current-day' : ''}`}
-                        >
-                            {day.date}
-                        </div>
-                    ))}
+                    {calendarDays.map((day, index) => {
+                        const counts = getCountsForDay(day.date, day.isCurrentMonth);
+                        return (
+                            <div 
+                                key={index} 
+                                className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isSunday ? 'sunday' : ''} ${day.isToday ? 'current-day' : ''}`}
+                                onClick={() => handleDayClick(day.date, day.isCurrentMonth)}
+                                style={{ cursor: day.isCurrentMonth ? 'pointer' : 'default' }}
+                            >
+                                <span className="day-number">{day.date}</span>
+                                {day.isCurrentMonth && (counts.events > 0 || counts.tasks > 0 || counts.habits > 0) && (
+                                    <div className="day-counters">
+                                        {counts.events > 0 && (
+                                            <span className="counter-badge events">{counts.events}</span>
+                                        )}
+                                        {counts.tasks > 0 && (
+                                            <span className="counter-badge tasks">{counts.tasks}</span>
+                                        )}
+                                        {counts.habits > 0 && (
+                                            <span className="counter-badge habits">{counts.habits}</span>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
             <div className="explanation-div">
                 <p className="explanation-title">Jelmagyarázat</p>
-                <div className="legend-items">
-                    <div className="legend-item">
-                        <span className="legend-color events"></span>
-                        <p>Események</p>
-                    </div>
-                    <div className="legend-item">
-                        <span className="legend-color tasks"></span>
-                        <p>Teendők (nincs kész)</p>
-                    </div>
-                    <div className="legend-item">
-                        <span className="legend-color partial"></span>
-                        <p>Részben kész</p>
-                    </div>
-                    <div className="legend-item">
-                        <span className="legend-color complete"></span>
-                        <p>Mind kész</p>
-                    </div>
-                    <div className="legend-item">
-                        <span className="legend-color habits"></span>
-                        <p>Szokások</p>
-                    </div>
+                <div className="calendar-legend">
+                    <span><span className="counter-badge events"></span> Események</span>
+                    <span><span className="counter-badge tasks"></span> Teendők</span>
+                    <span><span className="counter-badge habits"></span> Szokások</span>
                 </div>
             </div>
+
+            <EventPopup
+                isOpen={showEventPopup}
+                onClose={() => setShowEventPopup(false)}
+                onSave={handleSaveEvent}
+                selectedDate={selectedDate}
+            />
         </section>
     )
 }

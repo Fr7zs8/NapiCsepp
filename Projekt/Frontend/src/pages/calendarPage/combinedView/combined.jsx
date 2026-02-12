@@ -1,17 +1,29 @@
 import "./combined.css"
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
+
 
 export function CombinedView(){
     const navigate = useNavigate();
-
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
     const [currentWeek, setCurrentWeek] = useState(new Date());
     const [selectedDay, setSelectedDay] = useState(new Date());
 
+
+    useEffect(() => {
+        const handleResize = () => {
+            const mobileStatus = window.innerWidth <= 900;
+            if (mobileStatus !== isMobile) {
+                setIsMobile(mobileStatus);
+                navigate('/calendar/monthly');
+            }
+        };
+            window.addEventListener('resize', handleResize);
+            return () => window.removeEventListener('resize', handleResize);
+    }, [isMobile, navigate]);
+    
     const handleWeeklyNavigation = () => {
-        // On mobile, stay at combined view (/calendar)
-        // On desktop, go to weekly view (/calendar/weekly)
         if (window.innerWidth > 600) {
             navigate("/calendar/weekly");
         }
@@ -92,17 +104,26 @@ export function CombinedView(){
                     <p>{monthName}</p>
                 </div>
                 <div className="view-switch-div">
-                    <div className="view-switch-small">
-                        <input type="radio" id="view-month" name="view"/>
-                        <label htmlFor="view-month" onClick={() => navigate("/calendar/monthly")}>Hónap</label>
-                        
-                        <input type="radio" id="view-week" name="view" defaultChecked/>
-                        <label htmlFor="view-week" onClick={() => handleWeeklyNavigation()}>Hét</label>
-                        
-                        <input type="radio" id="view-day" name="view"/>
-                        <label htmlFor="view-day" onClick={() => navigate("/calendar/daily")}>Nap</label>
-                        
-                        <span className="switch-slider"></span>
+                    <div className={`view-switch-small ${isMobile ? 'is-mobile' : ''}`}>
+                        <input type="radio" id="view-month" name="view" 
+                            checked={window.location.pathname.includes('monthly')} 
+                            onChange={() => navigate('/calendar/monthly')} />
+                        <label htmlFor="view-month">Hónap</label>
+
+                        <input type="radio" id="view-week" name="view" 
+                            checked={window.location.pathname.includes('weekly') || window.location.pathname.includes('combined')} 
+                            onChange={() => navigate('/calendar/weekly')} />
+                        <label htmlFor="view-week">Hét</label>
+
+                        {!isMobile && (
+                            <>
+                                <input type="radio" id="view-day" name="view" 
+                                    checked={window.location.pathname.includes('daily')} 
+                                    onChange={() => navigate('/calendar/daily')} />
+                                <label htmlFor="view-day">Nap</label>
+                            </>
+                        )}
+                        <div className="switch-slider"></div>
                     </div>
                 </div>
             </div>

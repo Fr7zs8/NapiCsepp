@@ -48,6 +48,12 @@
     display: none;
 }
 
+.view-switch-small input:checked + label {
+    color: darkgoldenrod;
+    background-color: #292951;
+    border-radius: 7px;
+}
+
 .view-switch-small label {
     padding: 0.4rem 0.8rem;
     cursor: pointer;
@@ -59,7 +65,6 @@
     position: absolute;
     width: calc(33.33% - 4px);
     height: calc(100% - 8px);
-    background: #14142a;
     opacity: 0.15;
     border-radius: 6px;
     transition: 0.3s ease;
@@ -79,14 +84,15 @@
     left: calc(66.66% - 4px);
 }
 
-/* Main combined layout */
 .combined-layout {
     display: grid;
-    grid-template-columns: 120px 1fr 300px;
-    gap: 1rem;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* Week toggle - left side */
 .week-toggle-div {
     background: #fff;
     border-radius: 12px;
@@ -125,11 +131,11 @@
     box-shadow: none;
 }
 
-/* Weekly overview - center */
 .weekly-overview-div {
     background: #fff;
     border-radius: 12px;
     padding: 1.5rem;
+    width: 100%;
 }
 
 .week-grid {
@@ -189,7 +195,6 @@
     color: #2d2d2d;
 }
 
-/* Daily schedule - right side */
 .daily-schedule-div {
     background: #fff;
     border-radius: 12px;
@@ -226,7 +231,6 @@
     border-left-color: #10b981;
 }
 
-/* Responsive - Tablet */
 @media (max-width: 1024px) {
     .combined-layout {
         grid-template-columns: 1fr;
@@ -245,10 +249,10 @@
 
     .daily-schedule-div {
         max-height: 400px;
+        width: 100%;
     }
 }
 
-/* Responsive - Medium - Merge week & day view */
 @media (max-width: 768px) {
     .combined-calendar-view {
         padding: 1.5rem;
@@ -277,6 +281,8 @@
         width: 100%;
         display: flex;
         justify-content: center;
+        align-items: center;
+        margin: 0 auto;
     }
 
     .combined-layout {
@@ -309,7 +315,6 @@
     }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 480px) {
     .combined-calendar-view {
         padding: 1rem;
@@ -381,7 +386,6 @@
         font-size: 0.75rem;
     }
 
-    /* Hide daily view option on mobile - only show monthly and weekly */
     #view-day {
         display: none;
     }
@@ -390,7 +394,6 @@
         display: none;
     }
 
-    /* Adjust slider width for 2 options instead of 3 */
     .switch-slider {
         width: calc(50% - 4px);
     }

@@ -17,22 +17,18 @@ export function Sidebar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Ha login vagy register oldalon vagyunk, ne jelenjen meg a sidebar
   if (location.pathname === "/login" || location.pathname === "/register") {
     return null;
   }
 
   return (
     <>
-      {/* Hamburger button - visible only on mobile/medium screens */}
       <button className="hamburger-btn" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Backdrop - visible when menu is open on mobile */}
       {isOpen && <div className="sidebar-backdrop" onClick={() => setIsOpen(false)}></div>}
 
-      {/* Sidebar */}
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
         <div className="sidebar-header">
           <h2>NapiCsepp</h2>

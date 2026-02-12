@@ -49,3 +49,48 @@
   margin-top: '10px';
   font-size: '14px';
 }
+
+@media (max-width: 900px) {
+  .login-conatiner {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 0;
+  }
+  .login-image-div, .login-content-div {
+    width: 100%;
+    padding: 0;
+  }
+  .login-image-div img {
+    width: 100vw;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 0 0 15px 15px;
+  }
+  .login-content-div {
+    padding: 1.5rem 1rem 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-conatiner {
+    border-radius: 0;
+    min-height: 100vh;
+  }
+  .login-content-div {
+    padding: 1rem 0.5rem 2rem 0.5rem;
+  }
+  .login-header-div h1, .login-header-div h3 {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+  .login-image-div img {
+    max-height: 140px;
+    border-radius: 0 0 10px 10px;
+  }
+  .login-form-input-div input {
+    font-size: 0.95rem;
+    padding: 0.6rem;
+  }
+}

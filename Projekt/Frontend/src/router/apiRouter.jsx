@@ -9,7 +9,7 @@ import { LoginView } from '../pages/loginPage/loginView/login'
 import { RegisterView } from '../pages/loginPage/registerView/register'
 import { ProfileView } from '../pages/profileView/profile'
 import { StatisticsView } from '../pages/statisticsView/statisticsView'
-import { Layout } from '../components/layout/layout'
+import { Layout } from '../components/Layout/layout'
 
 import {createBrowserRouter} from "react-router-dom"
 
@@ -52,14 +52,6 @@ export const appRouter = createBrowserRouter([
     )
   },
   {
-    path: "/calendar",
-    element: (
-      <ProtectedRouter>
-        <Layout><CombinedView /></Layout>
-      </ProtectedRouter>
-    )
-  },
-  {
     path: "/calendar/monthly",
     element: (
       <ProtectedRouter>
@@ -72,6 +64,14 @@ export const appRouter = createBrowserRouter([
     element: (
       <ProtectedRouter>
         <Layout><WeeklyView /></Layout>
+      </ProtectedRouter>
+    )
+  },
+  {
+    path: "/calendar/combined",
+    element: (
+      <ProtectedRouter>
+        <Layout><CombinedView /></Layout>
       </ProtectedRouter>
     )
   },

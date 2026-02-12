@@ -34,7 +34,15 @@ export function HomepageView(){
         finally{
             setLoading(false);
         }
-    }        
+    } 
+    
+    const getTodayDate = () => {
+        return new Date().toLocaleDateString('hu-HU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
 
     const quotes = [
         "A siker nem végleges, a kudarc nem végzetes: a folytatáshoz szükséges bátorság az, ami számít.",
@@ -86,7 +94,7 @@ export function HomepageView(){
         <section>
             <div className="info-text-div">
                 <h3>Szia {profile.username}!</h3>
-                <p>December van</p>
+                <p className="stat-header-text">A mai dátum: {getTodayDate()}</p>
             </div>
             <div className="progress-view-div">
                 <div>

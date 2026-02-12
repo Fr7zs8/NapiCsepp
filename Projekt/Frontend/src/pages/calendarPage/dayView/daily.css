@@ -30,13 +30,12 @@
 }
 
 .info-text-div.current-day p {
-    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    background:#2d2d2d;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-/* View Switch */
 .view-switch-small {
     position: relative;
     display: flex;
@@ -44,29 +43,62 @@
     border-radius: 8px;
     padding: 4px;
     border: 1px solid #ddd;
+    min-width: 180px;
+}
+
+.view-switch-small label {
+    flex: 1;
+    text-align: center;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 0.85rem;
+    transition: color 0.3s;
 }
 
 .view-switch-small input[type="radio"] {
     display: none;
 }
 
-.view-switch-small label {
-    padding: 0.4rem 0.8rem;
-    cursor: pointer;
-    z-index: 2;
-    font-size: 0.85rem;
-}
-
 .switch-slider {
     position: absolute;
-    width: calc(33.33% - 4px);
     height: calc(100% - 8px);
-    background: #14142a;
-    opacity: 0.15;
     border-radius: 6px;
-    transition: 0.3s ease;
-    left: 4px;
-    top: 4px;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+
+.view-switch-small:not(.is-mobile) .switch-slider {
+    width: calc(33.33% - 4px);
+}
+
+.view-switch-small:not(.is-mobile) input#view-day:checked ~ .switch-slider {
+    transform: translateX(0);
+}
+
+.view-switch-small:not(.is-mobile) input#view-week:checked ~ .switch-slider {
+    transform: translateX(100%);
+}
+
+.view-switch-small:not(.is-mobile) input#view-month:checked ~ .switch-slider {
+    transform: translateX(200%);
+}
+
+.view-switch-small.is-mobile .switch-slider {
+    width: calc(50% - 4px);
+}
+.view-switch-small.is-mobile input#view-week:checked ~ .switch-slider {
+    transform: translateX(0);
+}
+
+.view-switch-small.is-mobile input#view-month:checked ~ .switch-slider {
+    transform: translateX(100%);
+}
+
+
+.view-switch-small input:checked + label {
+    color: darkgoldenrod
 }
 
 #view-month:checked ~ .switch-slider {
@@ -111,7 +143,6 @@
     padding: 1rem;
 }
 
-/* Responsive - Tablet */
 @media (max-width: 768px) {
     .day-calendar-section {
         padding: 1.5rem;
@@ -157,7 +188,6 @@
     }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 480px) {
     .day-calendar-section {
         padding: 1rem;

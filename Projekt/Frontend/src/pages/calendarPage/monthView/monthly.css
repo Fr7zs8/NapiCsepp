@@ -1,3 +1,48 @@
+/* Calendar counter badges */
+.counter-badge {
+    display: inline-block;
+    min-width: 22px;
+    padding: 2px 7px;
+    margin: 1px 2px;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    color: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.counter-badge.events {
+    background: #2196f3;
+}
+.counter-badge.tasks {
+    background: #43a047;
+}
+.counter-badge.habits {
+    background: #ffd600;
+    color: #222;
+}
+
+/* Legend for calendar counters */
+.calendar-legend {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1rem 2rem;
+    margin: 2rem auto 0 auto;
+    max-width: 420px;
+    font-size: 1.1em;
+}
+.calendar-legend span {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+.calendar-legend .counter-badge {
+    margin: 0 0.2em 0 0;
+}
 
 .header-div {
     display: flex;
@@ -28,33 +73,68 @@
 .view-switch-small {
     position: relative;
     display: flex;
-    background: #a9a8a8;
+    background: #fff;
     border-radius: 8px;
     padding: 4px;
-    border: 1px solid #a3a0a0;
+    border: 1px solid #ddd;
+    min-width: 180px;
+}
+
+.view-switch-small label {
+    flex: 1;
+    text-align: center;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 0.85rem;
+    transition: color 0.3s;
 }
 
 .view-switch-small input[type="radio"] {
     display: none;
 }
 
-.view-switch-small label {
-    padding: 0.4rem 0.8rem;
-    cursor: pointer;
-    z-index: 2;
-    font-size: 0.85rem;
-}
 
 .switch-slider {
     position: absolute;
-    width: calc(33.33% - 4px);
     height: calc(100% - 8px);
-    background: #14142a;
-    opacity: 0.15;
     border-radius: 6px;
-    transition: 0.3s ease;
-    left: 4px;
-    top: 4px;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.view-switch-small:not(.is-mobile) .switch-slider {
+    width: calc(33.33% - 4px);
+}
+
+.view-switch-small:not(.is-mobile) input#view-day:checked ~ .switch-slider {
+    transform: translateX(0);
+}
+
+.view-switch-small:not(.is-mobile) input#view-week:checked ~ .switch-slider {
+    transform: translateX(100%);
+}
+
+.view-switch-small:not(.is-mobile) input#view-month:checked ~ .switch-slider {
+    transform: translateX(200%);
+}
+
+.view-switch-small.is-mobile .switch-slider {
+    width: calc(50% - 4px);
+}
+
+.view-switch-small.is-mobile input#view-week:checked ~ .switch-slider {
+    transform: translateX(0);
+}
+
+.view-switch-small.is-mobile input#view-month:checked ~ .switch-slider {
+    transform: translateX(100%);
+}
+
+.view-switch-small input:checked + label {
+    color: darkgoldenrod;
+    background-color: #292951;
+    border-radius: 7px;
 }
 
 #view-month:checked ~ .switch-slider {
@@ -176,7 +256,6 @@
     color: #666;
 }
 
-/* Responsive - Tablet */
 @media (max-width: 768px) {
     .header-div {
         flex-direction: column;
@@ -227,7 +306,6 @@
     }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 480px) {
     .header-div {
         gap: 0.75rem;
@@ -298,7 +376,6 @@
         font-size: 0.8rem;
     }
 
-    /* Hide daily view option on mobile - only show monthly and weekly */
     #view-day {
         display: none;
     }
@@ -307,7 +384,6 @@
         display: none;
     }
 
-    /* Adjust slider width for 2 options instead of 3 */
     .switch-slider {
         width: calc(50% - 4px);
     }

@@ -150,7 +150,6 @@ section {
     color: #666;
 }
 
-/* Statisztikák */
 .statistics-header {
     display: flex;
     align-items: center;
@@ -219,8 +218,13 @@ section {
     color: #2d2d2d;
 }
 
-/* Responsive - Tablet */
 @media (max-width: 768px) {
+    /* center habits quick-access on tablet if only 2 visible */
+    .quick-access-list-div .access-div:nth-child(3) {
+        grid-column: 1 / -1;
+        width: fit-content;
+        margin: 0 auto;
+    }
     section {
         padding: 1.5rem;
     }
@@ -265,7 +269,6 @@ section {
     }
 }
 
-/* Responsive - Mobile */
 @media (max-width: 480px) {
     section {
         padding: 1rem;

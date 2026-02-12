@@ -15,7 +15,6 @@
     margin-left: 0;
 }
 
-/* Mobile responsive - remove left margin when sidebar becomes mobile menu */
 @media (max-width: 768px) {
     .main-content {
         margin-left: 0;

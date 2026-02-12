@@ -1,4 +1,12 @@
 
+.weekly-view-section {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
 .header-div {
     display: flex;
     justify-content: space-between;
@@ -32,29 +40,68 @@
     border-radius: 8px;
     padding: 4px;
     border: 1px solid #ddd;
+    min-width: 180px;
+}
+
+.view-switch-small label {
+    flex: 1;
+    text-align: center;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 0.85rem;
+    transition: color 0.3s;
 }
 
 .view-switch-small input[type="radio"] {
     display: none;
 }
 
-.view-switch-small label {
-    padding: 0.4rem 0.8rem;
-    cursor: pointer;
-    z-index: 2;
-    font-size: 0.85rem;
-}
 
 .switch-slider {
     position: absolute;
-    width: calc(33.33% - 4px);
     height: calc(100% - 8px);
-    background: #14142a;
-    opacity: 0.15;
     border-radius: 6px;
-    transition: 0.3s ease;
-    left: 4px;
-    top: 4px;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.view-switch-small:not(.is-mobile) .switch-slider {
+    width: calc(33.33% - 4px);
+}
+
+.view-switch-small:not(.is-mobile) input#view-day:checked ~ .switch-slider {
+    transform: translateX(0);
+}
+
+.view-switch-small:not(.is-mobile) input#view-week:checked ~ .switch-slider {
+    transform: translateX(100%);
+}
+
+.view-switch-small:not(.is-mobile) input#view-month:checked ~ .switch-slider {
+    transform: translateX(200%);
+}
+
+.view-switch-small.is-mobile .switch-slider {
+    width: calc(50% - 4px);
+}
+
+.view-switch-small.is-mobile input#view-week:checked ~ .switch-slider {
+    transform: translateX(0);
+}
+
+.view-switch-small.is-mobile input#view-month:checked ~ .switch-slider {
+    transform: translateX(100%);
+}
+
+.view-switch-small input:checked + label {
+    color: darkgoldenrod;
+    background-color: #292951;
+    border-radius: 7px;
+}
+
+.switch-slider.mobile-slider {
+    width: calc(50% - 4px); 
 }
 
 #view-month:checked ~ .switch-slider {
@@ -75,10 +122,13 @@
     padding: 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     overflow-x: auto;
+    max-width: 1200px;
+    width: 100%;
 }
 
 .week-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
     min-width: 800px;
 }
 
@@ -176,6 +226,8 @@
         width: 100%;
         display: flex;
         justify-content: center;
+        align-items: center;
+        margin: 0 auto;
     }
 
     .week-grid {
@@ -277,7 +329,7 @@
         height: 45px;
     }
 
-    /* Hide daily view option on mobile - only show monthly and weekly */
+
     #view-day {
         display: none;
     }
@@ -286,7 +338,7 @@
         display: none;
     }
 
-    /* Adjust slider width for 2 options instead of 3 */
+
     .switch-slider {
         width: calc(50% - 4px);
     }

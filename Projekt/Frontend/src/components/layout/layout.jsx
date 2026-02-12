@@ -1,4 +1,4 @@
-import { Sidebar } from "./sidebar";
+import { Sidebar } from "../Sidebar/sidebar";
 import "./layout.css";
 
 export function Layout({ children }) {

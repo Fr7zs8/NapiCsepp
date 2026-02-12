@@ -57,14 +57,12 @@
     color: #777;
 }
 
-/* divider */
 .sidebar-divider {
     height: 1px;
     background: #333;
     margin: 0.5rem 0;
 }
 
-/* footer */
 .sidebar-footer {
     padding: 1rem 1.5rem;
     border-top: 1px solid #333;
@@ -72,7 +70,7 @@
     color: #aaa;
 }
 
-/* Hamburger Button - hidden on desktop */
+
 .hamburger-btn {
     display: none;
     position: fixed;
@@ -86,7 +84,7 @@
     padding: 0.5rem;
 }
 
-/* Backdrop for mobile menu */
+
 .sidebar-backdrop {
     display: none;
     position: fixed;
@@ -98,7 +96,7 @@
     z-index: 999;
 }
 
-/* Mobile/Tablet Responsiveness */
+
 @media (max-width: 768px) {
     .hamburger-btn {
         display: flex;

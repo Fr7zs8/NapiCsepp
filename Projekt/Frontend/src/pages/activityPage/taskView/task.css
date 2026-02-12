@@ -72,7 +72,7 @@
     background: #333;
 }
 
-/* save button flash animation - more noticeable */
+
 .flash {
     animation: saveFlash 1s ease-in-out;
 }
@@ -147,11 +147,11 @@
 }
 
 .label.date-label {
-    /* hidden on mobile by default */
+
     display: none;
 }
 
-/* show only on desktop */
+
 @media (min-width: 1024px) {
     .label.date-label {
         display: inline-block;
@@ -176,7 +176,7 @@
     color: white;
 }
 
-/* Responsive rules */
+
 @media (max-width: 720px) {
     .task-form-div { flex-direction: column; }
     .priority-btn, .add-btn { width: 100%; }
