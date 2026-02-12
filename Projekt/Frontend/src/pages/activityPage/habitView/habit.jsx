@@ -357,13 +357,13 @@ export function HabitView() {
           )}
         </select>
 
-        <input
+        <input  //<-ezt akarom kiszedni mert nincs nagyon nagy értelme, a naptár megjelenítési helyénél kívül..
           type="date"
           className="priority-btn"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
           placeholder="Kezdés dátuma"
-        />
+        />  
 
         <button className={`add-btn ${flashSave ? 'flash' : ''}`} onClick={editId ? saveHabit : addHabit}>
           <Plus size={20} />
