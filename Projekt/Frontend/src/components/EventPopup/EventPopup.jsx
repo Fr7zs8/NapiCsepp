@@ -7,8 +7,7 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
         event_name: "",
         event_date: "",
         event_start_time: "",
-        event_end_time: "",
-        event_color: "#0090ff"
+        event_end_time: ""
     });
 
     useEffect(() => {
@@ -16,32 +15,26 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
             if (existingEvent) {
                 const startDateTime = new Date(existingEvent.event_start_time);
                 const endDateTime = new Date(existingEvent.event_end_time);
-                
                 setEventData({
                     event_name: existingEvent.event_name || "",
                     event_date: startDateTime.toISOString().split('T')[0],
                     event_start_time: startDateTime.toTimeString().slice(0, 5),
-                    event_end_time: endDateTime.toTimeString().slice(0, 5),
-                    event_color: existingEvent.event_color || "#0090ff"
+                    event_end_time: endDateTime.toTimeString().slice(0, 5)
                 });
             } else {
                 const date = selectedDate ? new Date(selectedDate) : new Date();
                 const dateStr = date.toISOString().split('T')[0];
-                
                 let startTime = "09:00";
                 let endTime = "10:00";
-                
                 if (selectedHour !== undefined && selectedHour !== null) {
                     startTime = `${selectedHour.toString().padStart(2, '0')}:00`;
                     endTime = `${(selectedHour + 1).toString().padStart(2, '0')}:00`;
                 }
-                
                 setEventData({
                     event_name: "",
                     event_date: dateStr,
                     event_start_time: startTime,
-                    event_end_time: endTime,
-                    event_color: "#0090ff"
+                    event_end_time: endTime
                 });
             }
         }
@@ -62,7 +55,7 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
             event_name: eventData.event_name,
             event_start_time: startDateTime,
             event_end_time: endDateTime,
-            event_color: eventData.event_color
+            event_color: "#0090ff"
         };
 
         onSave(eventToSave);
@@ -71,16 +64,6 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
 
     if (!isOpen) return null;
 
-    const colorOptions = [
-        { name: "Kék", value: "#0090ff" },
-        { name: "Zöld", value: "#22C55E" },
-        { name: "Piros", value: "#EF4444" },
-        { name: "Sárga", value: "#F59E0B" },
-        { name: "Lila", value: "#A855F7" },
-        { name: "Rózsaszín", value: "#EC4899" },
-        { name: "Narancs", value: "#FD6703" },
-        { name: "Türkiz", value: "#06b6d4" }
-    ];
 
     return (
         <div className="popup-overlay" onClick={onClose}>
@@ -140,21 +123,6 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label>Szín</label>
-                        <div className="color-picker">
-                            {colorOptions.map((color) => (
-                                <button
-                                    key={color.value}
-                                    type="button"
-                                    className={`color-option ${eventData.event_color === color.value ? 'selected' : ''}`}
-                                    style={{ backgroundColor: color.value }}
-                                    onClick={() => setEventData({ ...eventData, event_color: color.value })}
-                                    title={color.name}
-                                />
-                            ))}
-                        </div>
-                    </div>
 
                     <div className="form-actions">
                         <button type="button" onClick={onClose} className="btn-cancel">

@@ -158,69 +158,92 @@ export function WeeklyView(){
                                 <div key={index} className="time-cell">{time}</div>
                             ))}
                         </div>
-                        {weekDays.map((day, dayIndex) => (
-                            <div key={dayIndex} className="day-column">
-                                <div className={`day-header-cell ${day.isWeekend ? 'weekend' : ''} ${day.isToday ? 'current-day' : ''}`}>
-                                    <span className="day-name">{day.dayName}</span>
-                                    <span className="day-date">{day.date}</span>
+                        {weekDays.map((day, dayIndex) => {
+                            // All events for this day
+                            const dateStr = day.fullDate.toISOString().split('T')[0];
+                            const dayEvents = events.filter(event => {
+                                const startTime = new Date(event.event_start_time);
+                                return startTime.toISOString().split('T')[0] === dateStr;
+                            });
+                            // For each hour, check if an event covers it
+                            return (
+                                <div key={dayIndex} className="day-column" style={{ position: 'relative', height: '1440px' }}>
+                                    <div className={`day-header-cell ${day.isWeekend ? 'weekend' : ''} ${day.isToday ? 'current-day' : ''}`}>
+                                        <span className="day-name">{day.dayName}</span>
+                                        <span className="day-date">{day.date}</span>
+                                    </div>
+                                    {/* Hour lines, skip if event covers this hour */}
+                                    {timeSlots.map((_, timeIndex) => {
+                                        // Move all lines one hour forward
+                                        const hour = timeIndex + 1;
+                                        // Check if any event covers this hour
+                                        const isCovered = dayEvents.some(event => {
+                                            const startTime = new Date(event.event_start_time);
+                                            const endTime = new Date(event.event_end_time);
+                                            const startMinutes = (startTime.getHours() + 1) * 60 + startTime.getMinutes();
+                                            const endMinutes = (endTime.getHours() + 1) * 60 + endTime.getMinutes();
+                                            const slotStart = hour * 60;
+                                            return slotStart >= startMinutes && slotStart < endMinutes;
+                                        });
+                                        if (isCovered) return null;
+                                        return (
+                                            <div key={timeIndex} style={{
+                                                position: 'absolute',
+                                                top: `${hour * 60}px`,
+                                                left: 0,
+                                                width: '100%',
+                                                height: '1px',
+                                                borderTop: '1px solid #e5e7eb',
+                                                zIndex: 1
+                                            }} />
+                                        );
+                                    })}
+                                    {/* Events absolute positioned, all moved one hour forward */}
+                                    {dayEvents.map((event, eventIdx) => {
+                                        const startTime = new Date(event.event_start_time);
+                                        const endTime = new Date(event.event_end_time);
+                                        const startMinutes = (startTime.getHours() + 1) * 60 + startTime.getMinutes();
+                                        const endMinutes = (endTime.getHours() + 1) * 60 + endTime.getMinutes();
+                                        const top = startMinutes;
+                                        const height = Math.max(endMinutes - startMinutes, 15); 
+                                        return (
+                                            <div
+                                                key={eventIdx}
+                                                className="event-block event-absolute"
+                                                style={{
+                                                    top: `${top}px`,
+                                                    height: `${height}px`,
+                                                    left: '5%',
+                                                    right: '5%',
+                                                    backgroundColor: event.event_color || '#0090ff',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    overflow: 'hidden',
+                                                    zIndex: 10,
+                                                    cursor: 'pointer',
+                                                    position: 'absolute',
+                                                    width: '90%'
+                                                }}
+                                                onClick={e => {
+                                                    setSelectedDate(day.fullDate);
+                                                    setSelectedHour(startTime.getHours());
+                                                    setShowEventPopup(true);
+                                                }}
+                                            >
+                                                <div className="event-name">{event.event_name}</div>
+                                                <div className="event-time">
+                                                    {startTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })} -
+                                                    {endTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                                {timeSlots.map((_, timeIndex) => {
-                                    const cellEvents = getEventsForCell(day.fullDate, timeIndex);
-                                    return (
-                                        <div 
-                                            key={timeIndex} 
-                                            className={`hour-cell ${day.isWeekend ? 'weekend' : ''}`}
-                                            onClick={() => handleCellClick(day.fullDate, timeIndex)}
-                                        >
-                                            {cellEvents.map((event, eventIdx) => {
-                                                const startTime = new Date(event.event_start_time);
-                                                const endTime = new Date(event.event_end_time);
-                                                const startHour = startTime.getHours();
-                                                const endHour = endTime.getHours();
-                                                const endMinutes = endTime.getMinutes();
-                                                if (timeIndex === startHour) {
-                                                    const duration = endHour - startHour + (endMinutes > 0 ? 1 : 0);
-                                                    const height = duration * 48;
-                                                    return (
-                                                        <div
-                                                            key={eventIdx}
-                                                            className="event-block"
-                                                            style={{
-                                                                backgroundColor: event.event_color || '#0090ff',
-                                                                height: `${height}px`,
-                                                                minHeight: '30px',
-                                                                position: 'absolute',
-                                                                top: `${startHour * 48}px`,
-                                                                left: 0,
-                                                                right: 0,
-                                                                zIndex: 2,
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                justifyContent: 'center',
-                                                                alignItems: 'center',
-                                                                overflow: 'hidden'
-                                                            }}
-                                                            onClick={e => {
-                                                                setSelectedDate(day.fullDate);
-                                                                setSelectedHour(timeIndex);
-                                                                setShowEventPopup(true);
-                                                            }}
-                                                        >
-                                                            <div className="event-name">{event.event_name}</div>
-                                                            <div className="event-time">
-                                                                {startTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })} - 
-                                                                {endTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                }
-                                                return null;
-                                            })}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ))}
+                            );
+                        })}
+                        
                     </div>
                 </div>
             </div>

@@ -217,40 +217,50 @@ export function CombinedView(){
                     <div className="schedule-header">
                         {selectedDayString}
                     </div>
-                    <div className="time-slots">
-                        <div style={{ position: "relative", height: `${timeSlots.length * 48}px` }}>
-                            {/* Render hour labels */}
+                    <div className="time-slots" style={{ display: 'flex', flexDirection: 'row' }}>
+                        {/* Hour label column */}
+                        <div style={{ width: 60, position: 'relative' }}>
                             {timeSlots.map((time, index) => (
-                                <div key={index} style={{ position: "absolute", top: `${index * 48}px`, left: 0, width: "100%", height: "48px", borderBottom: "1px solid #e0e0e0", zIndex: 1, background: "transparent" }}>
-                                    <span style={{ paddingLeft: 8, fontSize: "0.9em", color: "#666" }}>{time}</span>
+                                <div key={index} style={{ height: 48, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', borderBottom: '1px solid #e0e0e0', color: '#666', fontSize: '0.9em', paddingRight: 8 }}>
+                                    {time}
                                 </div>
+                            ))}
+                        </div>
+                        {/* Event timeline column */}
+                        <div style={{ position: "relative", height: `${timeSlots.length * 48}px`, flex: 1 }}>
+                            {/* Hour lines */}
+                            {timeSlots.map((_, index) => (
+                                <div key={index} style={{ position: "absolute", top: `${index * 48}px`, left: 0, width: "100%", height: 1, borderTop: "1px solid #e0e0e0", zIndex: 1 }} />
                             ))}
                             {/* Render event blocks spanning all hours */}
                             {events.map((event, i) => {
                                 const start = new Date(event.event_start_time);
                                 const end = new Date(event.event_end_time);
-                                const startHour = start.getHours();
-                                const endHour = end.getHours();
-                                const duration = endHour - startHour + (end.getMinutes() > 0 ? 1 : 0);
                                 const dateStr = start.toISOString().split('T')[0];
                                 if (dateStr !== selectedDay.toISOString().split('T')[0]) return null;
+                                // Calculate top/height in minutes, 1px = 1min, 1h = 60px
+                                const startMinutes = start.getHours() * 60 + start.getMinutes();
+                                const endMinutes = end.getHours() * 60 + end.getMinutes();
+                                const top = (startMinutes / 60) * 48;
+                                const height = Math.max(((endMinutes - startMinutes) / 60) * 48, 15); // at least 15px
                                 return (
                                     <div
                                         key={i}
-                                        className="event-block-combined"
+                                        className="event-block-combined event-absolute"
                                         style={{
                                             backgroundColor: event.event_color || "#2196f3",
                                             position: "absolute",
-                                            top: `${startHour * 48}px`,
-                                            height: `${(endHour - startHour + (end.getMinutes() > 0 ? 1 : 0)) * 48}px`,
-                                            left: 0,
-                                            right: 0,
+                                            top: `${top}px`,
+                                            height: `${height}px`,
+                                            left: '5%',
+                                            right: '5%',
                                             zIndex: 2,
                                             display: "flex",
                                             flexDirection: "column",
                                             justifyContent: "center",
                                             alignItems: "center",
-                                            overflow: "hidden"
+                                            overflow: "hidden",
+                                            width: '90%'
                                         }}
                                         onClick={e => {
                                             setMiniPopupEvent(event);

@@ -1,3 +1,4 @@
+
 import "./daily.css"
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from 'react-router-dom'
@@ -62,20 +63,17 @@ export function DailyView(){
         }
     };
 
-    const getEventsForHour = (hour) => {
+    // Get all events for the current day
+    const getEventsForDay = () => {
         const dateStr = currentDay.toISOString().split('T')[0];
         return events.filter(event => {
             const startTime = new Date(event.event_start_time);
-            const endTime = new Date(event.event_end_time);
             const eventDateStr = startTime.toISOString().split('T')[0];
-            if (eventDateStr !== dateStr) return false;
-            const startHour = startTime.getHours();
-            const endHour = endTime.getHours();
-            const endMinutes = endTime.getMinutes();
-            return hour >= startHour && (hour < endHour || (hour === endHour && endMinutes === 0));
+            return eventDateStr === dateStr;
         });
     };
 
+    // For timeline labels
     const generateTimeSlots = () => {
         const slots = [];
         for (let hour = 0; hour < 24; hour++) {
@@ -83,7 +81,6 @@ export function DailyView(){
         }
         return slots;
     };
-    
     const timeSlots = generateTimeSlots();
 
     const dateString = currentDay.toLocaleDateString('hu-HU', { 
@@ -116,7 +113,6 @@ export function DailyView(){
                             checked={window.location.pathname.includes('weekly') || window.location.pathname.includes('combined')} 
                             onChange={() => navigate('/calendar/weekly')} />
                         <label htmlFor="view-week">Hét</label>
-
                         {!isMobile && (
                             <>
                                 <input type="radio" id="view-day" name="view" 
@@ -128,54 +124,63 @@ export function DailyView(){
                         <div className="switch-slider"></div>
                     </div>
             </div>
-            <div className="hour-list-div">
-                {timeSlots.map((time, index) => {
-                    const hourEvents = getEventsForHour(index);
+            <div className="day-timeline" style={{ position: 'relative', height: '1440px', width: '100%', margin: '0 auto' }}>
+                {/* Hour labels */}
+                {timeSlots.map((time, idx) => (
+                    <div key={time} style={{
+                        position: 'absolute',
+                        top: `${idx * 60}px`,
+                        left: 0,
+                        width: '100%',
+                        height: '1px',
+                        borderTop: '1px solid #e5e7eb',
+                        zIndex: 1
+                    }}>
+                        <span style={{ position: 'absolute', left: 0, top: '-10px', width: '80px', color: '#666', fontSize: '0.9rem', background: 'white', zIndex: 2 }}>{time}</span>
+                    </div>
+                ))}
+                {/* Events absolute positioned */}
+                {getEventsForDay().map((event, idx) => {
+                    const startTime = new Date(event.event_start_time);
+                    const endTime = new Date(event.event_end_time);
+                    const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
+                    const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
+                    const top = startMinutes;
+                    const height = Math.max(endMinutes - startMinutes, 15); // at least 15px
                     return (
-                        <div key={index} className="hour-slot" onClick={() => handleHourClick(index)}>
-                            <span className="time-label">{time}</span>
-                            <div className="time-content">
-                                {hourEvents.map((event, eventIdx) => {
-                                    const startTime = new Date(event.event_start_time);
-                                    const endTime = new Date(event.event_end_time);
-                                    const startHour = startTime.getHours();
-                                    const endHour = endTime.getHours();
-                                    const duration = endHour - startHour + (endTime.getMinutes() > 0 ? 1 : 0);
-                                    if (index === startHour) {
-                                        return (
-                                            <div
-                                                key={eventIdx}
-                                                className="event-block-daily"
-                                                style={{
-                                                    backgroundColor: event.event_color || '#0090ff',
-                                                    height: `${duration * 48}px`,
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                    overflow: 'hidden'
-                                                }}
-                                                onClick={e => {
-                                                    setSelectedHour(index);
-                                                    setShowEventPopup(true);
-                                                }}
-                                            >
-                                                <div className="event-name">{event.event_name}</div>
-                                                <div className="event-time">
-                                                    {startTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })} - 
-                                                    {endTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
-                                                </div>
-                                            </div>
-                                        );
-                                    }
-                                    return null;
-                                })}
+                        <div
+                            key={idx}
+                            className="event-block-daily event-absolute"
+                            style={{
+                                top: `${top}px`,
+                                height: `${height}px`,
+                                left: '90px',
+                                right: '10px',
+                                backgroundColor: event.event_color || '#0090ff',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                overflow: 'hidden',
+                                zIndex: 10,
+                                cursor: 'pointer',
+                                position: 'absolute',
+                                width: 'calc(100% - 110px)'
+                            }}
+                            onClick={e => {
+                                setSelectedHour(startTime.getHours());
+                                setShowEventPopup(true);
+                            }}
+                        >
+                            <div className="event-name">{event.event_name}</div>
+                            <div className="event-time">
+                                {startTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })} -
+                                {endTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
                             </div>
                         </div>
                     );
                 })}
             </div>
-
             <EventPopup
                 isOpen={showEventPopup}
                 onClose={() => setShowEventPopup(false)}
