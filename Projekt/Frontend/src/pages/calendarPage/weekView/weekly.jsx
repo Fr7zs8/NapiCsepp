@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
+import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 import { activityService } from "../../../router/apiRouter";
 
 export function WeeklyView(){
@@ -13,7 +14,8 @@ export function WeeklyView(){
     const [selectedHour, setSelectedHour] = useState(null);
     const [events, setEvents] = useState([]);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
-
+    const [editingEvent, setEditingEvent] = useState(null);
+    const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
 
     useEffect(() => {
         fetchEvents();
@@ -52,19 +54,46 @@ export function WeeklyView(){
         });
     };
 
-    const handleCellClick = (date, hour) => {
-        setSelectedDate(date);
-        setSelectedHour(hour);
-        setShowEventPopup(true);
+    const handleCellClick = (date, hour, e) => {
+        const cellEvents = getEventsForCell(date, hour);
+        if (cellEvents.length > 0) {
+            setMiniPopup({ show: true, event: cellEvents[0], position: { x: e.clientX, y: e.clientY } });
+        } else {
+            setSelectedDate(date);
+            setSelectedHour(hour);
+            setEditingEvent(null);
+            setShowEventPopup(true);
+        }
     };
 
     const handleSaveEvent = async (eventData) => {
         try {
-            await activityService.createEvent(eventData);
+            if (editingEvent) {
+                await activityService.updateEvent(editingEvent.id, eventData);
+            } else {
+                await activityService.createEvent(eventData);
+            }
             fetchEvents();
+            setShowEventPopup(false);
+            setEditingEvent(null);
         } catch (err) {
-            console.error("Error creating event:", err);
-            alert("Hiba történt az esemény létrehozása során!");
+            alert("Hiba történt az esemény mentésekor!");
+        }
+    };
+
+    const handleEditEvent = (event) => {
+        setEditingEvent(event);
+        setShowEventPopup(true);
+        setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
+    };
+
+    const handleDeleteEvent = async (eventId) => {
+        try {
+            await activityService.deleteEvent(eventId);
+            fetchEvents();
+            setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
+        } catch (err) {
+            alert("Hiba történt az esemény törlésekor!");
         }
     };
 
@@ -174,28 +203,32 @@ export function WeeklyView(){
                                     </div>
                                     {/* Hour lines, skip if event covers this hour */}
                                     {timeSlots.map((_, timeIndex) => {
-                                        // Move all lines one hour forward
-                                        const hour = timeIndex + 1;
+                                        // Use 0-based hour indexing
+                                        const hour = timeIndex;
                                         // Check if any event covers this hour
                                         const isCovered = dayEvents.some(event => {
                                             const startTime = new Date(event.event_start_time);
                                             const endTime = new Date(event.event_end_time);
-                                            const startMinutes = (startTime.getHours() + 1) * 60 + startTime.getMinutes();
-                                            const endMinutes = (endTime.getHours() + 1) * 60 + endTime.getMinutes();
+                                            const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
+                                            const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
                                             const slotStart = hour * 60;
                                             return slotStart >= startMinutes && slotStart < endMinutes;
                                         });
                                         if (isCovered) return null;
                                         return (
-                                            <div key={timeIndex} style={{
-                                                position: 'absolute',
-                                                top: `${hour * 60}px`,
-                                                left: 0,
-                                                width: '100%',
-                                                height: '1px',
-                                                borderTop: '1px solid #e5e7eb',
-                                                zIndex: 1
-                                            }} />
+                                            <div
+                                                key={timeIndex}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: `${hour * 60}px`,
+                                                    left: 0,
+                                                    width: '100%',
+                                                    height: '1px',
+                                                    borderTop: '1px solid #e5e7eb',
+                                                    zIndex: 1
+                                                }}
+                                                onClick={e => handleCellClick(day.fullDate, hour, e)}
+                                            />
                                         );
                                     })}
                                     {/* Events absolute positioned, all moved one hour forward */}
@@ -227,9 +260,8 @@ export function WeeklyView(){
                                                     width: '90%'
                                                 }}
                                                 onClick={e => {
-                                                    setSelectedDate(day.fullDate);
-                                                    setSelectedHour(startTime.getHours());
-                                                    setShowEventPopup(true);
+                                                    e.stopPropagation();
+                                                    setMiniPopup({ show: true, event, position: { x: e.clientX, y: e.clientY } });
                                                 }}
                                             >
                                                 <div className="event-name">{event.event_name}</div>
@@ -250,11 +282,21 @@ export function WeeklyView(){
 
             <EventPopup
                 isOpen={showEventPopup}
-                onClose={() => setShowEventPopup(false)}
+                onClose={() => { setShowEventPopup(false); setEditingEvent(null); }}
                 onSave={handleSaveEvent}
                 selectedDate={selectedDate}
                 selectedHour={selectedHour}
+                existingEvent={editingEvent}
             />
+            {miniPopup.show && (
+                <EventMiniPopup
+                    event={miniPopup.event}
+                    position={miniPopup.position}
+                    onEdit={handleEditEvent}
+                    onDelete={handleDeleteEvent}
+                    onClose={() => setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } })}
+                />
+            )}
         </section>
     )
 }

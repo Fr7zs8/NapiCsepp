@@ -1,10 +1,10 @@
-
 import "./daily.css"
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from "react";
 import { activityService } from "../../../router/apiRouter";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
+import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 
 export function DailyView(){
     const navigate = useNavigate();
@@ -14,6 +14,8 @@ export function DailyView(){
     const [showEventPopup, setShowEventPopup] = useState(false);
     const [selectedHour, setSelectedHour] = useState(null);
     const [events, setEvents] = useState([]);
+    const [editingEvent, setEditingEvent] = useState(null);
+    const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
 
     useEffect(() => {
         const handleResize = () => {
@@ -48,18 +50,49 @@ export function DailyView(){
         });
     };
 
-    const handleHourClick = (hour) => {
-        setSelectedHour(hour);
-        setShowEventPopup(true);
+    const handleHourClick = (hour, e) => {
+        // Check if there is an event at this hour
+        const cellEvents = getEventsForDay().filter(event => {
+            const startTime = new Date(event.event_start_time);
+            return startTime.getHours() === hour;
+        });
+        if (cellEvents.length > 0) {
+            setMiniPopup({ show: true, event: cellEvents[0], position: { x: e.clientX, y: e.clientY } });
+        } else {
+            setSelectedHour(hour);
+            setEditingEvent(null);
+            setShowEventPopup(true);
+        }
     };
 
     const handleSaveEvent = async (eventData) => {
         try {
-            await activityService.createEvent(eventData);
+            if (editingEvent) {
+                await activityService.updateEvent(editingEvent.id, eventData);
+            } else {
+                await activityService.createEvent(eventData);
+            }
             fetchEvents();
+            setShowEventPopup(false);
+            setEditingEvent(null);
         } catch (err) {
-            console.error("Error creating event:", err);
-            alert("Hiba történt az esemény létrehozása során!");
+            alert("Hiba történt az esemény mentésekor!");
+        }
+    };
+
+    const handleEditEvent = (event) => {
+        setEditingEvent(event);
+        setShowEventPopup(true);
+        setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
+    };
+
+    const handleDeleteEvent = async (eventId) => {
+        try {
+            await activityService.deleteEvent(eventId);
+            fetchEvents();
+            setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
+        } catch (err) {
+            alert("Hiba történt az esemény törlésekor!");
         }
     };
 
@@ -135,7 +168,9 @@ export function DailyView(){
                         height: '1px',
                         borderTop: '1px solid #e5e7eb',
                         zIndex: 1
-                    }}>
+                    }}
+                        onClick={e => handleHourClick(idx, e)}
+                    >
                         <span style={{ position: 'absolute', left: 0, top: '-10px', width: '80px', color: '#666', fontSize: '0.9rem', background: 'white', zIndex: 2 }}>{time}</span>
                     </div>
                 ))}
@@ -168,8 +203,8 @@ export function DailyView(){
                                 width: 'calc(100% - 110px)'
                             }}
                             onClick={e => {
-                                setSelectedHour(startTime.getHours());
-                                setShowEventPopup(true);
+                                e.stopPropagation();
+                                setMiniPopup({ show: true, event, position: { x: e.clientX, y: e.clientY } });
                             }}
                         >
                             <div className="event-name">{event.event_name}</div>
@@ -183,11 +218,21 @@ export function DailyView(){
             </div>
             <EventPopup
                 isOpen={showEventPopup}
-                onClose={() => setShowEventPopup(false)}
+                onClose={() => { setShowEventPopup(false); setEditingEvent(null); }}
                 onSave={handleSaveEvent}
                 selectedDate={currentDay}
                 selectedHour={selectedHour}
+                existingEvent={editingEvent}
             />
+            {miniPopup.show && (
+                <EventMiniPopup
+                    event={miniPopup.event}
+                    position={miniPopup.position}
+                    onEdit={handleEditEvent}
+                    onDelete={handleDeleteEvent}
+                    onClose={() => setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } })}
+                />
+            )}
         </section>
     )
 }

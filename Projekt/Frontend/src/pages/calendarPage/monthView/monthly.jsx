@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 import { activityService } from "../../../router/apiRouter";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
+import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 import { eventService } from "../../../router/apiRouter";
 
 export function MonthlyView(){
@@ -11,7 +12,10 @@ export function MonthlyView(){
 
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [showEventPopup, setShowEventPopup] = useState(false);
+    const [showDayEventsPopup, setShowDayEventsPopup] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [dayEvents, setDayEvents] = useState([]);
+    const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
     const [events, setEvents] = useState([]);
     const [activities, setActivities] = useState([]);
     const [habits, setHabits] = useState([]);
@@ -62,24 +66,67 @@ export function MonthlyView(){
 
     const handleDayClick = (day, isCurrentMonth) => {
         if (!isCurrentMonth) return;
-        
         const year = currentMonth.getFullYear();
         const month = currentMonth.getMonth();
         const clickedDate = new Date(year, month, day);
-        
         setSelectedDate(clickedDate);
+        // Find all events for this day
+        const dateStr = clickedDate.toISOString().split('T')[0];
+        const eventsForDay = events.filter(e => {
+            const eventDate = new Date(e.event_start_time).toISOString().split('T')[0];
+            return eventDate === dateStr;
+        });
+        setDayEvents(eventsForDay);
+        setShowDayEventsPopup(true);
+    };
+    const handleAddEvent = () => {
+        setShowDayEventsPopup(false);
         setShowEventPopup(true);
     };
 
-    const handleSaveEvent = async (eventData) => {
+    const handleEditEvent = (event) => {
+        setShowDayEventsPopup(false);
+        setShowEventPopup(true);
+        setEditingEvent(event);
+    };
+
+    const handleDeleteEvent = async (eventId) => {
         try {
-            await eventService.createEvent(eventData);
+            await eventService.deleteEvent(eventId);
             fetchData();
+            setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
+            setShowDayEventsPopup(false);
         } catch (err) {
-            console.error("Error creating event:", err);
-            alert("Hiba történt az esemény létrehozása során!");
+            alert("Hiba történt az esemény törlésekor!");
         }
     };
+
+    const [editingEvent, setEditingEvent] = useState(null);
+
+    const handleSaveEvent = async (eventData) => {
+        try {
+            if (editingEvent) {
+                await eventService.updateEvent(editingEvent.id, eventData);
+            } else {
+                await eventService.createEvent(eventData);
+            }
+            fetchData();
+            setShowEventPopup(false);
+            setEditingEvent(null);
+        } catch (err) {
+            alert("Hiba történt az esemény mentésekor!");
+        }
+    };
+    const handleEventClick = (event, e) => {
+        e.stopPropagation();
+        setMiniPopup({
+            show: true,
+            event,
+            position: { x: e.clientX, y: e.clientY }
+        });
+    };
+
+    const closeMiniPopup = () => setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
 
     const getCountsForDay = (day, isCurrentMonth) => {
         if (!isCurrentMonth) return { events: 0, tasks: 0, habits: 0 };
@@ -242,11 +289,51 @@ export function MonthlyView(){
                 </div>
             </div>
 
+            {/* Popup for listing all events on a day */}
+            {showDayEventsPopup && (
+                <div className="popup-overlay" onClick={() => setShowDayEventsPopup(false)}>
+                    <div className="popup-content" onClick={e => e.stopPropagation()} style={{ minWidth: 320 }}>
+                        <div className="popup-header">
+                            <h2>Események ezen a napon</h2>
+                            <button className="close-btn" onClick={() => setShowDayEventsPopup(false)}>×</button>
+                        </div>
+                        <div className="popup-list">
+                            {dayEvents.length === 0 ? (
+                                <p>Nincs esemény ezen a napon.</p>
+                            ) : (
+                                dayEvents.map(ev => (
+                                    <div key={ev.id} className="popup-event-row" onClick={e => handleEventClick(ev, e)}>
+                                        <span>{ev.event_name}</span>
+                                        <span style={{ fontSize: '0.9em', color: '#888' }}>{new Date(ev.event_start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(ev.event_end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                        <div className="popup-actions">
+                            <button className="btn-save" onClick={handleAddEvent}>Új esemény hozzáadása</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Mini popup for edit/delete */}
+            {miniPopup.show && (
+                <EventMiniPopup
+                    event={miniPopup.event}
+                    position={miniPopup.position}
+                    onEdit={handleEditEvent}
+                    onDelete={handleDeleteEvent}
+                    onClose={closeMiniPopup}
+                />
+            )}
+
+            {/* Main event create/edit popup */}
             <EventPopup
                 isOpen={showEventPopup}
-                onClose={() => setShowEventPopup(false)}
+                onClose={() => { setShowEventPopup(false); setEditingEvent(null); }}
                 onSave={handleSaveEvent}
                 selectedDate={selectedDate}
+                existingEvent={editingEvent}
             />
         </section>
     )

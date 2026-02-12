@@ -162,6 +162,11 @@
 .day-column {
     flex: 1;
     min-width: 100px;
+    border-left: 1px solid #e0e0e0;
+}
+
+.day-column:first-child {
+    border-left: none;
 }
 
 .day-header-cell {

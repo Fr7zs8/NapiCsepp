@@ -4,6 +4,39 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 import { eventService } from "../../../router/apiRouter";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
+import { EventPopup } from "../../../components/EventPopup/EventPopup";
+
+function EventsListPopup({ events, onClose, date }) {
+    return (
+        <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.3)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        }} onClick={onClose}>
+            <div style={{ background: 'white', borderRadius: 12, padding: 32, minWidth: 320, maxWidth: 400, boxShadow: '0 4px 24px rgba(0,0,0,0.15)' }} onClick={e => e.stopPropagation()}>
+                <h2 style={{marginTop:0, marginBottom:16}}>Események: {date && date.toLocaleDateString('hu-HU')}</h2>
+                {events.length === 0 ? <div>Nincs esemény.</div> : (
+                    <ul style={{listStyle:'none',padding:0,margin:0}}>
+                        {events.map((ev, idx) => (
+                            <li key={idx} style={{marginBottom:16, background:'#e3f2fd', borderRadius:8, padding:12}}>
+                                <div style={{fontWeight:'bold'}}>{ev.event_name}</div>
+                                <div>{new Date(ev.event_start_time).toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})} - {new Date(ev.event_end_time).toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})}</div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                <button style={{marginTop:16}} onClick={onClose}>Bezár</button>
+            </div>
+        </div>
+    );
+}
 
 export function CombinedView(){
     const navigate = useNavigate();
@@ -14,11 +47,40 @@ export function CombinedView(){
 
     const [miniPopupEvent, setMiniPopupEvent] = useState(null);
     const [miniPopupPosition, setMiniPopupPosition] = useState({ x: 0, y: 0 });
+    const [showEventPopup, setShowEventPopup] = useState(false);
+    const [editingEvent, setEditingEvent] = useState(null);
+    const [selectedHour, setSelectedHour] = useState(null);
+    const [showEventsList, setShowEventsList] = useState(false);
+    const [eventsListForDay, setEventsListForDay] = useState([]);
+    const [eventsListDate, setEventsListDate] = useState(null);
     const handleEditEvent = (event) => {
+        setEditingEvent(event);
+        setShowEventPopup(true);
         setMiniPopupEvent(null);
     };
-    const handleDeleteEvent = (eventId) => {
-        setMiniPopupEvent(null);
+    const handleDeleteEvent = async (eventId) => {
+        try {
+            await eventService.deleteEvent(eventId);
+            fetchEvents();
+            setMiniPopupEvent(null);
+        } catch (err) {
+            alert("Hiba történt az esemény törlésekor!");
+        }
+    };
+
+    const handleSaveEvent = async (eventData) => {
+        try {
+            if (editingEvent) {
+                await eventService.updateEvent(editingEvent.id, eventData);
+            } else {
+                await eventService.createEvent(eventData);
+            }
+            fetchEvents();
+            setShowEventPopup(false);
+            setEditingEvent(null);
+        } catch (err) {
+            alert("Hiba történt az esemény mentésekor!");
+        }
     };
     useEffect(() => {
         const handleResize = () => {
@@ -110,6 +172,15 @@ export function CombinedView(){
 
     const handleDaySelect = (fullDate) => {
         setSelectedDay(new Date(fullDate));
+        // Show popup with all events for this day
+        const dateStr = new Date(fullDate).toISOString().split('T')[0];
+        const dayEvents = events.filter(ev => {
+            const evDate = new Date(ev.event_start_time).toISOString().split('T')[0];
+            return evDate === dateStr;
+        });
+        setEventsListForDay(dayEvents);
+        setEventsListDate(new Date(fullDate));
+        setShowEventsList(true);
     };
 
     const today = new Date();
@@ -146,6 +217,9 @@ export function CombinedView(){
                     onDelete={handleDeleteEvent}
                     onClose={() => setMiniPopupEvent(null)}
                 />
+            )}
+            {showEventsList && (
+                <EventsListPopup events={eventsListForDay} date={eventsListDate} onClose={() => setShowEventsList(false)} />
             )}
             <div className="header-div">
                 <div className="navigation-buttons">
@@ -228,10 +302,37 @@ export function CombinedView(){
                         </div>
                         {/* Event timeline column */}
                         <div style={{ position: "relative", height: `${timeSlots.length * 48}px`, flex: 1 }}>
-                            {/* Hour lines */}
-                            {timeSlots.map((_, index) => (
-                                <div key={index} style={{ position: "absolute", top: `${index * 48}px`, left: 0, width: "100%", height: 1, borderTop: "1px solid #e0e0e0", zIndex: 1 }} />
-                            ))}
+                            {/* Hour lines and click for new event */}
+                            {timeSlots.map((_, index) => {
+                                const hour = index;
+                                // Check if any event covers this hour
+                                const hourEvents = events.filter(event => {
+                                    const start = new Date(event.event_start_time);
+                                    const end = new Date(event.event_end_time);
+                                    const eventDate = start.toISOString().split('T')[0];
+                                    if (eventDate !== selectedDay.toISOString().split('T')[0]) return false;
+                                    const startHour = start.getHours();
+                                    const endHour = end.getHours();
+                                    const endMinutes = end.getMinutes();
+                                    return hour >= startHour && (hour < endHour || (hour === endHour && endMinutes === 0));
+                                });
+                                return (
+                                    <div
+                                        key={index}
+                                        style={{ position: "absolute", top: `${index * 48}px`, left: 0, width: "100%", height: 1, borderTop: "1px solid #e0e0e0", zIndex: 1 }}
+                                        onClick={e => {
+                                            if (hourEvents.length === 0) {
+                                                setEditingEvent(null);
+                                                setSelectedHour(hour);
+                                                setShowEventPopup(true);
+                                            } else {
+                                                setMiniPopupEvent(hourEvents[0]);
+                                                setMiniPopupPosition({ x: e.clientX, y: e.clientY });
+                                            }
+                                        }}
+                                    />
+                                );
+                            })}
                             {/* Render event blocks spanning all hours */}
                             {events.map((event, i) => {
                                 const start = new Date(event.event_start_time);
@@ -263,6 +364,7 @@ export function CombinedView(){
                                             width: '90%'
                                         }}
                                         onClick={e => {
+                                            e.stopPropagation();
                                             setMiniPopupEvent(event);
                                             setMiniPopupPosition({ x: e.clientX, y: e.clientY });
                                         }}
@@ -277,6 +379,14 @@ export function CombinedView(){
                                 );
                             })}
                         </div>
+                                <EventPopup
+                                    isOpen={showEventPopup}
+                                    onClose={() => { setShowEventPopup(false); setEditingEvent(null); }}
+                                    onSave={handleSaveEvent}
+                                    selectedDate={selectedDay}
+                                    selectedHour={selectedHour}
+                                    existingEvent={editingEvent}
+                                />
                     </div>
 
                 </div>
