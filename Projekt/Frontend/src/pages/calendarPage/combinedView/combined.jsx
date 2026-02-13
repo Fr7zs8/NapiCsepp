@@ -290,13 +290,12 @@ export function CombinedView(){
                     </div>
                 </div>
 
-                {/* Daily schedule - right */}
+              
                 <div className="daily-schedule-div">
                     <div className="schedule-header">
                         {selectedDayString}
                     </div>
                     <div className="time-slots" style={{ display: 'flex', flexDirection: 'row' }}>
-                        {/* Hour label column */}
                         <div style={{ width: 60, position: 'relative' }}>
                             {timeSlots.map((time, index) => (
                                 <div key={index} style={{ height: 48, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', borderBottom: '1px solid #e0e0e0', color: '#666', fontSize: '0.9em', paddingRight: 8 }}>
@@ -304,14 +303,11 @@ export function CombinedView(){
                                 </div>
                             ))}
                         </div>
-                        {/* Event timeline column */}
                         <div style={{ position: "relative", height: `${timeSlots.length * 48}px`, flex: 1 }}>
-                            {/* Hour lines and click for new event */}
                             {timeSlots.map((_, index) => {
                                 const hour = index;
                                 return (
                                     <>
-                                        {/* Hour line (border) */}
                                         <div
                                             key={`line-${index}`}
                                             style={{
@@ -324,7 +320,6 @@ export function CombinedView(){
                                                 zIndex: 1
                                             }}
                                         />
-                                        {/* Transparent overlay for click */}
                                         <div
                                             key={`overlay-${index}`}
                                             style={{
@@ -347,17 +342,15 @@ export function CombinedView(){
                                     </>
                                 );
                             })}
-                            {/* Render event blocks spanning all hours */}
                             {events.map((event, i) => {
                                 const start = new Date(event.event_start_time);
                                 const end = new Date(event.event_end_time);
                                 const dateStr = start.toISOString().split('T')[0];
                                 if (dateStr !== selectedDay.toISOString().split('T')[0]) return null;
-                                // Calculate top/height in minutes, 1px = 1min, 1h = 60px
                                 const startMinutes = start.getHours() * 60 + start.getMinutes();
                                 const endMinutes = end.getHours() * 60 + end.getMinutes();
                                 const top = (startMinutes / 60) * 48;
-                                const height = Math.max(((endMinutes - startMinutes) / 60) * 48, 15); // at least 15px
+                                const height = Math.max(((endMinutes - startMinutes) / 60) * 48, 15); 
                                 return (
                                     <div
                                         key={i}

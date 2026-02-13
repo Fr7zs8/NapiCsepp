@@ -51,7 +51,6 @@ export function DailyView(){
     };
 
     const handleHourClick = (hour, e) => {
-        // Check if there is an event at this hour (minute-precise)
         const cellEvents = getEventsForDay().filter(event => {
             const startTime = new Date(event.event_start_time);
             const endTime = new Date(event.event_end_time);
@@ -110,7 +109,6 @@ export function DailyView(){
         });
     };
 
-    // For timeline labels
     const generateTimeSlots = () => {
         const slots = [];
         for (let hour = 0; hour < 24; hour++) {
@@ -162,7 +160,7 @@ export function DailyView(){
                     </div>
             </div>
             <div className="day-timeline" style={{ position: 'relative', height: '1440px', width: '100%', margin: '0 auto' }}>
-                {/* Hour labels and overlay for event creation */}
+                
                 {timeSlots.map((time, idx) => (
                     <>
                         {/* Hour line (border) */}
@@ -177,7 +175,7 @@ export function DailyView(){
                         }}>
                             <span style={{ position: 'absolute', left: 0, top: '-10px', width: '80px', color: '#666', fontSize: '0.9rem', background: 'white', zIndex: 2 }}>{time}</span>
                         </div>
-                        {/* Transparent overlay for click */}
+                        
                         <div key={`overlay-${time}`} style={{
                             position: 'absolute',
                             top: `${idx * 60}px`,
@@ -195,14 +193,13 @@ export function DailyView(){
                         />
                     </>
                 ))}
-                {/* Events absolute positioned */}
                 {getEventsForDay().map((event, idx) => {
                     const startTime = new Date(event.event_start_time);
                     const endTime = new Date(event.event_end_time);
                     const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
                     const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
                     const top = startMinutes;
-                    const height = Math.max(endMinutes - startMinutes, 15); // at least 15px
+                    const height = Math.max(endMinutes - startMinutes, 15); 
                     return (
                         <div
                             key={idx}

@@ -40,7 +40,7 @@ export default class ApiService{
         const response = await fetch(`${this.baseUrl}${endpoint}`, {
             method: "POST",
             headers: await this._getHeaders(),
-            body: JSON.stringify(data) // Adatok küldése JSON formátumban
+            body: JSON.stringify(data) 
         });
         return this._handleResponse(response);
     }

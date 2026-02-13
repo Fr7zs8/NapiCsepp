@@ -68,10 +68,8 @@ export function MonthlyView(){
         if (!isCurrentMonth) return;
         const year = currentMonth.getFullYear();
         const month = currentMonth.getMonth();
-        // Use local time, not UTC, to avoid off-by-one errors
         const clickedDate = new Date(year, month, day);
         setSelectedDate(clickedDate);
-        // Use local date string for comparison (YYYY-MM-DD)
         const dateStr = clickedDate.toLocaleDateString('en-CA');
         const eventsForDay = events.filter(e => {
             const eventDate = new Date(e.event_start_time).toLocaleDateString('en-CA');
@@ -134,7 +132,6 @@ export function MonthlyView(){
 
         const year = currentMonth.getFullYear();
         const month = currentMonth.getMonth();
-        // Use local date string (YYYY-MM-DD) to match popup logic
         const dateStr = new Date(year, month, day).toLocaleDateString('en-CA');
 
         const eventCount = events.filter(e => {
@@ -145,9 +142,7 @@ export function MonthlyView(){
         const taskCount = activities.filter(a => {
             const startDate = a.activity_start_date || a.activity_date || a.date;
             if (!startDate) return false;
-            // Use UTC string for tasks as before
             const actDate = new Date(startDate + 'T00:00:00').toISOString().split('T')[0];
-            // Convert dateStr (local) to UTC for comparison
             const checkDate = new Date(dateStr + 'T00:00:00').toISOString().split('T')[0];
             return actDate === checkDate;
         }).length;
@@ -293,7 +288,6 @@ export function MonthlyView(){
                 </div>
             </div>
 
-            {/* Popup for listing all events on a day */}
             {showDayEventsPopup && (
                 <div className="popup-overlay" onClick={() => setShowDayEventsPopup(false)}>
                     <div className="popup-content" onClick={e => e.stopPropagation()} style={{ minWidth: 320 }}>
@@ -322,7 +316,6 @@ export function MonthlyView(){
                 </div>
             )}
 
-            {/* Mini popup for edit/delete */}
             {miniPopup.show && (
                 <EventMiniPopup
                     event={miniPopup.event}
@@ -333,7 +326,6 @@ export function MonthlyView(){
                 />
             )}
 
-            {/* Main event create/edit popup */}
             <EventPopup
                 isOpen={showEventPopup}
                 onClose={() => { setShowEventPopup(false); setEditingEvent(null); }}

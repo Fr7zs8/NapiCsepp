@@ -13,9 +13,7 @@ export default class Habit {
     this.habitName = habitName;
     this.typeName = typeName;
     this.difficultyName = difficultyName;
-    // ensure numeric
     this.targetDays = targetDays ? Number(targetDays) : 0;
-    // normalize startDate to YYYY-MM-DD when possible
     try {
       const d = new Date(startDate);
       if (!Number.isNaN(d.getTime())) {
@@ -26,18 +24,14 @@ export default class Habit {
     } catch (e) {
       this.startDate = startDate;
     }
-    // optional: number of checked days (used for progress calculation)
     this.checkedDays = checkedDays;
-    // store endDate and compute totalDays between start and end
     try {
       const ed = new Date(endDate);
       const sd = new Date(this.startDate);
       if (!Number.isNaN(ed.getTime()) && !Number.isNaN(sd.getTime())) {
-        // normalize endDate
         this.endDate = ed.toISOString().split("T")[0];
         const diffTime = ed.setHours(0,0,0,0) - sd.setHours(0,0,0,0);
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        // include both start and end -> +1
         this.totalDays = Math.max(0, diffDays + 1);
       } else {
         this.endDate = endDate;
@@ -50,7 +44,6 @@ export default class Habit {
   }
 
   getDaysElapsed() {
-    // if checkedDays provided, use it (progress based on checked tasks)
     if (this.checkedDays !== null && !Number.isNaN(Number(this.checkedDays))) {
       return Math.max(0, Number(this.checkedDays));
     }
