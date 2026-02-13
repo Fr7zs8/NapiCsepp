@@ -1,4 +1,5 @@
-/* Popup overlay and content for monthly view event list */
+
+
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -133,10 +134,16 @@
 .navigation-buttons button {
     padding: 0.5rem 1rem;
     color: #2d2d2d;
-    background: #bdbaba;
-    border: 1px solid #9a9999;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
     cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.navigation-buttons button:hover {
+    background: #eef2f7;
+    border-color: #d1d5db;
 }
 
 .info-text-div p {
@@ -148,10 +155,10 @@
 .view-switch-small {
     position: relative;
     display: flex;
-    background: #fff;
+    background: #f8fafc;
     border-radius: 8px;
     padding: 4px;
-    border: 1px solid #ddd;
+    border: 1px solid #e5e7eb;
     min-width: 180px;
 }
 
@@ -176,6 +183,7 @@
     border-radius: 6px;
     transition: all 0.3s ease;
     z-index: 1;
+    background: #22c55e;
 }
 
 .view-switch-small:not(.is-mobile) .switch-slider {
@@ -207,8 +215,7 @@
 }
 
 .view-switch-small input:checked + label {
-    color: darkgoldenrod;
-    background-color: #292951;
+    color: #fff;
     border-radius: 7px;
 }
 
@@ -226,22 +233,47 @@
 
 .month-view-div {
     background: #fff;
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin: 0 auto 2rem auto;
+    max-width: 1100px;
+    border: 1px solid #e5e7eb;
+    box-shadow: none;
 }
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 1px;
-    background: #e0e0e0;
-    border: 1px solid #e0e0e0;
+    background: #e5e7eb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    min-height: 630px;
+}
+
+@media (max-width: 1200px) {
+    .month-view-div {
+        max-width: 100%;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .calendar-grid {
+        overflow-x: hidden;
+    }
+    .header-div {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .month-view-div {
+        padding: 0.75rem;
+    }
 }
 
 .day-header {
-    background: #f5f5f5;
+    background: #f8fafc;
     padding: 0.75rem;
     text-align: center;
     font-weight: 600;
@@ -258,6 +290,12 @@
     min-height: 80px;
     text-align: right;
     color: #2d2d2d;
+    transition: background 0.2s, box-shadow 0.2s;
+    min-width: 0;
+}
+
+.calendar-day:hover {
+    background: #f0f9ff;
 }
 
 .calendar-day.other-month {
@@ -269,8 +307,8 @@
 }
 
 .calendar-day.current-day {
-    background: linear-gradient(135deg, #81dabd 0%, #77c9d7 100%);
-    color: white;
+    background: linear-gradient(135deg, #9bfcbf 0%, #97bfff 100%);
+    color: #fff;
     font-weight: 600;
 }
 
@@ -278,7 +316,8 @@
     background: #fff;
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+    box-shadow: none;
 }
 
 .explanation-title {

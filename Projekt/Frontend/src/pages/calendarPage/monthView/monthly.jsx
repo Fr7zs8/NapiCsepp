@@ -164,7 +164,6 @@ export function MonthlyView(){
                                 <label htmlFor="view-day">Nap</label>
                             </>
                         )}
-                        <div className="switch-slider"></div>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,84 @@
 .tasks-section {
     padding: 2rem;
-    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
+    background: none;
+}
+
+div.task-form-div{
+    background-color: rgb(255, 255, 255);
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 7px;
+    margin: auto;
+    margin-bottom: 20px;
+}
+
+div.task-item{
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 7px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.back-row {
+    margin: 0 0 1.5rem 0;
+}
+
+.back-btn {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.6rem 1.1rem;
+    cursor: pointer;
+    color: #2d2d2d;
+}
+
+.task-checkbox {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    display: inline-grid;
+    place-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+}
+
+.task-checkbox:checked {
+    background: #22c55e;
+    border-color: #16a34a;
+}
+
+.task-checkbox:checked::after {
+    content: "";
+    width: 6px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -1px;
+}
+
+.task-item.completed {
+    opacity: 0.55;
+}
+
+.task-item.completed .edit-btn,
+.task-item.completed .delete-btn {
+    opacity: 0.6;
+    filter: saturate(0.6);
+}
+
+div.task-list-div{
+    background-color: rgb(255, 255, 255);
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 7px;
+    margin: auto;
 }
 
 .info-text-div {
@@ -86,16 +164,16 @@
 }
 
 .task-list-div {
-    background: #e3e0e0;
-    border-radius: 12px;
-    padding: 1rem;
+    background: none;
+    border-radius: 0;
+    padding: 1rem 0;
     min-height: 200px;
 }
 
 .task-item {
-    background: white;
-    border-radius: 14px;
-    padding: 1rem;
+    background: none;
+    border-radius: 0;
+    padding: 1rem 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -164,11 +242,24 @@
 }
 
 .edit-btn,
-.delete-btn {
+
+.edit-btn {
     padding: 0.5rem 1rem;
     border-radius: 10px;
     border: none;
     cursor: pointer;
+    background: #f4f6f7;
+    color: #218838;
+    border: 1px solid #ddd;
+}
+
+.delete-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    background: #d32f2f;
+    color: white;
 }
 
 .delete-btn {

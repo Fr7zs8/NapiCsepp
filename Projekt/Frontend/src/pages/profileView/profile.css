@@ -1,6 +1,8 @@
 .profile-section {
     padding: 2rem;
-    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
 }
 
 .info-text-div {
@@ -25,12 +27,13 @@
     background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
     padding: 2rem;
     border-radius: 12px;
+    border: 1px solid #e5e7eb;
     margin-bottom: 3rem;
-    color: white;
+    color: #fff;
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 .profile-avatar {
@@ -55,12 +58,14 @@
     font-size: 1.5rem;
     font-weight: 600;
     opacity: 0.95;
+    color: #fff;
 }
 
 .email {
     margin: 0;
     font-size: 0.9rem;
     opacity: 0.85;
+    color: #eafaf1;
 }
 
 .data-list-div {
@@ -74,10 +79,12 @@
 }
 
 .data-item {
-    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #3b82f6;
     padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    background: #f8fafc;
+    box-shadow: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -94,7 +101,7 @@
 }
 
 .data-icon-label svg {
-    color: #10b981;
+    color: #3b82f6;
     flex-shrink: 0;
 }
 
@@ -119,7 +126,8 @@
     background: #fff;
     padding: 2.5rem;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    box-shadow: none;
 }
 
 .stats-header {
@@ -148,9 +156,10 @@
     gap: 1.5rem;
 }
 .stat-item {
-    background: #f9f9f9;
+    background: #f8fafc;
     padding: 2rem 1.5rem;
     border-radius: 10px;
+    border: 1px solid #e5e7eb;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -163,23 +172,69 @@
     background-color: #f0f9f7;
 }
 
+.stat-item.stat-tasks {
+    background: linear-gradient(135deg, #e9d5ff 0%, #f3e5ff 100%);
+    border-left: 4px solid #a855f7;
+}
+
+.stat-item.stat-completed {
+    background: linear-gradient(135deg, #a7f3d0 0%, #d1fae5 100%);
+    border-left: 4px solid #22c55e;
+}
+
+.stat-item.stat-habits {
+    background: linear-gradient(135deg, #fbcfe8 0%, #ffe5f0 100%);
+    border-left: 4px solid #ec4899;
+}
+
+.stat-item.stat-events {
+    background: linear-gradient(135deg, #bfdbfe 0%, #dfe7ff 100%);
+    border-left: 4px solid #3b82f6;
+}
+
 .stat-icon {
-    color: #10b981;
+    color: #22c55e;
     margin-bottom: 0.5rem;
 }
 
 .stat-value {
     margin: 0;
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: 700;
-    color: #2d2d2d;
+    color: #1f2937;
+    font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;
 }
 
 .stat-label {
     margin: 0;
-    color: #999;
-    font-size: 0.9rem;
-    font-weight: 500;
+    color: #4b5563;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;
+}
+
+.stat-item.stat-tasks .data-label,
+.stat-item.stat-tasks .data-value,
+.stat-item.stat-tasks svg {
+    color: #6d28d9;
+}
+
+.stat-item.stat-completed .data-label,
+.stat-item.stat-completed .data-value,
+.stat-item.stat-completed svg {
+    color: #15803d;
+}
+
+.stat-item.stat-habits .data-label,
+.stat-item.stat-habits .data-value,
+.stat-item.stat-habits svg {
+    color: #be185d;
+}
+
+.stat-item.stat-events .data-label,
+.stat-item.stat-events .data-value,
+.stat-item.stat-events svg {
+    color: #1d4ed8;
 }
 
 @media (max-width: 1024px) {
@@ -202,6 +257,7 @@
         text-align: center;
         margin-bottom: 2rem;
         padding: 1.5rem;
+        background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
     }
 
     .data-list-div .row {

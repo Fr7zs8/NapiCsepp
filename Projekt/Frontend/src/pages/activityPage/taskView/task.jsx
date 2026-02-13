@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Task from "../../../classes/Views/task.jsx";
 import Habit from "../../../classes/Views/habit.jsx";
 import { activityService } from "../../../router/apiRouter.jsx"
+import { useNavigate } from "react-router-dom";
 
 export function TaskView(){
 
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
     const [error, setError] = useState("");
     const [difficulties, setDifficulties] = useState([]);
     const [types, setTypes] = useState([]);
@@ -299,8 +301,11 @@ export function TaskView(){
                 <p>Mai teendők</p>
                 <p>Csak az aktuális naphoz tartozó elemek láthatók.</p>
             </div>
-
+            <div className="back-row">
+                <button className="back-btn" onClick={() => navigate("/")}>Vissza a főoldalra</button>
+            </div>
             <div className="task-form-div">
+            
                 <input 
                     type="text"
                     placeholder="Feladat neve"
@@ -356,9 +361,9 @@ export function TaskView(){
                 )}
 
                 {tasks.map(task => (
-                    <div className={`task-item ${task.typeName === "Szokás" ? 'habit-task' : ''}`} key={task.taskId}>
+                    <div className={`task-item ${task.typeName === "Szokás" ? 'habit-task' : ''} ${task.isCompleted ? 'completed' : ''}`} key={task.taskId}>
                         <div className="left-section">
-                            <input type="checkbox" checked={!!task.isCompleted} onChange={() => toggleTaskAchieved(task.taskId, task.isCompleted)} />
+                            <input className="task-checkbox" type="checkbox" checked={!!task.isCompleted} onChange={() => toggleTaskAchieved(task.taskId, task.isCompleted)} />
 
                             <div className="color-bar"></div>
 

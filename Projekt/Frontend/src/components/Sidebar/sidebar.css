@@ -1,73 +1,80 @@
 .sidebar {
-    width: 220px;
+    width: 300px;
     height: 100vh;
-    background-color: #111;
-    color: #fff;
+    background: #fff;
+    color: #222;
     position: fixed;
     top: 0;
     left: 0;
     display: flex;
     flex-direction: column;
+    border-right: 1px solid #e0e0e0;
 }
 
 /* fejléc */
 .sidebar-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid #333;
+    padding: 2rem 2rem;
+    border-bottom: 1px solid #e0e0e0;
+    background: #27ae60;
+    color: #fff;
 }
 
 .sidebar-header h2 {
     margin: 0;
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #fff;
 }
 
 /* navigáció */
 .sidebar-nav {
     flex: 1;
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
 }
 
 .sidebar-link {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    color: #ccc;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    color: #222;
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
 }
 
 .sidebar-link:hover {
-    background-color: #222;
-    color: #fff;
+    background: #eafaf1;
+    color: #27ae60;
 }
 
 .sidebar-link.active {
-    background-color: #333;
+    background: #27ae60;
     color: #fff;
-    font-weight: 500;
+    font-weight: 700;
 }
 
 /* kategória cím */
 .sidebar-category {
-    padding: 1rem 1.5rem 0.25rem;
-    font-size: 0.7rem;
+    padding: 1.25rem 2rem 0.35rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    color: #777;
+    color: #bdbdbd;
 }
 
 .sidebar-divider {
     height: 1px;
-    background: #333;
+    background: #e0e0e0;
     margin: 0.5rem 0;
 }
 
 .sidebar-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #333;
-    font-size: 0.85rem;
-    color: #aaa;
+    padding: 1.25rem 2rem;
+    border-top: 1px solid #e0e0e0;
+    font-size: 1rem;
+    color: #bdbdbd;
 }
 
 
@@ -107,8 +114,8 @@
     .sidebar {
         position: fixed;
         top: 0;
-        left: -220px;
-        width: 220px;
+        left: -300px;
+        width: 300px;
         height: 100vh;
         transition: left 0.3s ease-in-out;
         z-index: 1000;

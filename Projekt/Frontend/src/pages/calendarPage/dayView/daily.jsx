@@ -151,7 +151,7 @@ export function DailyView(){
                                 <label htmlFor="view-day">Nap</label>
                             </>
                         )}
-                        <div className="switch-slider"></div>
+                        
                     </div>
             </div>
             <div className="day-timeline" style={{ position: 'relative', height: '1440px', width: '100%', margin: '0 auto' }}>

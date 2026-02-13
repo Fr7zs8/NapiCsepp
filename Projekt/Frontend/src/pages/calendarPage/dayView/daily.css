@@ -1,3 +1,15 @@
+section.day-calendar-section{
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+@media (max-width: 1200px) {
+    section.day-calendar-section {
+        max-width: 100%;
+    }
+}
+
+
 .event-block-daily {
     position: relative;
     border: none;
@@ -16,13 +28,20 @@
 .day-calendar-section {
     padding: 2rem;
     background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    overflow-x: hidden;
 }
 
 .header-div {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
 }
 
 .navigation-buttons {
@@ -31,10 +50,10 @@
 }
 
 .navigation-buttons button {
-    padding: 0.5rem 1rem;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    padding: 0.55rem 1.1rem;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
     color: #2d2d2d;
     cursor: pointer;
 }
@@ -55,10 +74,10 @@
 .view-switch-small {
     position: relative;
     display: flex;
-    background: #fff;
+    background: #f8fafc;
     border-radius: 8px;
     padding: 4px;
-    border: 1px solid #ddd;
+    border: 1px solid #e5e7eb;
     min-width: 180px;
 }
 
@@ -82,6 +101,7 @@
     border-radius: 6px;
     transition: all 0.3s ease;
     z-index: 1;
+    background: #22c55e;
 }
 
 
@@ -114,7 +134,7 @@
 
 
 .view-switch-small input:checked + label {
-    color: darkgoldenrod
+    color: #fff;
 }
 
 #view-month:checked ~ .switch-slider {
@@ -132,14 +152,16 @@
 .day-timeline {
     position: relative;
     height: 1440px; /* 24h * 60px */
-    border-left: 2px solid #e5e7eb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
     background:
         repeating-linear-gradient(
             to bottom,
-            #f9f9f9 0px,
-            #f9f9f9 59px,
-            #e5e7eb 60px
+            #ffffff 0px,
+            #ffffff 58px,
+            #eef2f7 60px
         );
+    min-width: 0;
 }
 
 .event-absolute {
@@ -168,7 +190,7 @@
 
 .hour-slot {
     display: flex;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #eef2f7;
     min-height: 80px;
 }
 
@@ -181,7 +203,7 @@
     padding: 1rem;
     font-size: 0.9rem;
     color: #666;
-    border-right: 1px solid #e5e7eb;
+    border-right: 1px solid #eef2f7;
     flex-shrink: 0;
 }
 

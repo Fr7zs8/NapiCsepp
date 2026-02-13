@@ -102,9 +102,12 @@ export function HomepageView(){
                 <p className="stat-header-text">A mai dátum: {getTodayDate()}</p>
             </div>
             <div className="progress-view-div">
-                <div>
+                <div className="progress-row">
                     <p>Mai haladás</p>
                     <span>{completionRate}%</span>
+                </div>
+                <div className="progress-bar">
+                    <div className="progress-bar-fill" style={{ width: `${completionRate}%` }}></div>
                 </div>
             </div>
             <div className="text-carousel-div">
@@ -122,19 +125,19 @@ export function HomepageView(){
                     <div className="quick-access-list-div">
                         <div className="access-div calendar" onClick={() => navigate("/calendar/monthly")}>
                             <ArrowRight className="arrow-icon"/>
-                            <Calendar/>
+                            <Calendar size={50}/>
                             <p className="access-title">Naptár</p>
                             <p className="access-desc">Események és találkozók kezelése</p>
                         </div>
                         <div className="access-div tasks" onClick={() => navigate("/tasks")}>
                             <ArrowRight className="arrow-icon"/>
-                            <SquareCheckBig/>
+                            <SquareCheckBig size={50}/>
                             <p className="access-title">Feladatok</p>
                             <p className="access-desc">Mai teendők és feladatok</p>
                         </div>
                         <div className="access-div habits" onClick={() => navigate("/habits")}>
                             <ArrowRight className="arrow-icon"/>
-                            <Target/>
+                            <Target size={50}/>
                             <p className="access-title">Szokások</p>
                             <p className="access-desc">Adj hozzá szokást megadott időtartammal. A rendszer a megadott időszak minden napjára felveszi a to-do listába.</p>
                         </div>
@@ -149,28 +152,28 @@ export function HomepageView(){
                 <p>Nézd meg a mai teljesítményedet egy pillantásra</p>
                 <div className="statistics-list-div">
                         <div className="stat-div tasks">
-                            <p className="stat-label">Összes</p>
+                            <p className="stat-label purple">Összes</p>
                             <SquareCheckBig/>
                             <p className="stat-name">Feladatok</p>
-                            <p className="stat-value">{statsObj?.totalActivities || 0} db</p>
+                            <p className="stat-value purple">{statsObj?.totalActivities || 0} db</p>
                         </div>
                         <div className="stat-div finished">
-                            <p className="stat-label">Kész</p>
+                            <p className="stat-label green">Kész</p>
                             <CircleCheck/>
                             <p className="stat-name">Befejezett</p>
-                            <p className="stat-value">{statsObj?.completedActivities || 0} / {statsObj?.totalActivities || 0}</p>
+                            <p className="stat-value green">{statsObj?.completedActivities || 0} / {statsObj?.totalActivities || 0}</p>
                         </div>
                         <div className="stat-div events">
-                            <p className="stat-label">Ma</p>
+                            <p className="stat-label blue">Ma</p>
                             <Calendar/>
                             <p className="stat-name">Események</p>
-                            <p className="stat-value">{statsObj?.monthlyEventsCount || 0} db</p>
+                            <p className="stat-value blue">{statsObj?.monthlyEventsCount || 0} db</p>
                         </div>
                         <div className="stat-div habits">
-                            <p className="stat-label">Aktív</p>
+                            <p className="stat-label pink">Aktív</p>
                             <Target/>
                             <p className="stat-name">Szokások</p>
-                            <p className="stat-value">{statsObj?.getExtra('activeHabitsCount') || 0} db</p>
+                            <p className="stat-value pink">{statsObj?.getExtra('activeHabitsCount') || 0} db</p>
                         </div>
                     </div>
             </section>

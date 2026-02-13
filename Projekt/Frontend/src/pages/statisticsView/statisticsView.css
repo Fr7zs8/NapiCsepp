@@ -1,6 +1,8 @@
 .statistics-section {
     padding: 2rem;
-    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
 }
 
 .saved-flash {
@@ -39,10 +41,26 @@
     margin-bottom: 2rem;
 }
 
+@media (max-width: 1200px) {
+    .counters-div {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .counters-div {
+        grid-template-columns: 1fr;
+    }
+    .statistics-section {
+        padding: 1.25rem;
+    }
+}
+
 .counter-div {
-    background: #fff;
+    background: #f8fafc;
     padding: 1.5rem;
     border-radius: 12px;
+    border: 1px solid #e5e7eb;
     text-align: center;
     border-left: 4px solid;
 }
@@ -94,9 +112,10 @@
 
 
 .averages-div {
-    background: #fff;
+    background: #f8fafc;
     padding: 2rem;
     border-radius: 12px;
+    border: 1px solid #e5e7eb;
     margin-bottom: 2rem;
 }
 

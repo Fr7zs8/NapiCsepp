@@ -3,6 +3,29 @@
     background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
 }
 
+.back-row {
+    margin: 0 0 1.5rem 0;
+}
+
+.back-btn {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.6rem 1.1rem;
+    cursor: pointer;
+    color: #2d2d2d;
+}
+
+.task-item.completed {
+    opacity: 0.55;
+}
+
+.task-item.completed .edit-btn,
+.task-item.completed .delete-btn {
+    opacity: 0.6;
+    filter: saturate(0.6);
+}
+
 .info-text-div {
     margin-bottom: 2rem;
 }

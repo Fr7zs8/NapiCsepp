@@ -127,7 +127,7 @@ export function ProfileView(){
                         <p className="stats-subtitle">Az általános használati statisztikáid</p>
                     </div>
                     <div className="stats-grid">
-                        <div className="data-item">
+                        <div className="stat-item stat-tasks">
                             <div className="data-icon-label">
                                 <p className="data-label">Összes feladat</p>
                                 <SquareCheckBig size={24} />
@@ -138,7 +138,7 @@ export function ProfileView(){
                                 
                             </div>
                         </div>
-                        <div className="data-item">
+                        <div className="stat-item stat-completed">
                             <div className="data-icon-label">
                                 <p className="data-label">Befejezett aktivitások</p>
                                 <Award size={24} />
@@ -148,7 +148,7 @@ export function ProfileView(){
                                 
                             </div>
                         </div>
-                        <div className="data-item">
+                        <div className="stat-item stat-habits">
                             <div className="data-icon-label">
                                 <p className="data-label">Aktív szokások</p>
                                 <Target size={24} />
@@ -157,7 +157,7 @@ export function ProfileView(){
                                 <p className="data-value">{statsObj.getExtra('activeHabitsCount') || 0}</p>
                             </div>
                         </div>
-                        <div className="data-item">
+                        <div className="stat-item stat-events">
                             <div className="data-icon-label">
                             <p className="data-label">Hónapi események</p>
                                 <Calendar size={24} />

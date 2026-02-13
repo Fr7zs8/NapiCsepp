@@ -1,10 +1,12 @@
 import "./habit.css";
 import { Plus, Pencil, Trash2, Calendar, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Habit from "../../../classes/Views/habit.jsx";
 import { activityService } from "../../../router/apiRouter.jsx";
 
 export function HabitView() {
+  const navigate = useNavigate();
   const [habits, setHabits] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -313,6 +315,9 @@ export function HabitView() {
         <p>Szokások (Habits)</p>
         <p>Adj hozzá szokást megadott időtartammal és kezdési dátummal.</p>
       </div>
+      <div className="back-row">
+        <button className="back-btn" onClick={() => navigate("/")}>Vissza a főoldalra</button>
+      </div>
 
       <div className="task-form-div">
         <input
@@ -379,7 +384,7 @@ export function HabitView() {
         )}
 
         {habits.map((habit) => (
-          <div className="task-item" key={habit.habitId}>
+          <div className={`task-item ${habit.isCompleted() ? 'completed' : ''}`} key={habit.habitId}>
             <div className="left-section">
               <div className="color-bar"></div>
 

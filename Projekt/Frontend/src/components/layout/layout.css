@@ -1,14 +1,19 @@
 .layout {
     display: flex;
     min-height: 100vh;
+    width: 100vw;
 }
 
 .main-content {
     flex: 1;
-    margin-left: 220px;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
+    margin-left: 300px;
+    padding: 2rem 2.5rem;
+    background: #fff;
     min-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    overflow-x: hidden;
 }
 
 .main-content:only-child {

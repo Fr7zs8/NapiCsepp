@@ -22,6 +22,7 @@
 .combined-calendar-view {
     padding: 2rem;
     background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
+    overflow-x: hidden;
 }
 
 .hour-cell {
@@ -120,6 +121,37 @@
     margin: 0 auto;
 }
 
+@media (max-width: 900px) {
+    .combined-layout {
+        grid-template-columns: 1fr;
+    }
+    .weekly-overview-div {
+        overflow-x: hidden;
+    }
+    .week-grid {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 1200px) {
+    .combined-layout {
+        grid-template-columns: 1fr;
+    }
+    .week-toggle-div {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .combined-calendar-view {
+        padding: 1rem;
+    }
+    .header-div {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
 .week-toggle-div {
     background: #fff;
     border-radius: 12px;
@@ -163,16 +195,19 @@
     border-radius: 12px;
     padding: 1.5rem;
     width: 100%;
+    overflow-x: hidden;
 }
 
 .week-grid {
     display: flex;
     gap: 0.75rem;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .day-card {
     flex: 1;
+    min-width: 0;
     padding: 1rem;
     background: #f9f9f9;
     border-radius: 10px;
@@ -236,6 +271,8 @@
     padding: 1rem;
     max-height: 600px;
     overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 .schedule-header {
@@ -250,6 +287,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    overflow-x: hidden;
 }
 
 .time-slot {
