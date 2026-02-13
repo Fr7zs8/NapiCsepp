@@ -160,6 +160,7 @@ INSERT INTO `users_activities` (`user_id`, `activity_id`) VALUES
 (2, 6),
 (2, 7),
 (2, 8),
+(2, 10),
 (2, 9);
 
 INSERT INTO `users_events` (`user_id`, `event_id`) VALUES
