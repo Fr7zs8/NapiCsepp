@@ -41,6 +41,7 @@
 .navigation-buttons button {
     padding: 0.5rem 1rem;
     background: #fff;
+    color: #2d2d2d;
     border: 1px solid #ddd;
     border-radius: 8px;
     cursor: pointer;
