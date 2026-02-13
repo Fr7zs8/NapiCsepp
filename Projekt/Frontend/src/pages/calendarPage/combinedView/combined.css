@@ -187,17 +187,25 @@
 }
 
 .day-card.current-day {
-    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
-    color: white;
-    border-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #e6fff6 0%, #e0f7fa 100%);
+    color: #176b5c;
+    border-color: rgba(23, 107, 92, 0.15);
+}
+
+/* Highlight for selected day in combined view */
+.day-card.selected-day {
+    background: linear-gradient(135deg, #fffde4 0%, #e1ffe6 100%);
+    color: #222;
+    border: 2px solid #10b981;
+    box-shadow: 0 0 0 2px #10b98133;
 }
 
 .day-card.current-day .day-name {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(93, 86, 86, 0.9);
 }
 
 .day-card.current-day .day-date {
-    color: white;
+    color: rgb(1, 14, 10);
 }
 
 .day-card.weekend {

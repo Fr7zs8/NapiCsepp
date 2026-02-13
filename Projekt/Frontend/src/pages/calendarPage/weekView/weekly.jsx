@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
-import { activityService } from "../../../router/apiRouter";
+import { eventService } from "../../../router/apiRouter";
 
 export function WeeklyView(){
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ export function WeeklyView(){
 
     const fetchEvents = async () => {
         try {
-            const eventsData = await activityService.getAllEvents();
+            const eventsData = await eventService.getOverview();
             setEvents(eventsData || []);
         } catch (err) {
             console.error("Error fetching events:", err);
@@ -55,6 +55,7 @@ export function WeeklyView(){
     };
 
     const handleCellClick = (date, hour, e) => {
+        // Check if there is an event at this hour (minute-precise)
         const cellEvents = getEventsForCell(date, hour);
         if (cellEvents.length > 0) {
             setMiniPopup({ show: true, event: cellEvents[0], position: { x: e.clientX, y: e.clientY } });
@@ -69,9 +70,9 @@ export function WeeklyView(){
     const handleSaveEvent = async (eventData) => {
         try {
             if (editingEvent) {
-                await activityService.updateEvent(editingEvent.id, eventData);
+                await eventService.updateEvent(editingEvent.event_id, eventData);
             } else {
-                await activityService.createEvent(eventData);
+                await eventService.createEvent(eventData);
             }
             fetchEvents();
             setShowEventPopup(false);
@@ -89,7 +90,7 @@ export function WeeklyView(){
 
     const handleDeleteEvent = async (eventId) => {
         try {
-            await activityService.deleteEvent(eventId);
+            await eventService.deleteEvent(eventId);
             fetchEvents();
             setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
         } catch (err) {
@@ -201,44 +202,54 @@ export function WeeklyView(){
                                         <span className="day-name">{day.dayName}</span>
                                         <span className="day-date">{day.date}</span>
                                     </div>
-                                    {/* Hour lines, skip if event covers this hour */}
+                                    {/* Hour lines and overlay for event creation */}
                                     {timeSlots.map((_, timeIndex) => {
-                                        // Use 0-based hour indexing
                                         const hour = timeIndex;
-                                        // Check if any event covers this hour
-                                        const isCovered = dayEvents.some(event => {
-                                            const startTime = new Date(event.event_start_time);
-                                            const endTime = new Date(event.event_end_time);
-                                            const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
-                                            const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
-                                            const slotStart = hour * 60;
-                                            return slotStart >= startMinutes && slotStart < endMinutes;
-                                        });
-                                        if (isCovered) return null;
                                         return (
-                                            <div
-                                                key={timeIndex}
-                                                style={{
-                                                    position: 'absolute',
-                                                    top: `${hour * 60}px`,
-                                                    left: 0,
-                                                    width: '100%',
-                                                    height: '1px',
-                                                    borderTop: '1px solid #e5e7eb',
-                                                    zIndex: 1
-                                                }}
-                                                onClick={e => handleCellClick(day.fullDate, hour, e)}
-                                            />
+                                            <>
+                                                {/* Hour line (border) */}
+                                                <div
+                                                    key={`line-${timeIndex}`}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: `${hour * 60}px`,
+                                                        left: 0,
+                                                        width: '100%',
+                                                        height: '1px',
+                                                        borderTop: '1px solid #e5e7eb',
+                                                        zIndex: 1
+                                                    }}
+                                                />
+                                                {/* Transparent overlay for click */}
+                                                <div
+                                                    key={`overlay-${timeIndex}`}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: `${hour * 60}px`,
+                                                        left: 0,
+                                                        width: '100%',
+                                                        height: '60px',
+                                                        background: 'transparent',
+                                                        zIndex: 2,
+                                                        cursor: 'pointer',
+                                                    }}
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        handleCellClick(day.fullDate, hour, e);
+                                                    }}
+                                                />
+                                            </>
                                         );
                                     })}
                                     {/* Events absolute positioned, all moved one hour forward */}
                                     {dayEvents.map((event, eventIdx) => {
                                         const startTime = new Date(event.event_start_time);
                                         const endTime = new Date(event.event_end_time);
-                                        const startMinutes = (startTime.getHours() + 1) * 60 + startTime.getMinutes();
-                                        const endMinutes = (endTime.getHours() + 1) * 60 + endTime.getMinutes();
-                                        const top = startMinutes;
-                                        const height = Math.max(endMinutes - startMinutes, 15); 
+                                        // Subtract 60px so 08:00 starts at 420px, not 480px
+                                        const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
+                                        const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
+                                        const top = Math.max(startMinutes + 60, 0);
+                                        const height = Math.max(endMinutes - startMinutes, 15);
                                         return (
                                             <div
                                                 key={eventIdx}

@@ -68,12 +68,13 @@ export function MonthlyView(){
         if (!isCurrentMonth) return;
         const year = currentMonth.getFullYear();
         const month = currentMonth.getMonth();
+        // Use local time, not UTC, to avoid off-by-one errors
         const clickedDate = new Date(year, month, day);
         setSelectedDate(clickedDate);
-        // Find all events for this day
-        const dateStr = clickedDate.toISOString().split('T')[0];
+        // Use local date string for comparison (YYYY-MM-DD)
+        const dateStr = clickedDate.toLocaleDateString('en-CA');
         const eventsForDay = events.filter(e => {
-            const eventDate = new Date(e.event_start_time).toISOString().split('T')[0];
+            const eventDate = new Date(e.event_start_time).toLocaleDateString('en-CA');
             return eventDate === dateStr;
         });
         setDayEvents(eventsForDay);
@@ -106,7 +107,7 @@ export function MonthlyView(){
     const handleSaveEvent = async (eventData) => {
         try {
             if (editingEvent) {
-                await eventService.updateEvent(editingEvent.id, eventData);
+                await eventService.updateEvent(editingEvent.event_id, eventData);
             } else {
                 await eventService.createEvent(eventData);
             }
@@ -133,31 +134,34 @@ export function MonthlyView(){
 
         const year = currentMonth.getFullYear();
         const month = currentMonth.getMonth();
-        const dateStr = new Date(year, month, day).toISOString().split('T')[0];
+        // Use local date string (YYYY-MM-DD) to match popup logic
+        const dateStr = new Date(year, month, day).toLocaleDateString('en-CA');
 
         const eventCount = events.filter(e => {
-            const eventDate = new Date(e.event_start_time).toISOString().split('T')[0];
+            const eventDate = new Date(e.event_start_time).toLocaleDateString('en-CA');
             return eventDate === dateStr;
         }).length;
 
         const taskCount = activities.filter(a => {
             const startDate = a.activity_start_date || a.activity_date || a.date;
             if (!startDate) return false;
+            // Use UTC string for tasks as before
             const actDate = new Date(startDate + 'T00:00:00').toISOString().split('T')[0];
-            return actDate === dateStr;
+            // Convert dateStr (local) to UTC for comparison
+            const checkDate = new Date(dateStr + 'T00:00:00').toISOString().split('T')[0];
+            return actDate === checkDate;
         }).length;
 
         const habitCount = habits.filter(h => {
             const startDate = h.activity_start_date || h.startDate;
             const endDate = h.activity_end_date || h.endDate;
             if (!startDate) return false;
-            
             try {
                 const sd = new Date(startDate + 'T00:00:00');
                 const ed = endDate ? new Date(endDate + 'T23:59:59') : sd;
                 const checkDate = new Date(dateStr + 'T00:00:00');
                 return checkDate >= sd && checkDate <= ed;
-            } catch(e) {
+            } catch {
                 return false;
             }
         }).length;
@@ -301,12 +305,14 @@ export function MonthlyView(){
                             {dayEvents.length === 0 ? (
                                 <p>Nincs esemény ezen a napon.</p>
                             ) : (
-                                dayEvents.map(ev => (
-                                    <div key={ev.id} className="popup-event-row" onClick={e => handleEventClick(ev, e)}>
-                                        <span>{ev.event_name}</span>
-                                        <span style={{ fontSize: '0.9em', color: '#888' }}>{new Date(ev.event_start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(ev.event_end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                    </div>
-                                ))
+                                [...dayEvents]
+                                    .sort((a, b) => new Date(a.event_start_time) - new Date(b.event_start_time))
+                                    .map(ev => (
+                                        <div key={ev.event_id || `${ev.event_name}-${ev.event_start_time}`} className="popup-event-row" onClick={e => handleEventClick(ev, e)}>
+                                            <span>{ev.event_name}</span>
+                                            <span style={{ fontSize: '0.9em', color: '#888' }}>{new Date(ev.event_start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(ev.event_end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                        </div>
+                                    ))
                             )}
                         </div>
                         <div className="popup-actions">
@@ -334,6 +340,7 @@ export function MonthlyView(){
                 onSave={handleSaveEvent}
                 selectedDate={selectedDate}
                 existingEvent={editingEvent}
+                eventsForDay={dayEvents}
             />
         </section>
     )

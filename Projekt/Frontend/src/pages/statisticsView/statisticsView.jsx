@@ -75,22 +75,17 @@ export function StatisticsView(){
 
             setWeeklyPerDay(perDay.map((d, i) => ({ day: ['H','K','Sze','Cs','P','Szo','V'][i], ...d })));
 
-            const activeFromServer = statsObj.daily_tasks_count || statsObj.active_habits_count || statsObj.active_habits;
-            if (typeof activeFromServer === 'number') {
-                setActiveHabitsCount(activeFromServer);
-            } else {
-                const today = new Date();
-                today.setHours(0,0,0,0);
-                const activeCount = (allHabits || []).filter(h => {
-                    try {
-                        const sd = h.activity_start_date ? new Date(h.activity_start_date + 'T00:00:00') : null;
-                        const ed = h.activity_end_date ? new Date(h.activity_end_date + 'T23:59:59') : sd;
-                        if (!sd || !ed) return false;
-                        return sd <= today && ed >= today;
-                    } catch(e) { return false }
-                }).length;
-                setActiveHabitsCount(activeCount);
-            }
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const activeCount = (allHabits || []).filter(h => {
+                try {
+                    const sd = h.activity_start_date ? new Date(h.activity_start_date + 'T00:00:00') : null;
+                    const ed = h.activity_end_date ? new Date(h.activity_end_date + 'T23:59:59') : sd;
+                    if (!sd || !ed) return false;
+                    return sd <= today && ed >= today;
+                } catch(e) { return false }
+            }).length;
+            setActiveHabitsCount(activeCount);
 
         } catch (err) {
             setError(err.message || "Hiba az adatok betöltése során!");

@@ -268,7 +268,7 @@
 }
 
 .calendar-day.current-day {
-    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    background: linear-gradient(135deg, #81dabd 0%, #77c9d7 100%);
     color: white;
     font-weight: 600;
 }

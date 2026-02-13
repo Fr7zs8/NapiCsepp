@@ -2,7 +2,7 @@ import "./daily.css"
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from "react";
-import { activityService } from "../../../router/apiRouter";
+import { eventService } from "../../../router/apiRouter";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 
@@ -35,7 +35,7 @@ export function DailyView(){
 
     const fetchEvents = async () => {
         try {
-            const eventsData = await activityService.getAllEvents();
+            const eventsData = await eventService.getOverview();
             setEvents(eventsData || []);
         } catch (err) {
             console.error("Error fetching events:", err);
@@ -51,10 +51,14 @@ export function DailyView(){
     };
 
     const handleHourClick = (hour, e) => {
-        // Check if there is an event at this hour
+        // Check if there is an event at this hour (minute-precise)
         const cellEvents = getEventsForDay().filter(event => {
             const startTime = new Date(event.event_start_time);
-            return startTime.getHours() === hour;
+            const endTime = new Date(event.event_end_time);
+            const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
+            const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
+            const slotStart = hour * 60;
+            return slotStart >= startMinutes && slotStart < endMinutes;
         });
         if (cellEvents.length > 0) {
             setMiniPopup({ show: true, event: cellEvents[0], position: { x: e.clientX, y: e.clientY } });
@@ -68,9 +72,9 @@ export function DailyView(){
     const handleSaveEvent = async (eventData) => {
         try {
             if (editingEvent) {
-                await activityService.updateEvent(editingEvent.id, eventData);
+                await eventService.updateEvent(editingEvent.event_id, eventData);
             } else {
-                await activityService.createEvent(eventData);
+                await eventService.createEvent(eventData);
             }
             fetchEvents();
             setShowEventPopup(false);
@@ -88,7 +92,7 @@ export function DailyView(){
 
     const handleDeleteEvent = async (eventId) => {
         try {
-            await activityService.deleteEvent(eventId);
+            await eventService.deleteEvent(eventId);
             fetchEvents();
             setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
         } catch (err) {
@@ -158,21 +162,38 @@ export function DailyView(){
                     </div>
             </div>
             <div className="day-timeline" style={{ position: 'relative', height: '1440px', width: '100%', margin: '0 auto' }}>
-                {/* Hour labels */}
+                {/* Hour labels and overlay for event creation */}
                 {timeSlots.map((time, idx) => (
-                    <div key={time} style={{
-                        position: 'absolute',
-                        top: `${idx * 60}px`,
-                        left: 0,
-                        width: '100%',
-                        height: '1px',
-                        borderTop: '1px solid #e5e7eb',
-                        zIndex: 1
-                    }}
-                        onClick={e => handleHourClick(idx, e)}
-                    >
-                        <span style={{ position: 'absolute', left: 0, top: '-10px', width: '80px', color: '#666', fontSize: '0.9rem', background: 'white', zIndex: 2 }}>{time}</span>
-                    </div>
+                    <>
+                        {/* Hour line (border) */}
+                        <div key={`line-${time}`} style={{
+                            position: 'absolute',
+                            top: `${idx * 60}px`,
+                            left: 0,
+                            width: '100%',
+                            height: '1px',
+                            borderTop: '1px solid #e5e7eb',
+                            zIndex: 1
+                        }}>
+                            <span style={{ position: 'absolute', left: 0, top: '-10px', width: '80px', color: '#666', fontSize: '0.9rem', background: 'white', zIndex: 2 }}>{time}</span>
+                        </div>
+                        {/* Transparent overlay for click */}
+                        <div key={`overlay-${time}`} style={{
+                            position: 'absolute',
+                            top: `${idx * 60}px`,
+                            left: 0,
+                            width: '100%',
+                            height: '60px',
+                            background: 'transparent',
+                            zIndex: 2,
+                            cursor: 'pointer',
+                        }}
+                            onClick={e => {
+                                e.stopPropagation();
+                                handleHourClick(idx, e);
+                            }}
+                        />
+                    </>
                 ))}
                 {/* Events absolute positioned */}
                 {getEventsForDay().map((event, idx) => {
@@ -223,6 +244,7 @@ export function DailyView(){
                 selectedDate={currentDay}
                 selectedHour={selectedHour}
                 existingEvent={editingEvent}
+                eventsForDay={getEventsForDay()}
             />
             {miniPopup.show && (
                 <EventMiniPopup

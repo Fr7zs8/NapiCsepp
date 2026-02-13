@@ -3,6 +3,7 @@ import { Calendar, SquareCheckBig, Target, TrendingUp, CircleCheck, ArrowRight, 
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { clientService } from "../../router/apiRouter";
+import { activityService } from "../../router/apiRouter";
 
 export function HomepageView(){
     const [currentQuote, setCurrentQuote] = useState(0);
@@ -10,6 +11,7 @@ export function HomepageView(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [stats, setStats] = useState(null);
+    const [activeHabitsCount, setActiveHabitsCount] = useState(0);
 
     const navigate = useNavigate();
 
@@ -20,12 +22,23 @@ export function HomepageView(){
     const fetchData = async () => {
         try{
             setLoading(true);
-    
             const profileData = await clientService.getProfile();
             setProfile(Array.isArray(profileData) ? profileData[0] : profileData);
-            
             const statsData = await clientService.getStatistics();
             setStats(Array.isArray(statsData) ? statsData[0] : statsData);
+            // Aktív szokások lekérdezése
+            const allHabits = await activityService.getAllHabits();
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const activeCount = (allHabits || []).filter(h => {
+                try {
+                    const sd = h.activity_start_date ? new Date(h.activity_start_date + 'T00:00:00') : null;
+                    const ed = h.activity_end_date ? new Date(h.activity_end_date + 'T23:59:59') : sd;
+                    if (!sd || !ed) return false;
+                    return sd <= today && ed >= today;
+                } catch(e) { return false }
+            }).length;
+            setActiveHabitsCount(activeCount);
         }
         catch(error){
             setError(error.message || "Hiba az adatok betöltése során.");
@@ -34,7 +47,7 @@ export function HomepageView(){
         finally{
             setLoading(false);
         }
-    } 
+    }
     
     const getTodayDate = () => {
         return new Date().toLocaleDateString('hu-HU', {
@@ -165,7 +178,7 @@ export function HomepageView(){
                             <p className="stat-label">Aktív</p>
                             <Target/>
                             <p className="stat-name">Szokások</p>
-                            <p className="stat-value">{stats?.daily_tasks_count || 0} db</p>
+                            <p className="stat-value">{activeHabitsCount} db</p>
                         </div>
                     </div>
             </section>

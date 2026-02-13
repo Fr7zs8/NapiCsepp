@@ -104,7 +104,7 @@ export function ProfileView(){
                     <p className="data-value">{profile.register_date}</p>
                 </div>
 
-                <div className="data-item centered">
+                <div className="data-item">
                     <div className="data-icon-label">
                         <Database size={20} />
                         <p className="data-label">Adatok tárolása</p>
@@ -120,36 +120,50 @@ export function ProfileView(){
                         <p className="stats-subtitle">Az általános használati statisztikáid</p>
                     </div>
                     <div className="stats-grid">
-                        <div className="stat-item">
-                            <div className="stat-icon">
+                        <div className="data-item">
+                            <div className="data-icon-label">
+                                <p className="data-label">Összes feladat</p>
                                 <SquareCheckBig size={24} />
+                                
                             </div>
                             <div>
-                                <p className="stat-value">{stats.total_activity || 0}</p>
-                                <p className="stat-label">Összes feladat</p>
+                                <p className="data-value">{stats.total_activity || 0}</p>
+                                
                             </div>
                         </div>
-                        <div className="stat-item">
-                            <div className="stat-icon">
+                        <div className="data-item">
+                            <div className="data-icon-label">
+                                <p className="data-label">Befejezett aktivitások</p>
                                 <Award size={24} />
                             </div>
                             <div>
-                                <p className="stat-value">{stats.completed || 0}</p>
-                                <p className="stat-label">Befejezett</p>
+                                <p className="data-value">{stats.completed || 0}</p>
+                                
                             </div>
                         </div>
-                        <div className="stat-item">
-                            <div className="stat-icon">
+                        <div className="data-item">
+                            <div className="data-icon-label">
+                                <p className="data-label">Napi feladatok</p>
                                 <Target size={24} />
                             </div>
                             <div>
-                                <p className="stat-value">{stats.daily_tasks_count || 0}</p>
-                                <p className="stat-label">Napi feladatok</p>
+                                <p className="data-value">{stats.daily_tasks_count || 0}</p>
+                                
+                            </div>
+                        </div>
+                        <div className="data-item">
+                            <div className="data-icon-label">
+                            <p className="data-label">Hónapi események</p>
+                                <Calendar size={24} />
+                            </div>
+                            <div>
+                                <p className="data-value">{stats?.monthly_events_count || 0}</p>
+                                
                             </div>
                         </div>
                     </div>
                 </div>
             )}
         </section>
-    )
-}
+        )
+    }

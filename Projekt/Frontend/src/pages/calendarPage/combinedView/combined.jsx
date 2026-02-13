@@ -53,25 +53,27 @@ export function CombinedView(){
     const [showEventsList, setShowEventsList] = useState(false);
     const [eventsListForDay, setEventsListForDay] = useState([]);
     const [eventsListDate, setEventsListDate] = useState(null);
+    // Mini popup logic
+    const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
+
     const handleEditEvent = (event) => {
         setEditingEvent(event);
         setShowEventPopup(true);
-        setMiniPopupEvent(null);
+        setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
     };
     const handleDeleteEvent = async (eventId) => {
         try {
             await eventService.deleteEvent(eventId);
             fetchEvents();
-            setMiniPopupEvent(null);
+            setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
         } catch (err) {
             alert("Hiba történt az esemény törlésekor!");
         }
     };
-
     const handleSaveEvent = async (eventData) => {
         try {
             if (editingEvent) {
-                await eventService.updateEvent(editingEvent.id, eventData);
+                await eventService.updateEvent(editingEvent.event_id, eventData);
             } else {
                 await eventService.createEvent(eventData);
             }
@@ -144,11 +146,13 @@ export function CombinedView(){
             const date = new Date(startOfWeek);
             date.setDate(startOfWeek.getDate() + i);
             const isToday = date.toDateString() === today.toDateString();
+            const isSelected = date.toDateString() === selectedDay.toDateString();
             days.push({
                 dayName: ['H', 'K', 'Sz', 'Cs', 'P', 'Szo', 'V'][i],
                 date: date.getDate(),
                 isWeekend: i >= 5,
                 isToday: isToday,
+                isSelected: isSelected,
                 fullDate: date
             });
         }
@@ -275,7 +279,7 @@ export function CombinedView(){
                         {weekDays.map((day, index) => (
                             <div 
                                 key={index} 
-                                className={`day-card ${day.isWeekend ? 'weekend' : ''} ${day.isToday ? 'current-day' : ''}`}
+                                className={`day-card${day.isWeekend ? ' weekend' : ''}${day.isToday ? ' current-day' : ''}${day.isSelected ? ' selected-day' : ''}`}
                                 onClick={() => handleDaySelect(day.fullDate)}
                                 style={{ cursor: 'pointer' }}
                             >
@@ -305,32 +309,42 @@ export function CombinedView(){
                             {/* Hour lines and click for new event */}
                             {timeSlots.map((_, index) => {
                                 const hour = index;
-                                // Check if any event covers this hour
-                                const hourEvents = events.filter(event => {
-                                    const start = new Date(event.event_start_time);
-                                    const end = new Date(event.event_end_time);
-                                    const eventDate = start.toISOString().split('T')[0];
-                                    if (eventDate !== selectedDay.toISOString().split('T')[0]) return false;
-                                    const startHour = start.getHours();
-                                    const endHour = end.getHours();
-                                    const endMinutes = end.getMinutes();
-                                    return hour >= startHour && (hour < endHour || (hour === endHour && endMinutes === 0));
-                                });
                                 return (
-                                    <div
-                                        key={index}
-                                        style={{ position: "absolute", top: `${index * 48}px`, left: 0, width: "100%", height: 1, borderTop: "1px solid #e0e0e0", zIndex: 1 }}
-                                        onClick={e => {
-                                            if (hourEvents.length === 0) {
+                                    <>
+                                        {/* Hour line (border) */}
+                                        <div
+                                            key={`line-${index}`}
+                                            style={{
+                                                position: "absolute",
+                                                top: `${index * 48}px`,
+                                                left: 0,
+                                                width: "100%",
+                                                height: 1,
+                                                borderTop: "1px solid #e0e0e0",
+                                                zIndex: 1
+                                            }}
+                                        />
+                                        {/* Transparent overlay for click */}
+                                        <div
+                                            key={`overlay-${index}`}
+                                            style={{
+                                                position: "absolute",
+                                                top: `${index * 48}px`,
+                                                left: 0,
+                                                width: "100%",
+                                                height: "48px",
+                                                background: "transparent",
+                                                zIndex: 2,
+                                                cursor: "pointer"
+                                            }}
+                                            onClick={e => {
+                                                e.stopPropagation();
                                                 setEditingEvent(null);
                                                 setSelectedHour(hour);
                                                 setShowEventPopup(true);
-                                            } else {
-                                                setMiniPopupEvent(hourEvents[0]);
-                                                setMiniPopupPosition({ x: e.clientX, y: e.clientY });
-                                            }
-                                        }}
-                                    />
+                                            }}
+                                        />
+                                    </>
                                 );
                             })}
                             {/* Render event blocks spanning all hours */}
@@ -365,8 +379,7 @@ export function CombinedView(){
                                         }}
                                         onClick={e => {
                                             e.stopPropagation();
-                                            setMiniPopupEvent(event);
-                                            setMiniPopupPosition({ x: e.clientX, y: e.clientY });
+                                            setMiniPopup({ show: true, event, position: { x: e.clientX, y: e.clientY } });
                                         }}
                                     >
                                         <div style={{ fontWeight: "bold", fontSize: "1.1em" }}>{event.event_name}</div>
@@ -386,7 +399,20 @@ export function CombinedView(){
                                     selectedDate={selectedDay}
                                     selectedHour={selectedHour}
                                     existingEvent={editingEvent}
+                                    eventsForDay={events.filter(ev => {
+                                        const d = new Date(ev.event_start_time);
+                                        return d.toLocaleDateString('en-CA') === selectedDay.toLocaleDateString('en-CA');
+                                    })}
                                 />
+                                {miniPopup.show && (
+                                    <EventMiniPopup
+                                        event={miniPopup.event}
+                                        position={miniPopup.position}
+                                        onEdit={handleEditEvent}
+                                        onDelete={handleDeleteEvent}
+                                        onClose={() => setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } })}
+                                    />
+                                )}
                     </div>
 
                 </div>

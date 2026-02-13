@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import "./EventPopup.css";
 
-export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour, existingEvent }) {
+export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour, existingEvent, eventsForDay }) {
     const [eventData, setEventData] = useState({
         event_name: "",
         event_date: "",
@@ -23,7 +23,8 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
                 });
             } else {
                 const date = selectedDate ? new Date(selectedDate) : new Date();
-                const dateStr = date.toISOString().split('T')[0];
+                // Use local date string (YYYY-MM-DD) to avoid UTC offset issues
+                const dateStr = date.toLocaleDateString('en-CA');
                 let startTime = "09:00";
                 let endTime = "10:00";
                 if (selectedHour !== undefined && selectedHour !== null) {
@@ -42,7 +43,6 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
         if (!eventData.event_name.trim()) {
             alert("Kérlek add meg az esemény nevét!");
             return;
@@ -50,13 +50,53 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
 
         const startDateTime = `${eventData.event_date} ${eventData.event_start_time}`;
         const endDateTime = `${eventData.event_date} ${eventData.event_end_time}`;
-        
-        const eventToSave = {
-            event_name: eventData.event_name,
-            event_start_time: startDateTime,
-            event_end_time: endDateTime,
-            event_color: "#0090ff"
-        };
+        const newStart = new Date(startDateTime);
+        const newEnd = new Date(endDateTime);
+
+        // Ellenőrzés: kezdés < befejezés
+        if (newStart >= newEnd) {
+            alert("A kezdési időnek korábbinak kell lennie, mint a befejezésnek!");
+            return;
+        }
+
+        // Ellenőrzés: esemény nem nyúlhat át másik napra
+        if (
+            newStart.toISOString().split('T')[0] !== newEnd.toISOString().split('T')[0]
+        ) {
+            alert("Az esemény nem nyúlhat át több napra!");
+            return;
+        }
+
+        // Check for overlap with other events on the same day
+        if (Array.isArray(eventsForDay)) {
+            const overlap = eventsForDay.some(ev => {
+                if (existingEvent && ev.event_id === existingEvent.event_id) return false;
+                const evStart = new Date(ev.event_start_time);
+                const evEnd = new Date(ev.event_end_time);
+                // Overlap if: newStart < evEnd && newEnd > evStart
+                return newStart < evEnd && newEnd > evStart;
+            });
+            if (overlap) {
+                alert("Ebben az időzónában már van egy esemény. Kérlek válassz másik időt!");
+                return;
+            }
+        }
+
+        let eventToSave;
+        if (existingEvent) {
+            eventToSave = {
+                event_name: eventData.event_name,
+                event_start_time: startDateTime,
+                event_end_time: endDateTime
+            };
+        } else {
+            eventToSave = {
+                event_name: eventData.event_name,
+                event_start_time: startDateTime,
+                event_end_time: endDateTime,
+                event_color: "#0090ff"
+            };
+        }
 
         onSave(eventToSave);
         onClose();

@@ -9,7 +9,7 @@ export function EventMiniPopup({ event, position, onEdit, onDelete, onClose }) {
             style={{ top: position.y, left: position.x }}
         >
             <button onClick={() => onEdit(event)}>Szerkesztés</button>
-            <button onClick={() => onDelete(event.id)}>Törlés</button>
+            <button onClick={() => onDelete(event.event_id)}>Törlés</button>
             <button onClick={onClose}>Bezár</button>
         </div>
     );
