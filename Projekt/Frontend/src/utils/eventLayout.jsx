@@ -24,7 +24,7 @@ export function calculateEventLayout(events) {
         });
     });
 
-    // overlap detection
+
     positioned.forEach((event, i) => {
         let overlaps = positioned.filter(e =>
             e !== event &&

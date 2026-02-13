@@ -1,6 +1,7 @@
 import "./combined.css"
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
+import CalendarManager from "../../../classes/Views/calendarManager";
 import { useNavigate } from 'react-router-dom'
 import { eventService } from "../../../router/apiRouter";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
@@ -25,9 +26,13 @@ function EventsListPopup({ events, onClose, date }) {
                 {events.length === 0 ? <div>Nincs esemény.</div> : (
                     <ul style={{listStyle:'none',padding:0,margin:0}}>
                         {events.map((ev, idx) => (
-                            <li key={idx} style={{marginBottom:16, background:'#e3f2fd', borderRadius:8, padding:12}}>
-                                <div style={{fontWeight:'bold'}}>{ev.event_name}</div>
-                                <div>{new Date(ev.event_start_time).toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})} - {new Date(ev.event_end_time).toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})}</div>
+                            <li key={ev.eventId || ev.event_id || idx} style={{marginBottom:16, background:'#e3f2fd', borderRadius:8, padding:12}}>
+                                <div style={{fontWeight:'bold'}}>{ev.eventName || ev.event_name}</div>
+                                <div>{typeof ev.formatTime === 'function' ? ev.formatTime() :
+                                    (ev.event_start_time && ev.event_end_time ?
+                                        `${new Date(ev.event_start_time).toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})} - ${new Date(ev.event_end_time).toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})}` :
+                                        'Időpont nincs')
+                                }</div>
                             </li>
                         ))}
                     </ul>
@@ -43,7 +48,7 @@ export function CombinedView(){
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
     const [currentWeek, setCurrentWeek] = useState(new Date());
     const [selectedDay, setSelectedDay] = useState(new Date());
-    const [events, setEvents] = useState([]);
+    const [calendarManager, setCalendarManager] = useState(null);
 
     const [miniPopupEvent, setMiniPopupEvent] = useState(null);
     const [miniPopupPosition, setMiniPopupPosition] = useState({ x: 0, y: 0 });
@@ -53,27 +58,45 @@ export function CombinedView(){
     const [showEventsList, setShowEventsList] = useState(false);
     const [eventsListForDay, setEventsListForDay] = useState([]);
     const [eventsListDate, setEventsListDate] = useState(null);
-    // Mini popup logic
     const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
 
     const handleEditEvent = (event) => {
         setEditingEvent(event);
         setShowEventPopup(true);
         setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
+        setMiniPopupEvent(null);
     };
     const handleDeleteEvent = async (eventId) => {
         try {
-            await eventService.deleteEvent(eventId);
+            let id = eventId;
+            if (typeof eventId === 'object') {
+                id = eventId.event_id || eventId.eventId;
+            }
+            if (!id || isNaN(Number(id))) {
+                alert("Hibás esemény azonosító!");
+                return;
+            }
+            await eventService.deleteEvent(Number(id));
             fetchEvents();
             setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
         } catch (err) {
-            alert("Hiba történt az esemény törlésekor!");
+            if (err && err.message) {
+                alert("Hiba történt az esemény törlésekor: " + err.message);
+            } else {
+                alert("Hiba történt az esemény törlésekor!");
+            }
+            console.error("Delete event error:", err);
         }
     };
     const handleSaveEvent = async (eventData) => {
         try {
             if (editingEvent) {
-                await eventService.updateEvent(editingEvent.event_id, eventData);
+                const id = editingEvent.event_id || editingEvent.eventId;
+                if (!id || isNaN(Number(id))) {
+                    alert("Hibás esemény azonosító szerkesztéskor!");
+                    return;
+                }
+                await eventService.updateEvent(Number(id), eventData);
             } else {
                 await eventService.createEvent(eventData);
             }
@@ -81,7 +104,12 @@ export function CombinedView(){
             setShowEventPopup(false);
             setEditingEvent(null);
         } catch (err) {
-            alert("Hiba történt az esemény mentésekor!");
+            if (err && err.message) {
+                alert("Hiba történt az esemény mentésekor: " + err.message);
+            } else {
+                alert("Hiba történt az esemény mentésekor!");
+            }
+            console.error("Save event error:", err);
         }
     };
     useEffect(() => {
@@ -96,25 +124,21 @@ export function CombinedView(){
             return () => window.removeEventListener('resize', handleResize);
     }, [isMobile, navigate]);
 
-    useEffect(() => {
-        fetchEvents();
-    }, []);
+
 
     const fetchEvents = async () => {
         try {
             const data = await eventService.getOverview();
-            setEvents(data || []);
+            setCalendarManager(new CalendarManager(currentWeek, 'combined', [], data || []));
         } catch (err) {
             console.error("Error fetching events:", err);
         }
     };
 
-    
-    // const handleWeeklyNavigation = () => {
-    //     if (window.innerWidth > 600) {
-    //         navigate("/calendar/weekly");
-    //     }
-    // };
+    useEffect(() => {
+        fetchEvents();
+    }, [currentWeek]);
+
 
     const changeWeek = (direction) => {
         setCurrentWeek(prev => {
@@ -124,41 +148,7 @@ export function CombinedView(){
         });
     };
 
-    // const changeDay = (direction) => {
-    //     setSelectedDay(prev => {
-    //         const newDate = new Date(prev);
-    //         newDate.setDate(prev.getDate() + direction);
-    //         return newDate;
-    //     });
-    // };
     
-    const generateWeekDays = () => {
-        const days = [];
-        const startOfWeek = new Date(currentWeek);
-        
-        const day = startOfWeek.getDay();
-        const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-        startOfWeek.setDate(diff);
-        
-        const today = new Date();
-        
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(startOfWeek);
-            date.setDate(startOfWeek.getDate() + i);
-            const isToday = date.toDateString() === today.toDateString();
-            const isSelected = date.toDateString() === selectedDay.toDateString();
-            days.push({
-                dayName: ['H', 'K', 'Sz', 'Cs', 'P', 'Szo', 'V'][i],
-                date: date.getDate(),
-                isWeekend: i >= 5,
-                isToday: isToday,
-                isSelected: isSelected,
-                fullDate: date
-            });
-        }
-        
-        return days;
-    };
 
     const generateTimeSlots = () => {
         const slots = [];
@@ -168,7 +158,8 @@ export function CombinedView(){
         return slots;
     };
     
-    const weekDays = generateWeekDays();
+    const weekData = calendarManager ? calendarManager.getCombinedView(currentWeek) : null;
+    const weekDays = calendarManager ? calendarManager.getWeekView(currentWeek, selectedDay) : [];
     const timeSlots = generateTimeSlots();
 
     const monthName = currentWeek.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long' });
@@ -176,10 +167,11 @@ export function CombinedView(){
 
     const handleDaySelect = (fullDate) => {
         setSelectedDay(new Date(fullDate));
-        // Show popup with all events for this day
+        if (!calendarManager) return;
         const dateStr = new Date(fullDate).toISOString().split('T')[0];
-        const dayEvents = events.filter(ev => {
-            const evDate = new Date(ev.event_start_time).toISOString().split('T')[0];
+        const weekData = calendarManager.getCombinedView(currentWeek);
+        const dayEvents = (weekData?.events || []).filter(ev => {
+            const evDate = new Date(ev.startTime).toISOString().split('T')[0];
             return evDate === dateStr;
         });
         setEventsListForDay(dayEvents);
@@ -188,31 +180,10 @@ export function CombinedView(){
     };
 
     const today = new Date();
-    // const isSelectedToday = selectedDay.toDateString() === today.toDateString();
-
-    const getEventsForHour = (hour) => {
-        const dateStr = selectedDay.toISOString().split('T')[0];
-
-        return events.filter(event => {
-            const start = new Date(event.event_start_time);
-            const end = new Date(event.event_end_time);
-
-            const eventDate = start.toISOString().split('T')[0];
-            if (eventDate !== dateStr) return false;
-
-            const startHour = start.getHours();
-            const endHour = end.getHours();
-            const endMinutes = end.getMinutes();
-
-            return hour >= startHour &&
-                (hour < endHour || (hour === endHour && endMinutes === 0));
-        });
-    };
 
 
     return(
         <section className="combined-calendar-view">
-            {/* Mini popup state */}
             {miniPopupEvent && (
                 <EventMiniPopup
                     event={miniPopupEvent}
@@ -260,7 +231,6 @@ export function CombinedView(){
             </div>
 
             <div className="combined-layout">
-                {/* Week toggle buttons - left */}
                 <div className="week-toggle-div">
                     <button className="week-toggle-btn back" onClick={() => changeWeek(-1)}>
                         ← Előző
@@ -273,18 +243,17 @@ export function CombinedView(){
                     </button>
                 </div>
 
-                {/* Weekly overview - center */}
                 <div className="weekly-overview-div">
                     <div className="week-grid">
                         {weekDays.map((day, index) => (
-                            <div 
-                                key={index} 
-                                className={`day-card${day.isWeekend ? ' weekend' : ''}${day.isToday ? ' current-day' : ''}${day.isSelected ? ' selected-day' : ''}`}
-                                onClick={() => handleDaySelect(day.fullDate)}
+                            <div
+                                key={index}
+                                className={`day-card${day.isToday ? ' current-day' : ''}${day.isSelected ? ' selected-day' : ''}`}
+                                onClick={() => handleDaySelect(day.date)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <div className="day-name">{day.dayName}</div>
-                                <div className="day-date">{day.date}</div>
+                                <div className="day-name">{day.date.toLocaleDateString('hu-HU', { weekday: 'short' })}</div>
+                                <div className="day-date">{day.date.getDate()}</div>
                             </div>
                         ))}
                     </div>
@@ -307,12 +276,11 @@ export function CombinedView(){
                             {timeSlots.map((_, index) => {
                                 const hour = index;
                                 return (
-                                    <>
+                                    <div key={`slot-${index}`} style={{ position: "relative", height: 48 }}>
                                         <div
-                                            key={`line-${index}`}
                                             style={{
                                                 position: "absolute",
-                                                top: `${index * 48}px`,
+                                                top: 0,
                                                 left: 0,
                                                 width: "100%",
                                                 height: 1,
@@ -321,10 +289,9 @@ export function CombinedView(){
                                             }}
                                         />
                                         <div
-                                            key={`overlay-${index}`}
                                             style={{
                                                 position: "absolute",
-                                                top: `${index * 48}px`,
+                                                top: 0,
                                                 left: 0,
                                                 width: "100%",
                                                 height: "48px",
@@ -339,21 +306,20 @@ export function CombinedView(){
                                                 setShowEventPopup(true);
                                             }}
                                         />
-                                    </>
+                                    </div>
                                 );
                             })}
-                            {events.map((event, i) => {
-                                const start = new Date(event.event_start_time);
-                                const end = new Date(event.event_end_time);
-                                const dateStr = start.toISOString().split('T')[0];
-                                if (dateStr !== selectedDay.toISOString().split('T')[0]) return null;
+                            {calendarManager && calendarManager.getDayView(selectedDay).events.map((event, i) => {
+                                const start = new Date(event.startTime);
+                                const end = new Date(event.endTime);
+                                if (isNaN(start) || isNaN(end)) return null;
                                 const startMinutes = start.getHours() * 60 + start.getMinutes();
                                 const endMinutes = end.getHours() * 60 + end.getMinutes();
                                 const top = (startMinutes / 60) * 48;
-                                const height = Math.max(((endMinutes - startMinutes) / 60) * 48, 15); 
+                                const height = Math.max(((endMinutes - startMinutes) / 60) * 48, 15);
                                 return (
                                     <div
-                                        key={i}
+                                        key={event.event_id || event.eventId || i}
                                         className="event-block-combined event-absolute"
                                         style={{
                                             backgroundColor: event.event_color || "#2196f3",
@@ -375,37 +341,34 @@ export function CombinedView(){
                                             setMiniPopup({ show: true, event, position: { x: e.clientX, y: e.clientY } });
                                         }}
                                     >
-                                        <div style={{ fontWeight: "bold", fontSize: "1.1em" }}>{event.event_name}</div>
+                                        <div style={{ fontWeight: "bold", fontSize: "1.1em" }}>{event.eventName || event.event_name}</div>
                                         <div>
-                                            {start.toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})}
-                                            {" - "}
-                                            {end.toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})}
+                                            {typeof event.formatTime === 'function' ? event.formatTime() : ''}
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
-                                <EventPopup
-                                    isOpen={showEventPopup}
-                                    onClose={() => { setShowEventPopup(false); setEditingEvent(null); }}
-                                    onSave={handleSaveEvent}
-                                    selectedDate={selectedDay}
-                                    selectedHour={selectedHour}
-                                    existingEvent={editingEvent}
-                                    eventsForDay={events.filter(ev => {
-                                        const d = new Date(ev.event_start_time);
-                                        return d.toLocaleDateString('en-CA') === selectedDay.toLocaleDateString('en-CA');
-                                    })}
-                                />
-                                {miniPopup.show && (
-                                    <EventMiniPopup
-                                        event={miniPopup.event}
-                                        position={miniPopup.position}
-                                        onEdit={handleEditEvent}
-                                        onDelete={handleDeleteEvent}
-                                        onClose={() => setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } })}
-                                    />
-                                )}
+                        {showEventPopup && (
+                            <EventPopup
+                                isOpen={showEventPopup}
+                                onClose={() => { setShowEventPopup(false); setEditingEvent(null); }}
+                                onSave={handleSaveEvent}
+                                selectedDate={selectedDay}
+                                selectedHour={selectedHour}
+                                existingEvent={editingEvent}
+                                eventsForDay={calendarManager ? calendarManager.getDayView(selectedDay).events : []}
+                            />
+                        )}
+                        {miniPopup.show && (
+                            <EventMiniPopup
+                                event={miniPopup.event}
+                                position={miniPopup.position}
+                                onEdit={handleEditEvent}
+                                onDelete={handleDeleteEvent}
+                                onClose={() => setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } })}
+                            />
+                        )}
                     </div>
 
                 </div>

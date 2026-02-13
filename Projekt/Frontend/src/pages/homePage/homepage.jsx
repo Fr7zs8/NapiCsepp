@@ -4,14 +4,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { clientService } from "../../router/apiRouter";
 import { activityService } from "../../router/apiRouter";
+import Statistics from "../../classes/Views/statistics";
 
 export function HomepageView(){
     const [currentQuote, setCurrentQuote] = useState(0);
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [stats, setStats] = useState(null);
-    const [activeHabitsCount, setActiveHabitsCount] = useState(0);
+    const [statsObj, setStatsObj] = useState(null);
 
     const navigate = useNavigate();
 
@@ -25,20 +25,12 @@ export function HomepageView(){
             const profileData = await clientService.getProfile();
             setProfile(Array.isArray(profileData) ? profileData[0] : profileData);
             const statsData = await clientService.getStatistics();
-            setStats(Array.isArray(statsData) ? statsData[0] : statsData);
-            // Aktív szokások lekérdezése
+            const statsRaw = Array.isArray(statsData) ? statsData[0] : statsData;
+            const statsInstance = new Statistics(statsRaw);
             const allHabits = await activityService.getAllHabits();
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const activeCount = (allHabits || []).filter(h => {
-                try {
-                    const sd = h.activity_start_date ? new Date(h.activity_start_date + 'T00:00:00') : null;
-                    const ed = h.activity_end_date ? new Date(h.activity_end_date + 'T23:59:59') : sd;
-                    if (!sd || !ed) return false;
-                    return sd <= today && ed >= today;
-                } catch(e) { return false }
-            }).length;
-            setActiveHabitsCount(activeCount);
+            const activeCount = Statistics.getActiveHabitsCount(allHabits);
+            statsInstance.setExtra('activeHabitsCount', activeCount);
+            setStatsObj(statsInstance);
         }
         catch(error){
             setError(error.message || "Hiba az adatok betöltése során.");
@@ -101,7 +93,7 @@ export function HomepageView(){
         );
     }
 
-    const completionRate = stats && stats.total_activity ? Math.round(((stats.completed||0) / stats.total_activity) * 100) : 0;
+    const completionRate = statsObj ? statsObj.getDailyCompletionRate() : 0;
 
     return(
         <section>
@@ -160,25 +152,25 @@ export function HomepageView(){
                             <p className="stat-label">Összes</p>
                             <SquareCheckBig/>
                             <p className="stat-name">Feladatok</p>
-                            <p className="stat-value">{stats?.total_activity || 0} db</p>
+                            <p className="stat-value">{statsObj?.totalActivities || 0} db</p>
                         </div>
                         <div className="stat-div finished">
                             <p className="stat-label">Kész</p>
                             <CircleCheck/>
                             <p className="stat-name">Befejezett</p>
-                            <p className="stat-value">{(stats?.completed||0)} / {(stats?.total_activity||0)}</p>
+                            <p className="stat-value">{statsObj?.completedActivities || 0} / {statsObj?.totalActivities || 0}</p>
                         </div>
                         <div className="stat-div events">
                             <p className="stat-label">Ma</p>
                             <Calendar/>
                             <p className="stat-name">Események</p>
-                            <p className="stat-value">{stats?.monthly_events_count || 0} db</p>
+                            <p className="stat-value">{statsObj?.monthlyEventsCount || 0} db</p>
                         </div>
                         <div className="stat-div habits">
                             <p className="stat-label">Aktív</p>
                             <Target/>
                             <p className="stat-name">Szokások</p>
-                            <p className="stat-value">{activeHabitsCount} db</p>
+                            <p className="stat-value">{statsObj?.getExtra('activeHabitsCount') || 0} db</p>
                         </div>
                     </div>
             </section>

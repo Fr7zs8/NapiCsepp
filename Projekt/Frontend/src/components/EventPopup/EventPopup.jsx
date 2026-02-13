@@ -13,13 +13,17 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
     useEffect(() => {
         if (isOpen) {
             if (existingEvent) {
-                const startDateTime = new Date(existingEvent.event_start_time);
-                const endDateTime = new Date(existingEvent.event_end_time);
+                // Support both API and Event class field names
+                const startRaw = existingEvent.event_start_time || existingEvent.startTime;
+                const endRaw = existingEvent.event_end_time || existingEvent.endTime;
+                const nameRaw = existingEvent.event_name || existingEvent.eventName || "";
+                const startDateTime = new Date(startRaw);
+                const endDateTime = new Date(endRaw);
                 setEventData({
-                    event_name: existingEvent.event_name || "",
-                    event_date: startDateTime.toISOString().split('T')[0],
-                    event_start_time: startDateTime.toTimeString().slice(0, 5),
-                    event_end_time: endDateTime.toTimeString().slice(0, 5)
+                    event_name: nameRaw,
+                    event_date: !isNaN(startDateTime) ? startDateTime.toISOString().split('T')[0] : "",
+                    event_start_time: !isNaN(startDateTime) ? startDateTime.toTimeString().slice(0, 5) : "",
+                    event_end_time: !isNaN(endDateTime) ? endDateTime.toTimeString().slice(0, 5) : ""
                 });
             } else {
                 const date = selectedDate ? new Date(selectedDate) : new Date();
@@ -60,9 +64,10 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
         }
 
         // Ellenőrzés: esemény nem nyúlhat át másik napra
-        if (
-            newStart.toISOString().split('T')[0] !== newEnd.toISOString().split('T')[0]
-        ) {
+        // Kivétel: ha 00:00-tól 23:59-ig tart ugyanazon a napon, az érvényes
+        const startDay = newStart.toISOString().split('T')[0];
+        const endDay = newEnd.toISOString().split('T')[0];
+        if (startDay !== endDay) {
             alert("Az esemény nem nyúlhat át több napra!");
             return;
         }

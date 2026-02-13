@@ -1,10 +1,12 @@
 import "./weekly.css"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useState, useEffect } from "react";
+import CalendarManager from "../../../classes/Views/calendarManager";
 import { useNavigate } from 'react-router-dom'
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 import { eventService } from "../../../router/apiRouter";
+
 
 export function WeeklyView(){
     const navigate = useNavigate();
@@ -13,6 +15,7 @@ export function WeeklyView(){
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedHour, setSelectedHour] = useState(null);
     const [events, setEvents] = useState([]);
+    const [calendarManager, setCalendarManager] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
     const [editingEvent, setEditingEvent] = useState(null);
     const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
@@ -25,6 +28,7 @@ export function WeeklyView(){
         try {
             const eventsData = await eventService.getOverview();
             setEvents(eventsData || []);
+            setCalendarManager(new CalendarManager(currentWeek, 'weekly', [], eventsData || []));
         } catch (err) {
             console.error("Error fetching events:", err);
         }
@@ -55,7 +59,6 @@ export function WeeklyView(){
     };
 
     const handleCellClick = (date, hour, e) => {
-        // Check if there is an event at this hour (minute-precise)
         const cellEvents = getEventsForCell(date, hour);
         if (cellEvents.length > 0) {
             setMiniPopup({ show: true, event: cellEvents[0], position: { x: e.clientX, y: e.clientY } });
@@ -70,7 +73,7 @@ export function WeeklyView(){
     const handleSaveEvent = async (eventData) => {
         try {
             if (editingEvent) {
-                await eventService.updateEvent(editingEvent.event_id, eventData);
+                await eventService.updateEvent(editingEvent.event_id || editingEvent.eventId, eventData);
             } else {
                 await eventService.createEvent(eventData);
             }
@@ -90,11 +93,24 @@ export function WeeklyView(){
 
     const handleDeleteEvent = async (eventId) => {
         try {
-            await eventService.deleteEvent(eventId);
+            let id = eventId;
+            if (typeof eventId === 'object') {
+                id = eventId.event_id || eventId.eventId;
+            }
+            if (!id || isNaN(Number(id))) {
+                alert("Hibás esemény azonosító!");
+                return;
+            }
+            await eventService.deleteEvent(Number(id));
             fetchEvents();
             setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
         } catch (err) {
-            alert("Hiba történt az esemény törlésekor!");
+            if (err && err.message) {
+                alert("Hiba történt az esemény törlésekor: " + err.message);
+            } else {
+                alert("Hiba történt az esemény törlésekor!");
+            }
+            console.error("Delete event error:", err);
         }
     };
 
@@ -112,27 +128,7 @@ export function WeeklyView(){
         });
     };
 
-    const generateWeekDays = () => {
-        const days = [];
-        const startOfWeek = new Date(currentWeek);
-        const day = startOfWeek.getDay();
-        const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-        startOfWeek.setDate(diff);
-        const today = new Date();
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(startOfWeek);
-            date.setDate(startOfWeek.getDate() + i);
-            const isToday = date.toDateString() === today.toDateString();
-            days.push({
-                dayName: ['hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat', 'vasárnap'][i],
-                date: date.getDate(),
-                fullDate: date,
-                isWeekend: i >= 5,
-                isToday: isToday
-            });
-        }
-        return days;
-    };
+    const weekDays = calendarManager ? calendarManager.getWeekView(currentWeek, selectedDate) : [];
 
     const generateTimeSlots = () => {
         const slots = [];
@@ -142,7 +138,6 @@ export function WeeklyView(){
         return slots;
     };
 
-    const weekDays = generateWeekDays();
     const timeSlots = generateTimeSlots();
     const monthName = currentWeek.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long' });
 
@@ -189,27 +184,30 @@ export function WeeklyView(){
                             ))}
                         </div>
                         {weekDays.map((day, dayIndex) => {
-                            // All events for this day
-                            const dateStr = day.fullDate.toISOString().split('T')[0];
-                            const dayEvents = events.filter(event => {
-                                const startTime = new Date(event.event_start_time);
-                                return startTime.toISOString().split('T')[0] === dateStr;
-                            });
-                            // For each hour, check if an event covers it
                             return (
-                                <div key={dayIndex} className="day-column" style={{ position: 'relative', height: '1440px' }}>
-                                    <div className={`day-header-cell ${day.isWeekend ? 'weekend' : ''} ${day.isToday ? 'current-day' : ''}`}>
-                                        <span className="day-name">{day.dayName}</span>
-                                        <span className="day-date">{day.date}</span>
+                                <div key={`day-${day.date.toISOString()}`} className="day-column" style={{ position: 'relative', height: '1440px' }}>
+                                    <div className={`day-header-cell${day.isToday ? ' current-day' : ''}${day.isSelected ? ' selected-day' : ''}`}>
+                                        <span className="day-name">{day.date.toLocaleDateString('hu-HU', { weekday: 'long' })}</span>
+                                        <span className="day-date">{day.date.getDate()}</span>
                                     </div>
-                                    {/* Hour lines and overlay for event creation */}
                                     {timeSlots.map((_, timeIndex) => {
                                         const hour = timeIndex;
+                                        const isLastRow = timeIndex === timeSlots.length - 1;
+                                        const isLastCol = dayIndex === weekDays.length - 1;
+                                        const isFirstCol = dayIndex === 0;
                                         return (
-                                            <>
-                                                {/* Hour line (border) */}
+                                            <div
+                                                key={`cell-${day.date.toISOString()}-${timeIndex}`}
+                                                style={{
+                                                    position: 'relative',
+                                                    width: '100%',
+                                                    borderRight: isLastRow || isLastCol ? '1px solid #e5e7eb' : 'none',
+                                                    borderLeft: isLastRow || isFirstCol ? '1px solid #e5e7eb' : 'none',
+                                                    borderBottom: isLastRow ? '1px solid #e5e7eb' : 'none',
+                                                    background: isLastRow ? '#fff' : 'transparent',
+                                                }}
+                                            >
                                                 <div
-                                                    key={`line-${timeIndex}`}
                                                     style={{
                                                         position: 'absolute',
                                                         top: `${hour * 60}px`,
@@ -220,39 +218,38 @@ export function WeeklyView(){
                                                         zIndex: 1
                                                     }}
                                                 />
-                                                {/* Transparent overlay for click */}
                                                 <div
-                                                    key={`overlay-${timeIndex}`}
                                                     style={{
                                                         position: 'absolute',
                                                         top: `${hour * 60}px`,
                                                         left: 0,
                                                         width: '100%',
                                                         height: '60px',
-                                                        background: 'transparent',
+                                                        background: isLastRow ? '#fff' : 'transparent',
+                                                        borderBottom: isLastRow ? '1px solid #e5e7eb' : 'none',
+                                                        borderTop: isLastRow ? '1px solid #e5e7eb' : 'none',
+                                                        borderLeft: isLastRow ? '1px solid #e5e7eb' : 'none',
                                                         zIndex: 2,
                                                         cursor: 'pointer',
                                                     }}
                                                     onClick={e => {
                                                         e.stopPropagation();
-                                                        handleCellClick(day.fullDate, hour, e);
+                                                        handleCellClick(day.date, hour, e);
                                                     }}
                                                 />
-                                            </>
+                                            </div>
                                         );
                                     })}
-                                    {/* Events absolute positioned, all moved one hour forward */}
-                                    {dayEvents.map((event, eventIdx) => {
-                                        const startTime = new Date(event.event_start_time);
-                                        const endTime = new Date(event.event_end_time);
-                                        // Subtract 60px so 08:00 starts at 420px, not 480px
+                                    {day.events.map((event, eventIdx) => {
+                                        const startTime = new Date(event.startTime);
+                                        const endTime = new Date(event.endTime);
                                         const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
                                         const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
                                         const top = Math.max(startMinutes + 60, 0);
                                         const height = Math.max(endMinutes - startMinutes, 15);
                                         return (
                                             <div
-                                                key={eventIdx}
+                                                key={`event-${event.event_id || event.eventId || eventIdx}-${day.date.toISOString()}`}
                                                 className="event-block event-absolute"
                                                 style={{
                                                     top: `${top}px`,
@@ -275,10 +272,9 @@ export function WeeklyView(){
                                                     setMiniPopup({ show: true, event, position: { x: e.clientX, y: e.clientY } });
                                                 }}
                                             >
-                                                <div className="event-name">{event.event_name}</div>
+                                                <div className="event-name">{event.eventName}</div>
                                                 <div className="event-time">
-                                                    {startTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })} -
-                                                    {endTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
+                                                    {event.formatTime()}
                                                 </div>
                                             </div>
                                         );

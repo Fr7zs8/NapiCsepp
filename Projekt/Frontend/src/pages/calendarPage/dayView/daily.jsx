@@ -2,6 +2,7 @@ import "./daily.css"
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from "react";
+import CalendarManager from "../../../classes/Views/calendarManager";
 import { eventService } from "../../../router/apiRouter";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
@@ -13,7 +14,7 @@ export function DailyView(){
     const [currentDay, setCurrentDay] = useState(new Date());
     const [showEventPopup, setShowEventPopup] = useState(false);
     const [selectedHour, setSelectedHour] = useState(null);
-    const [events, setEvents] = useState([]);
+    const [calendarManager, setCalendarManager] = useState(null);
     const [editingEvent, setEditingEvent] = useState(null);
     const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
 
@@ -36,7 +37,7 @@ export function DailyView(){
     const fetchEvents = async () => {
         try {
             const eventsData = await eventService.getOverview();
-            setEvents(eventsData || []);
+            setCalendarManager(new CalendarManager(currentDay, 'daily', [], eventsData || []));
         } catch (err) {
             console.error("Error fetching events:", err);
         }
@@ -51,9 +52,11 @@ export function DailyView(){
     };
 
     const handleHourClick = (hour, e) => {
-        const cellEvents = getEventsForDay().filter(event => {
-            const startTime = new Date(event.event_start_time);
-            const endTime = new Date(event.event_end_time);
+        if (!calendarManager) return;
+        const dayEvents = calendarManager.getDayView(currentDay).events;
+        const cellEvents = dayEvents.filter(event => {
+            const startTime = new Date(event.startTime);
+            const endTime = new Date(event.endTime);
             const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
             const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
             const slotStart = hour * 60;
@@ -99,15 +102,7 @@ export function DailyView(){
         }
     };
 
-    // Get all events for the current day
-    const getEventsForDay = () => {
-        const dateStr = currentDay.toISOString().split('T')[0];
-        return events.filter(event => {
-            const startTime = new Date(event.event_start_time);
-            const eventDateStr = startTime.toISOString().split('T')[0];
-            return eventDateStr === dateStr;
-        });
-    };
+    const dayData = calendarManager ? calendarManager.getDayView(currentDay) : { activities: [], events: [] };
 
     const generateTimeSlots = () => {
         const slots = [];
@@ -193,9 +188,9 @@ export function DailyView(){
                         />
                     </>
                 ))}
-                {getEventsForDay().map((event, idx) => {
-                    const startTime = new Date(event.event_start_time);
-                    const endTime = new Date(event.event_end_time);
+                {dayData.events.map((event, idx) => {
+                    const startTime = new Date(event.startTime);
+                    const endTime = new Date(event.endTime);
                     const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
                     const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
                     const top = startMinutes;
@@ -225,10 +220,9 @@ export function DailyView(){
                                 setMiniPopup({ show: true, event, position: { x: e.clientX, y: e.clientY } });
                             }}
                         >
-                            <div className="event-name">{event.event_name}</div>
+                            <div className="event-name">{event.eventName}</div>
                             <div className="event-time">
-                                {startTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })} -
-                                {endTime.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
+                                {event.formatTime()}
                             </div>
                         </div>
                     );
@@ -241,7 +235,7 @@ export function DailyView(){
                 selectedDate={currentDay}
                 selectedHour={selectedHour}
                 existingEvent={editingEvent}
-                eventsForDay={getEventsForDay()}
+                eventsForDay={dayData.events}
             />
             {miniPopup.show && (
                 <EventMiniPopup

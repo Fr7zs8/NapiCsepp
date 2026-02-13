@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import "./statisticsView.css"
 import { Calendar, SquareCheckBigIcon, Target, Award, TrendingUp, Activity, Loader2 } from "lucide-react"
 import { clientService, activityService } from "../../router/apiRouter";
+import Statistics from "../../classes/Views/statistics";
 
 export function StatisticsView(){
 
     const [stats, setStats] = useState(null);
+    const [statsObj, setStatsObj] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [weeklyPerDay, setWeeklyPerDay] = useState([]);
-    const [activeHabitsCount, setActiveHabitsCount] = useState(0);
     const [savedFlash, setSavedFlash] = useState(false);
 
     useEffect(()=>{
@@ -47,8 +48,9 @@ export function StatisticsView(){
                 activityService.getAllHabits()
             ]);
 
-            const statsObj = Array.isArray(statsRes) ? statsRes[0] : statsRes;
-            setStats(statsObj);
+            const statsRaw = Array.isArray(statsRes) ? statsRes[0] : statsRes;
+            setStats(statsRaw);
+            const statsInstance = new Statistics(statsRaw);
 
             const { monday, sunday } = getWeekRange(new Date());
             const perDay = Array.from({length:7}, (_,i)=>({ completed:0, pending:0 }));
@@ -69,7 +71,7 @@ export function StatisticsView(){
                         }
                     }
                 } catch(e) {
-                    // ignore parse errors
+                    //error ignorálása
                 }
             });
 
@@ -85,7 +87,10 @@ export function StatisticsView(){
                     return sd <= today && ed >= today;
                 } catch(e) { return false }
             }).length;
-            setActiveHabitsCount(activeCount);
+            const activeHabits = Statistics.getActiveHabitsCount(allHabits);
+            statsInstance.setExtra('activeHabitsCount', activeHabits);
+            statsInstance.setExtra('weeklyPerDay', perDay);
+            setStatsObj(statsInstance);
 
         } catch (err) {
             setError(err.message || "Hiba az adatok betöltése során!");
@@ -122,19 +127,19 @@ export function StatisticsView(){
         );
     }
 
-    const totalTasks = stats.total_activity || 0;
-    const completed = stats.completed || 0;
+    const totalTasks = statsObj?.totalActivities || 0;
+    const completed = statsObj?.completedActivities || 0;
     const pending = totalTasks - completed;
-    const completionRate = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
+    const completionRate = statsObj ? statsObj.getDailyCompletionRate() : 0;
 
-    const weeklyTotal = weeklyPerDay.reduce((s,d)=>s + d.completed + d.pending, 0);
-    const weeklyCompleted = weeklyPerDay.reduce((s,d)=>s + d.completed, 0);
-    const weeklyAverage = weeklyTotal > 0 ? Math.round(weeklyTotal / 7) : 0;
+    const activeHabitsCount = statsObj?.getExtra('activeHabitsCount') || 0;
 
-    const weekData = weeklyPerDay.length ? weeklyPerDay : [
+    const weekData = statsObj?.getExtra('weeklyPerDay')?.map((d,i) => ({...d, day: ['H','K','Sze','Cs','P','Szo','V'][i]})) || [
         { day: 'H', completed:0, pending:0 },{ day: 'K', completed:0, pending:0 },{ day: 'Sze', completed:0, pending:0 },{ day: 'Cs', completed:0, pending:0 },{ day: 'P', completed:0, pending:0 },{ day: 'Szo', completed:0, pending:0 },{ day: 'V', completed:0, pending:0 }
     ];
-    
+    const weeklyTotal = weekData.reduce((s,d)=>s + d.completed + d.pending, 0);
+    const weeklyCompleted = weekData.reduce((s,d)=>s + d.completed, 0);
+    const weeklyAverage = weeklyTotal > 0 ? Math.round(weeklyTotal / 7) : 0;
     const maxValue = Math.max(...weekData.map(d => d.completed + d.pending), 1);
 
     return (
@@ -148,25 +153,25 @@ export function StatisticsView(){
                 <div className="counter-div allTasks">
                     <p className="counter-label">Összes feladat</p>
                     <SquareCheckBigIcon size={32}/>
-                    <p className="counter-value">{totalTasks}</p>
+                    <p className="counter-value">{statsObj?.totalActivities || 0}</p>
                     <p className="counter-desc">Teendők + Szokások</p>
                 </div>
                 <div className="counter-div completed">
                     <p className="counter-label">Befejezett feladatok</p>
                     <Award size={32}/>
-                    <p className="counter-value">{completed}</p>
+                    <p className="counter-value">{statsObj?.completedActivities || 0}</p>
                     <p className="counter-desc">Elvégzett feladatok</p>
                 </div>
                 <div className="counter-div events">
                     <p className="counter-label">Összes események</p>
                     <Calendar size={32}/>
-                    <p className="counter-value">{stats.monthly_events_count || 0}</p>
+                    <p className="counter-value">{statsObj?.monthlyEventsCount || 0}</p>
                     <p className="counter-desc">Naptári események</p>
                 </div>
                 <div className="counter-div active">
-                    <p className="counter-label">Összes szokások</p>
+                    <p className="counter-label">Aktív szokások</p>
                     <Target size={32}/>
-                    <p className="counter-value">{activeHabitsCount || stats.daily_tasks_count || 0}</p>
+                    <p className="counter-value">{activeHabitsCount}</p>
                     <p className="counter-desc">Aktív szokások</p>
                 </div>
             </div>
@@ -193,7 +198,7 @@ export function StatisticsView(){
                 <div className="ratio-div">
                     <div className="completed-div">
                         <p>Befejezett</p>
-                        <p className="ratio-value">{completed}</p>
+                        <p className="ratio-value">{statsObj?.completedActivities || 0}</p>
                     </div>
                     <div className="pending-div">
                         <p>Függőben lévő</p>
@@ -209,15 +214,15 @@ export function StatisticsView(){
                     </div>
                     <div className="priority-item high-difficulty">
                         <p>Magas nehézség</p>
-                        <p className="priority-value">{stats.hard_tasks || 0}</p>
+                        <p className="priority-value">{statsObj?.hardTasks || 0}</p>
                     </div>
                     <div className="priority-item mid-difficulty">
                         <p>Közepes nehézség</p>
-                        <p className="priority-value">{stats.middle_tasks || 0}</p>
+                        <p className="priority-value">{statsObj?.middleTasks || 0}</p>
                     </div>
                     <div className="priority-item low-difficulty">
                         <p>Alacsony nehézség</p>
-                        <p className="priority-value">{stats.easy_tasks || 0}</p>
+                        <p className="priority-value">{statsObj?.easyTasks || 0}</p>
                     </div>
                 </div>
                 <div className="habit-stats-div">

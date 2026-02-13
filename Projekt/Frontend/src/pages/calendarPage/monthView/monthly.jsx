@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 import { activityService } from "../../../router/apiRouter";
+import CalendarManager from "../../../classes/Views/calendarManager";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 import { eventService } from "../../../router/apiRouter";
@@ -20,6 +21,7 @@ export function MonthlyView(){
     const [activities, setActivities] = useState([]);
     const [habits, setHabits] = useState([]);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+    const [calendarManager, setCalendarManager] = useState(null);
     
     const daysOfWeek = ['H', 'K', 'Sz', 'Cs', 'P', 'Sz', 'V'];
 
@@ -49,6 +51,7 @@ export function MonthlyView(){
             setEvents(eventsData || []);
             setActivities(activitiesData || []);
             setHabits(habitsData || []);
+            setCalendarManager(new CalendarManager(currentMonth, 'monthly', activitiesData || [], eventsData || []));
         } catch (err) {
             console.error("Error fetching data:", err);
         }
@@ -127,86 +130,7 @@ export function MonthlyView(){
 
     const closeMiniPopup = () => setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
 
-    const getCountsForDay = (day, isCurrentMonth) => {
-        if (!isCurrentMonth) return { events: 0, tasks: 0, habits: 0 };
-
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth();
-        const dateStr = new Date(year, month, day).toLocaleDateString('en-CA');
-
-        const eventCount = events.filter(e => {
-            const eventDate = new Date(e.event_start_time).toLocaleDateString('en-CA');
-            return eventDate === dateStr;
-        }).length;
-
-        const taskCount = activities.filter(a => {
-            const startDate = a.activity_start_date || a.activity_date || a.date;
-            if (!startDate) return false;
-            const actDate = new Date(startDate + 'T00:00:00').toISOString().split('T')[0];
-            const checkDate = new Date(dateStr + 'T00:00:00').toISOString().split('T')[0];
-            return actDate === checkDate;
-        }).length;
-
-        const habitCount = habits.filter(h => {
-            const startDate = h.activity_start_date || h.startDate;
-            const endDate = h.activity_end_date || h.endDate;
-            if (!startDate) return false;
-            try {
-                const sd = new Date(startDate + 'T00:00:00');
-                const ed = endDate ? new Date(endDate + 'T23:59:59') : sd;
-                const checkDate = new Date(dateStr + 'T00:00:00');
-                return checkDate >= sd && checkDate <= ed;
-            } catch {
-                return false;
-            }
-        }).length;
-
-        return { events: eventCount, tasks: taskCount, habits: habitCount };
-    };
-    
-    const generateCalendarDays = () => {
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth();
-        
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        
-        const firstDayOfWeek = firstDay.getDay();
-        const daysInMonth = lastDay.getDate();
-        
-        const today = new Date();
-        const days = [];
-        
-        const startDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-        for (let i = startDay; i > 0; i--) {
-            const prevDate = new Date(year, month, 1 - i);
-            days.push({ date: prevDate.getDate(), isCurrentMonth: false, isSunday: false, isToday: false });
-        }
-
-        for (let i = 1; i <= daysInMonth; i++) {
-            const date = new Date(year, month, i);
-            const dayOfWeek = date.getDay();
-            const isSunday = dayOfWeek === 0;
-            const isToday = date.toDateString() === today.toDateString();
-            days.push({ date: i, isCurrentMonth: true, isSunday, isToday });
-        }
-        
-        const currentLength = days.length;
-        const daysInLastRow = currentLength % 7;
-        
-        if (daysInLastRow !== 0) {
-            const remainingDays = 7 - daysInLastRow;
-            for (let i = 1; i <= remainingDays; i++) {
-                const nextDate = new Date(year, month + 1, i);
-                const isSunday = nextDate.getDay() === 0;
-                days.push({ date: i, isCurrentMonth: false, isSunday, isToday: false });
-            }
-        }
-        
-        return days;
-    };
-    
-    const calendarDays = generateCalendarDays();
+    const calendarDays = calendarManager ? calendarManager.getMonthView(currentMonth, activities, habits) : [];
     const monthName = currentMonth.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long' });
 
     return(
@@ -252,25 +176,27 @@ export function MonthlyView(){
                         </div>
                     ))}
                     {calendarDays.map((day, index) => {
-                        const counts = getCountsForDay(day.date, day.isCurrentMonth);
+                        const eventCount = day.events.length;
+                        const taskCount = day.taskCount || 0;
+                        const habitCount = day.habits.length;
                         return (
-                            <div 
-                                key={index} 
+                            <div
+                                key={index}
                                 className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isSunday ? 'sunday' : ''} ${day.isToday ? 'current-day' : ''}`}
-                                onClick={() => handleDayClick(day.date, day.isCurrentMonth)}
+                                onClick={() => handleDayClick(day.date.getDate(), day.isCurrentMonth)}
                                 style={{ cursor: day.isCurrentMonth ? 'pointer' : 'default' }}
                             >
-                                <span className="day-number">{day.date}</span>
-                                {day.isCurrentMonth && (counts.events > 0 || counts.tasks > 0 || counts.habits > 0) && (
+                                <span className="day-number">{day.date.getDate()}</span>
+                                {day.isCurrentMonth && (eventCount > 0 || taskCount > 0 || habitCount > 0) && (
                                     <div className="day-counters">
-                                        {counts.events > 0 && (
-                                            <span className="counter-badge events">{counts.events}</span>
+                                        {eventCount > 0 && (
+                                            <span className="counter-badge events">{eventCount}</span>
                                         )}
-                                        {counts.tasks > 0 && (
-                                            <span className="counter-badge tasks">{counts.tasks}</span>
+                                        {taskCount > 0 && (
+                                            <span className="counter-badge tasks">{taskCount}</span>
                                         )}
-                                        {counts.habits > 0 && (
-                                            <span className="counter-badge habits">{counts.habits}</span>
+                                        {habitCount > 0 && (
+                                            <span className="counter-badge habits">{habitCount}</span>
                                         )}
                                     </div>
                                 )}

@@ -18,6 +18,7 @@ import UserService from "../classes/Services/userService";
 import ActivityService from "../classes/Services/activityService";
 import { ProtectedRouter } from "./protectedRouter";
 import EventService from "../classes/Services/eventService";
+import { AdminView } from "../pages/adminPage/adminView";
 
 const api = new ApiService("http://localhost:3000");
 export const activityService = new ActivityService(api);
@@ -117,6 +118,16 @@ export const appRouter = createBrowserRouter([
       <ProtectedRouter>
         <Layout>
           <HabitView />
+        </Layout>
+      </ProtectedRouter>
+    ),
+  },
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRouter>
+        <Layout>
+          <AdminView />
         </Layout>
       </ProtectedRouter>
     ),

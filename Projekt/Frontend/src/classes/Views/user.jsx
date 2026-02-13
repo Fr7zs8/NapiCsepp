@@ -8,15 +8,22 @@ export default class User{
         this.register_date = register_date
     }
 
-    getActivities(){
-
+    getActivities() {
+        // Placeholder
+        return [];
     }
 
-    isAdmin(){
-
+    isAdmin() {
+        return this.role === 'admin' || this.role === 'ADMIN';
     }
 
-    toJSON(){
-        
+    toJSON() {
+        return {
+            user_id: this.user_id,
+            email: this.email,
+            username: this.username,
+            role: this.role,
+            register_date: this.register_date
+        };
     }
 }

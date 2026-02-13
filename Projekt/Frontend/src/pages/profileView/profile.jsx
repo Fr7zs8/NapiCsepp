@@ -1,13 +1,15 @@
 import "./profile.css"
 import { User, Mail, Database, Lock, Loader2, Award, Target, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
-import { clientService } from "../../router/apiRouter";
+import { clientService, activityService } from "../../router/apiRouter";
+import Statistics from "../../classes/Views/statistics";
 import { SquareCheckBig } from "lucide-react";
 
 export function ProfileView(){
 
     const [profile, setProfile] = useState(null);
-    const [stats, setStats] = useState(null);
+    // nem kell külön stats változó
+    const [statsObj, setStatsObj] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -23,7 +25,12 @@ export function ProfileView(){
             setProfile(Array.isArray(profileData) ? profileData[0] : profileData);
             
             const statsData = await clientService.getStatistics();
-            setStats(Array.isArray(statsData) ? statsData[0] : statsData);
+            const statsRaw = Array.isArray(statsData) ? statsData[0] : statsData;
+            // setStats(statsRaw); // nem kell, csak statsObj kell
+            const allHabits = await activityService.getAllHabits ? await activityService.getAllHabits() : [];
+            const statsInstance = new Statistics(statsRaw);
+            statsInstance.setExtra('activeHabitsCount', Statistics.getActiveHabitsCount(allHabits));
+            setStatsObj(statsInstance);
         }
         catch(error){
             setError(error.message || "Hiba az adatok betöltése során.");
@@ -113,7 +120,7 @@ export function ProfileView(){
                 </div>
             </div>
             
-            {stats && (
+            {statsObj && (
                 <div className="profile-stats-div">
                     <div className="stats-header">
                         <p className="stats-title">Profil statisztikák</p>
@@ -127,7 +134,7 @@ export function ProfileView(){
                                 
                             </div>
                             <div>
-                                <p className="data-value">{stats.total_activity || 0}</p>
+                                <p className="data-value">{statsObj.totalActivities || 0}</p>
                                 
                             </div>
                         </div>
@@ -137,18 +144,17 @@ export function ProfileView(){
                                 <Award size={24} />
                             </div>
                             <div>
-                                <p className="data-value">{stats.completed || 0}</p>
+                                <p className="data-value">{statsObj.completedActivities || 0}</p>
                                 
                             </div>
                         </div>
                         <div className="data-item">
                             <div className="data-icon-label">
-                                <p className="data-label">Napi feladatok</p>
+                                <p className="data-label">Aktív szokások</p>
                                 <Target size={24} />
                             </div>
                             <div>
-                                <p className="data-value">{stats.daily_tasks_count || 0}</p>
-                                
+                                <p className="data-value">{statsObj.getExtra('activeHabitsCount') || 0}</p>
                             </div>
                         </div>
                         <div className="data-item">
@@ -157,7 +163,7 @@ export function ProfileView(){
                                 <Calendar size={24} />
                             </div>
                             <div>
-                                <p className="data-value">{stats?.monthly_events_count || 0}</p>
+                                <p className="data-value">{statsObj.monthlyEventsCount || 0}</p>
                                 
                             </div>
                         </div>

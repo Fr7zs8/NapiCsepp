@@ -1,3 +1,14 @@
+.day-header-cell.current-day {
+    background: linear-gradient(135deg, #e6fff6 0%, #e0f7fa 100%);
+    color: #176b5c;
+    border-bottom: 2px solid #10b981;
+}
+
+.day-header-cell.selected-day {
+    background: linear-gradient(135deg, #fffde4 0%, #e1ffe6 100%);
+    color: #222;
+    border-bottom: 2px solid #f9c846;
+}
 .event-block {
     position: absolute;
     left: 0;
