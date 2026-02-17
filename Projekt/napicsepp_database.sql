@@ -23,6 +23,7 @@ CREATE TABLE `activities` (
     `activity_achive` int(11) DEFAULT NULL,
     `activity_start_date` date DEFAULT NULL,
     `activity_end_date` date DEFAULT NULL,
+    `progress_counter` int DEFAULT NULL,
     FOREIGN KEY (`activity_type_id`) REFERENCES `types`(`type_id`) ON DELETE CASCADE,
     FOREIGN KEY (`activity_difficulty_id`) REFERENCES `difficulties`(`difficulty_id`) ON DELETE CASCADE
 );
@@ -68,12 +69,12 @@ INSERT INTO `types` (`type_id`, `type_name`) VALUES
 (4, 'Szokás'),
 (5, 'Mozgás');
 
-INSERT INTO `activities` (`activity_id`, `activity_name`, `activity_type_id`, `activity_difficulty_id`, `activity_achive`, `activity_start_date`, `activity_end_date`) VALUES
-(1, 'Levinni a szemetet', 1, 1, 1, '2025-11-10', '2025-11-10'),
-(2, 'Mosás', 1, 1, 0, '2025-11-12', '2025-11-12'),
-(3, 'Angol tz tanulni', 2, 2, 1, '2025-11-01', '2025-11-01'),
-(4, '2 liter viz', 4, 1, 0, '2025-12-01', '2025-12-30'),
-(5, 'Diétá követés', 4, 3, 0, '2025-11-10', '2025-12-10');
+INSERT INTO `activities` (`activity_id`, `activity_name`, `activity_type_id`, `activity_difficulty_id`, `activity_achive`, `activity_start_date`, `activity_end_date`, `progress_counter`) VALUES
+(1, 'Levinni a szemetet', 1, 1, 1, '2025-11-10', '2025-11-10', 0),
+(2, 'Mosás', 1, 1, 0, '2025-11-12', '2025-11-12', 0),
+(3, 'Angol tz tanulni', 2, 2, 1, '2025-11-01', '2025-11-01', 0),
+(4, '2 liter viz', 4, 1, 0, '2025-12-01', '2025-12-30', 0),
+(5, 'Diétá követés', 4, 3, 0, '2025-11-10', '2025-12-10', 0);
 
 CREATE FUNCTION `pwd_encrypt` (`pwd` VARCHAR(100)) RETURNS VARCHAR(255) CHARSET utf8 COLLATE utf8_general_ci DETERMINISTIC RETURN SHA2(concat(pwd,'sozas'),256);
 

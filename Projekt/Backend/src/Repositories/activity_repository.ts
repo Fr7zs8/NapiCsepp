@@ -83,8 +83,8 @@ export class ActivityRepository {
   ) {
     const [result]: any = await connection.query(
       `INSERT INTO activities 
-       (activity_name, activity_type_id, activity_difficulty_id, activity_achive, activity_start_date, activity_end_date)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+       (activity_name, activity_type_id, activity_difficulty_id, activity_achive, activity_start_date, activity_end_date, progress_counter)
+       VALUES (?, ?, ?, ?, ?, ?,?)`,
       [
         newelem.activity_name,
         typeId,
@@ -92,6 +92,7 @@ export class ActivityRepository {
         newelem.activity_achive,
         newelem.activity_start_date,
         newelem.activity_end_date,
+        newelem.progress_counter,
       ],
     );
 
@@ -180,6 +181,11 @@ export class ActivityRepository {
       if (activity.activity_end_date !== undefined) {
         updateFields.push("activity_end_date = ?");
         values.push(activity.activity_end_date);
+      }
+
+      if (activity.progress_counter !== undefined) {
+        updateFields.push("progress_counter = ?");
+        values.push(activity.progress_counter);
       }
 
       if (updateFields.length === 0) {

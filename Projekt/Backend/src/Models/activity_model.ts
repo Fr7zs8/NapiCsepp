@@ -6,6 +6,7 @@ export interface IActivity {
   activity_achive: boolean;
   activity_start_date: Date;
   activity_end_date: Date;
+  progress_counter: Number
 }
 
 export class Activity implements IActivity {
@@ -16,6 +17,7 @@ export class Activity implements IActivity {
   activity_achive: boolean;
   activity_start_date: Date;
   activity_end_date: Date;
+  progress_counter: Number;
 
   constructor(init: IActivity) {
     ((this.activity_id = init.activity_id),
@@ -24,6 +26,9 @@ export class Activity implements IActivity {
       (this.activity_difficulty_name = init.activity_difficulty_name),
       (this.activity_achive = init.activity_achive),
       (this.activity_start_date = init.activity_start_date),
-      (this.activity_end_date = init.activity_end_date));
+      (this.activity_end_date = init.activity_end_date),
+      (this.progress_counter = init.progress_counter)
+    );
+
   }
 }

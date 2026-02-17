@@ -55,6 +55,7 @@ CREATE TABLE `activities` (
   `activity_achive` int(11) DEFAULT NULL,
   `activity_start_date` date DEFAULT NULL,
   `activity_end_date` date DEFAULT NULL,
+  `progress_counter` int DEFAULT NULL,
   PRIMARY KEY (`activity_id`),
   KEY `activity_type_id` (`activity_type_id`),
   KEY `activity_difficulty_id` (`activity_difficulty_id`),
@@ -128,17 +129,13 @@ INSERT INTO `difficulties` (`difficulty_id`, `difficulty_name`) VALUES
 (2, 'Közepes'),
 (3, 'Nehéz');
 
-INSERT INTO `activities` (`activity_id`, `activity_name`, `activity_type_id`, `activity_difficulty_id`, `activity_achive`, `activity_start_date`, `activity_end_date`) VALUES
-(1, 'Levinni a szemetet', 1, 1, 1, '2025-11-10', '2025-11-10'),
-(2, 'Mosás', 1, 1, 0, '2025-11-12', '2025-11-12'),
-(3, 'Angol tz tanulni', 2, 2, 1, '2025-11-01', '2025-11-01'),
-(4, '2 liter viz', 4, 1, 0, '2026-02-12', '2026-02-19'),
-(5, 'Diétá követés', 4, 3, 0, '2025-11-10', '2025-12-10'),
-(6, 'Mosogatás', 1, 1, 1, '2026-01-02', '2026-01-02'),
-(7, 'Mosás', 1, 1, 0, '2026-02-13', '2026-02-13'),
-(8, 'Project bemutatás', 2, 3, 0, '2026-02-13', '2026-02-13'),
-(9, 'Fogmosás', 1, 1, 1, '2026-02-13', '2026-02-13'),
-(10, '8000 lépés naponta', 5, 2, 0, '2026-02-13', '2026-02-13');
+
+INSERT INTO `activities` (`activity_id`, `activity_name`, `activity_type_id`, `activity_difficulty_id`, `activity_achive`, `activity_start_date`, `activity_end_date`, `progress_counter`) VALUES
+(1, 'Levinni a szemetet', 1, 1, 1, '2025-11-10', '2025-11-10', 0),
+(2, 'Mosás', 1, 1, 0, '2025-11-12', '2025-11-12', 0),
+(3, 'Angol tz tanulni', 2, 2, 1, '2025-11-01', '2025-11-01', 0),
+(4, '2 liter viz', 4, 1, 0, '2025-12-01', '2025-12-30', 0),
+(5, 'Diétá követés', 4, 3, 0, '2025-11-10', '2025-12-10', 0);
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `language`, `role`, `register_date`) VALUES
 (1, 'admin', 'admin@gmail.com', 'admin123', 'hu', 'admin', '2025-11-27 00:00:00'),
@@ -156,12 +153,7 @@ INSERT INTO `users_activities` (`user_id`, `activity_id`) VALUES
 (2, 3),
 (2, 4),
 (3, 2),
-(3, 5),
-(2, 6),
-(2, 7),
-(2, 8),
-(2, 10),
-(2, 9);
+(3, 5);
 
 INSERT INTO `users_events` (`user_id`, `event_id`) VALUES
 (2, 1),
@@ -286,7 +278,7 @@ CREATE PROCEDURE `pr_pullactivities` (IN `user_id` INT)
 BEGIN
     SELECT activities.activity_id, activities.activity_name, types.type_name, difficulties.difficulty_name, activities.activity_achive,
            DATE_FORMAT(activities.activity_start_date, '%Y-%m-%d') AS activity_start_date,
-           DATE_FORMAT(activities.activity_end_date, '%Y-%m-%d') AS activity_end_date
+           DATE_FORMAT(activities.activity_end_date, '%Y-%m-%d') AS activity_end_date, activities.progress_counter
     FROM activities
     JOIN types ON types.type_id = activities.activity_type_id
     JOIN difficulties ON difficulties.difficulty_id = activities.activity_difficulty_id
@@ -319,7 +311,7 @@ BEGIN
         activities.activity_name,
         DATE_FORMAT(activities.activity_start_date, '%Y-%m-%d') AS activity_start_date,
         DATE_FORMAT(activities.activity_end_date, '%Y-%m-%d') AS activity_end_date,
-        activities.activity_achive, 
+        activities.activity_achive, activities.progress_counter,
         users.username, 
         types.type_name, 
         difficulties.difficulty_name
