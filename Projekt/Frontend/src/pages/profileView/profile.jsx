@@ -110,14 +110,12 @@ export function ProfileView(){
                     </div>
                     <p className="data-value">{profile.register_date}</p>
                 </div>
+            </div>
 
-                <div className="data-item">
-                    <div className="data-icon-label">
-                        <Database size={20} />
-                        <p className="data-label">Adatok tárolása</p>
-                    </div>
-                    <p className="data-value">MySQL Adatbázis</p>
-                </div>
+            <div className="edit-profile-div">
+                <button className="edit-profile-btn">
+                    Adatok szerkesztése
+                </button>
             </div>
             
             {statsObj && (

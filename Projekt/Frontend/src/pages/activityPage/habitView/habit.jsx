@@ -59,15 +59,7 @@ export function HabitView() {
       };
       await activityService.createHabit(habitData);
       const data = await activityService.getAllHabits();
-      const allActivities = await activityService.getAllActivities();
       const habitObj = data.map((item) => {
-        const checkedCount = allActivities.filter(
-          (a) =>
-            a.type_name === "Szokás" &&
-            a.activity_name === item.activity_name &&
-            (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
-        ).length;
-
         let targetDaysVal = null;
         if (item.target_days || item.target_days === 0) {
           targetDaysVal = Number(item.target_days);
@@ -94,7 +86,8 @@ export function HabitView() {
           targetDaysVal,
           item.activity_start_date,
           item.activity_end_date,
-          checkedCount,
+          null, // checkedDays - nem használjuk többé
+          item.progress_counter, // progressCounter a backendből
         );
       });
       setHabits(habitObj);
@@ -139,15 +132,7 @@ export function HabitView() {
       };
       await activityService.updateHabit(editId, updateData);
       const data = await activityService.getAllHabits();
-      const allActivities = await activityService.getAllActivities();
       const habitObj = data.map((item) => {
-        const checkedCount = allActivities.filter(
-          (a) =>
-            a.type_name === "Szokás" &&
-            a.activity_name === item.activity_name &&
-            (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
-        ).length;
-
         let targetDaysVal = null;
         if (item.target_days || item.target_days === 0) {
           targetDaysVal = Number(item.target_days);
@@ -174,7 +159,8 @@ export function HabitView() {
           targetDaysVal,
           item.activity_start_date,
           item.activity_end_date,
-          checkedCount,
+          null,
+          item.progress_counter,
         );
       });
       setHabits(habitObj);
@@ -193,15 +179,7 @@ export function HabitView() {
     try {
       await activityService.deleteHabit(id);
       const data = await activityService.getAllHabits();
-      const allActivities = await activityService.getAllActivities();
       const habitObj = data.map((item) => {
-        const checkedCount = allActivities.filter(
-          (a) =>
-            a.type_name === "Szokás" &&
-            a.activity_name === item.activity_name &&
-            (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
-        ).length;
-
         let targetDaysVal = null;
         if (item.target_days || item.target_days === 0) {
           targetDaysVal = Number(item.target_days);
@@ -228,7 +206,8 @@ export function HabitView() {
           targetDaysVal,
           item.activity_start_date,
           item.activity_end_date,
-          checkedCount,
+          null,
+          item.progress_counter,
         );
       });
       setHabits(habitObj);
@@ -247,16 +226,8 @@ export function HabitView() {
       try {
         setLoading(true);
         const data = await activityService.getAllHabits();
-        const allActivities = await activityService.getAllActivities();
 
         const habitObj = data.map((item) => {
-          const checkedCount = allActivities.filter(
-            (a) =>
-              a.type_name === "Szokás" &&
-              a.activity_name === item.activity_name &&
-              (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
-          ).length;
-
           let targetDaysVal = null;
           if (item.target_days || item.target_days === 0) {
             targetDaysVal = Number(item.target_days);
@@ -283,7 +254,8 @@ export function HabitView() {
             targetDaysVal,
             item.activity_start_date,
             item.activity_end_date,
-            checkedCount,
+            null, // checkedDays - nem használjuk többé
+            item.progress_counter, // progressCounter a backendből
           );
         });
         setHabits(habitObj);

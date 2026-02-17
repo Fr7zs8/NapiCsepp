@@ -279,7 +279,29 @@ export function TaskView(){
     async function toggleTaskAchieved(taskId, currentValue) {
         try {
             const newVal = currentValue ? 0 : 1;
+            
+            // Frissítjük a task activity_achive mezőjét
             await activityService.updateTask(taskId, { activity_achive: newVal });
+
+            // Ha ez egy szokásból generált to-do, akkor frissítjük a habit progress_counter-ét is
+            const task = tasks.find(t => t.taskId === taskId);
+            if (task && task.typeName === "Szokás" && newVal === 1) {
+                try {
+                    // Megkeressük az eredeti habit-et név alapján
+                    const habitsData = await activityService.getAllHabits();
+                    const parentHabit = habitsData.find(h => h.activity_name === task.taskName);
+                    
+                    if (parentHabit) {
+                        // Növeljük a progress_counter-t
+                        const newProgressCounter = (parentHabit.progress_counter || 0) + 1;
+                        await activityService.updateHabit(parentHabit.activity_id, {
+                            progress_counter: newProgressCounter
+                        });
+                    }
+                } catch (e) {
+                    console.error("Hiba a habit progress counter frissítése során:", e);
+                }
+            }
 
             await refreshActivities();
             try { window.dispatchEvent(new Event('activitiesUpdated')); } catch(e){}

@@ -37,9 +37,7 @@ export function MonthlyView(){
             return () => window.removeEventListener('resize', handleResize);
     }, [isMobile, navigate]);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    
 
     const fetchData = async () => {
         try {
@@ -57,7 +55,9 @@ export function MonthlyView(){
         }
     };
 
-    
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const changeMonth = (direction) => {
         setCurrentMonth(prev => {
@@ -189,13 +189,13 @@ export function MonthlyView(){
                                 {day.isCurrentMonth && (eventCount > 0 || taskCount > 0 || habitCount > 0) && (
                                     <div className="day-counters">
                                         {eventCount > 0 && (
-                                            <span className="counter-badge events">{eventCount}</span>
+                                            <span className="counter-badge events">🔔 {eventCount}</span>
                                         )}
                                         {taskCount > 0 && (
-                                            <span className="counter-badge tasks">{taskCount}</span>
+                                            <span className="counter-badge tasks">📓 {taskCount}</span>
                                         )}
                                         {habitCount > 0 && (
-                                            <span className="counter-badge habits">{habitCount}</span>
+                                            <span className="counter-badge habits">⭐ {habitCount}</span>
                                         )}
                                     </div>
                                 )}
@@ -207,9 +207,9 @@ export function MonthlyView(){
             <div className="explanation-div">
                 <p className="explanation-title">Jelmagyarázat</p>
                 <div className="calendar-legend">
-                    <span><span className="counter-badge events"></span> Események</span>
-                    <span><span className="counter-badge tasks"></span> Teendők</span>
-                    <span><span className="counter-badge habits"></span> Szokások</span>
+                    <span><span className="counter-badge events"></span> 🔔 Események</span>
+                    <span><span className="counter-badge tasks"></span> 📓 Teendők</span>
+                    <span><span className="counter-badge habits"></span> ⭐ Szokások</span>
                 </div>
             </div>
 
