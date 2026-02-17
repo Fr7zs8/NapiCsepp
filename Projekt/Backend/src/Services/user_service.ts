@@ -52,4 +52,14 @@ export class UserService {
 
     return results;
   }
+
+  async editUser(user: User, userId: number, admin_id: number) {
+    const results = await this.repository.editUser(userId, user, admin_id);
+
+    if (!results) {
+      throw new Error("Nincs semmi változtatni való!")
+    }
+
+    return results;
+  }
 }

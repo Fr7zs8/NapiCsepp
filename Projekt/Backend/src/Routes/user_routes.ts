@@ -20,4 +20,5 @@ router.get(
 
 router.post("/napicsepp/regisztrate", controller.register.bind(controller));
 
+router.put("/napicsepp/users/:id", verifyToken, controller.putUser.bind(controller));
 export default router;
