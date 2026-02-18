@@ -37,8 +37,12 @@ export class UserService {
   }
 
   async getAllUser(user_id: number) {
-    if (user_id != 1) {
-      throw new Error("Csak az admin kérheti le!");
+    const moderators = await this.repository.getModerators();
+
+    const isModerator = moderators.some((m: { user_id: number }) => m.user_id == user_id);
+
+    if (!isModerator) {
+      throw new Error("Csak a moderátor kérheti le!");
     }
     const results = await this.repository.getAllUser();
 
@@ -68,7 +72,7 @@ export class UserService {
     if (user_id !== 1) {
       throw new Error("Csak az admin kérheti le.")
     }
-    const result = await this.repository.getModerators(user_id);
+    const result = await this.repository.getModerators();
 
     if (result.length < 0) {
       throw new Error("Nincs egy db moderátor se.")
