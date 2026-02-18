@@ -52,4 +52,29 @@ export class UserService {
 
     return results;
   }
+
+  async editUser(user: User, userId: number, admin_id: number) {
+    const results = await this.repository.editUser(userId, user, admin_id);
+
+    if (!results) {
+      throw new Error("Nincs semmi változtatni való!")
+    }
+
+    return results;
+  }
+
+  async getmoderators(user_id: number) {
+
+    if (user_id !== 1) {
+      throw new Error("Csak az admin kérheti le.")
+    }
+    const result = await this.repository.getModerators(user_id);
+
+    if (result.length < 0) {
+      throw new Error("Nincs egy db moderátor se.")
+    }
+
+    return result;
+  }
+
 }

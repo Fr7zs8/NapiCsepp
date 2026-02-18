@@ -54,4 +54,35 @@ export class UserController {
       res.status(400).send({ error: err.message });
     }
   }
+
+  async putUser(req: any, res: Response) {
+    try {
+      const user_id = req.params.id;
+      const user = req.body;
+      const admin_id = req.user.user_id;
+
+      const success = await service.editUser(user, user_id, admin_id);
+      if (success) {
+        res.status(200).send("Sikeres modositás!");
+      }
+    }
+    catch (e: any) {
+      res.status(400).send({ error: e.message })
+    }
+  }
+
+  async getModerators(req: any, res: Response) {
+    try {
+      const admin_id: number = req.user.user_id;
+
+      const success = await service.getmoderators(admin_id);
+
+      if (success) {
+        res.status(200).send(success);
+      }
+    }
+    catch (e: any) {
+      res.status(400).send({ error: e.message })
+    }
+  }
 }

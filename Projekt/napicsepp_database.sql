@@ -205,3 +205,5 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+UPDATE users SET users.password =  pwd_encrypt("12345") WHERE users.user_id = 2;
