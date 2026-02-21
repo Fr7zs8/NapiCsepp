@@ -1,38 +1,33 @@
 {
-	"compilerOptions": {
-		"target": "es5",
-		"module": "commonjs",
-		//"moduleResolution": "node",
-		"lib": [
-			"es2015"
-		],
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    //"moduleResolution": "node",
+    "lib": ["es2015"],
 
-		"rootDir": "src",
-		"outDir": "dir",
+    "rootDir": "src",
+    "outDir": "dir",
 
-		"strict": true,
-		"alwaysStrict": true,
-		"strictFunctionTypes": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
 
-		"forceConsistentCasingInFileNames": true,
-		"noImplicitAny": true,
-		"noImplicitReturns": true,
-		"noImplicitThis": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"esModuleInterop": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"downlevelIteration": true,
-		"declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+    "declaration": true,
 
-		"pretty": true
-	},
-	"include": [
-		"typings/**/*",
-		"src/**/*"
-	]
+    "pretty": true
+  },
+  "include": ["typings/**/*", "src/**/*"]
 }

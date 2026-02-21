@@ -9,6 +9,8 @@ import typesRouter from "../Routes/type_routes";
 import difficultyRouter from "../Routes/difficulty_routes";
 import overviewRouter from "../Routes/overview_routes";
 import statisticRouter from "../Routes/statistic_routes";
+import cron from "node-cron";
+import { resetHabitState } from "../middleware/cron";
 
 const app = express();
 
@@ -16,6 +18,10 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+cron.schedule("0 0 * * *", () => {
+  resetHabitState();
+});
 
 app.use("/", router);
 app.use("/", eventRouter);
