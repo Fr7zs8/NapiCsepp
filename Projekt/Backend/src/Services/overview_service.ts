@@ -1,3 +1,5 @@
+import { HttpException } from "../middleware/error";
+import { Overview } from "../Models/overview_model";
 import { OverviewRepository } from "../Repositories/overview_repository";
 
 export class OverviewService {
@@ -7,10 +9,10 @@ export class OverviewService {
     this.repository = new OverviewRepository();
   }
 
-  async getOverview() {
+  async getOverview(): Promise<Overview[]> {
     const results = await this.repository.getOverview();
     if (!results || results.length === 0) {
-      throw new Error("Nincs semmi adat.");
+      throw new HttpException(404, "Nincs semmi adat.");
     }
     return results;
   }
