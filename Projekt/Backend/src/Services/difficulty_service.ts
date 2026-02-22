@@ -1,4 +1,6 @@
+import { IDifficulty } from "../Models/difficulty_model";
 import { DiffiCultyRepository } from "../Repositories/difficulty_repository";
+import { HttpException } from "../middleware/error";
 
 export class DifficultyService {
   private repository: DiffiCultyRepository;
@@ -7,10 +9,10 @@ export class DifficultyService {
     this.repository = new DiffiCultyRepository();
   }
 
-  async getDifficulties() {
+  async getDifficulties(): Promise<IDifficulty[]> {
     const results = await this.repository.getDifficulties();
     if (!results || results.length === 0) {
-      throw new Error("Nincs egy db nehézség se.");
+      throw new HttpException(404, "Nincs egy db nehézség se.");
     }
     return results;
   }

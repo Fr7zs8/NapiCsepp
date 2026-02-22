@@ -1,8 +1,9 @@
 import mysql from "mysql2/promise";
 import config from "../config/config";
+import { IDifficulty } from "../Models/difficulty_model";
 
 export class DiffiCultyRepository {
-  async getDifficulties() {
+  async getDifficulties(): Promise<IDifficulty[]> {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query(
