@@ -24,7 +24,7 @@ export class StatisticService {
     }
     const results = await this.repository.systemStatistic();
     if (!results || results.length === 0) {
-      throw new Error("Nincs egy db statisztika se.");
+      throw new HttpException(404, "Nincs egy db statisztika se.");
     }
     return results;
   }
@@ -32,7 +32,7 @@ export class StatisticService {
   async profileStatistic(user_id: number): Promise<IProfileStats[]> {
     const results = await this.repository.profileStatistic(user_id);
     if (!results || results.length === 0) {
-      throw new Error("Nincs egy db statisztika se.");
+      throw new HttpException(404, "Nincs egy db statisztika se.");
     }
     return results;
   }
