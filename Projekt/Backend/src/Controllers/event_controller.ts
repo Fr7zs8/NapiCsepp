@@ -10,7 +10,9 @@ export class EventController {
       const results = await service.getEvent(userId);
       res.status(200).send(results);
     } catch (err: any) {
-      res.status(404).send({ message: err.message });
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 
@@ -21,7 +23,9 @@ export class EventController {
       await service.postEvent(newelem, userId);
       res.status(200).send("Sikeres adatrögzítés!");
     } catch (err: any) {
-      res.status(400).send({ message: err.message });
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 
@@ -31,7 +35,9 @@ export class EventController {
       await service.deleteEvent(activity_id);
       res.status(200).send("Sikeres törlés.");
     } catch (err: any) {
-      res.status(400).send({ message: err.message });
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 
@@ -42,7 +48,9 @@ export class EventController {
       await service.putEvent(activityId, updateData);
       res.status(200).send("Sikeres módosítás!");
     } catch (err: any) {
-      res.status(400).send({ message: err.message });
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 }

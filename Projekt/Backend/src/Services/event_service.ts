@@ -1,5 +1,7 @@
 import { EventRepository } from "../Repositories/event_repository";
 import { Event, IEvent } from "../Models/event_model";
+import { ResultSetHeader } from "mysql2";
+import { HttpException } from "../middleware/error";
 
 export class EventService {
   private repository: EventRepository = new EventRepository();
@@ -8,55 +10,58 @@ export class EventService {
     this.repository = new EventRepository();
   }
 
-  async getEvent(userId: number) {
+  async getEvent(userId: number): Promise<IEvent[]> {
     const results = await this.repository.getEvent(userId);
     if (!results || results.length === 0) {
-      throw new Error("Nincs egy db event se.");
+      throw new HttpException(404, "Nincs egy db event se.");
     }
     return results;
   }
 
-  async postEvent(newelem: Event, userId: number) {
+  async postEvent(newelem: Event, userId: number): Promise<number> {
+    if (!newelem) {
+      throw new HttpException(400, "Hiányzó event adat.");
+    }
     const results = await this.repository.postEvent(newelem, userId);
 
-    if (!results || results.affectedRows <= 0) {
-      throw new Error("Nem modosult semmi.");
+    if (!results || results <= 0) {
+      throw new HttpException(500, "Az event mentése sikertelen.");
     }
 
     return results;
   }
 
-  async deleteEvent(event_id: number) {
+  async deleteEvent(event_id: number): Promise<ResultSetHeader> {
     const results = await this.repository.deleteEvent(event_id);
 
     if (isNaN(event_id)) {
-      throw new Error("Nem megfelelő az id tipusa!");
+      throw new HttpException(400, "Nem megfelelő az id tipusa!");
     }
 
     if (results.affectedRows <= 0) {
-      throw new Error("Nem volt változtatás.");
+      throw new HttpException(404, "Nem volt változtatás.");
     }
     return results;
   }
 
-  async putEvent(id: number, event: Partial<IEvent>) {
+  async putEvent(id: number, event: Partial<IEvent>): Promise<ResultSetHeader> {
     if (isNaN(id)) {
-      throw { status: 400, message: "Hibás formátumú azonosító!" };
+      throw new HttpException(400, "Hibás formátumú azonosító!");
     }
 
     if (!event || Object.keys(event).length === 0) {
-      throw { status: 400, message: "Nem küldte el az adatokat megfelelően!" };
+      throw new HttpException(400, "Nem küldte el az adatokat megfelelően!");
     }
 
     const result = await this.repository.updateEvent(id, event);
 
     if (result.affectedRows === 0) {
-      throw {
-        status: 404,
-        message: "Nincs frissítendő mező vagy nem található az esemény!",
-      };
+      throw new HttpException(
+        404,
+        "Nincs frissítendő mező vagy nem található az esemény!",
+      );
     }
 
-    return result.affectedRows;
+    return result;
   }
 }
