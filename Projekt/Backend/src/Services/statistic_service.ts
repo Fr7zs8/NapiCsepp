@@ -1,15 +1,26 @@
+import { HttpException } from "../middleware/error";
+import { IProfileStats, ISystemStatistic } from "../Models/system_model";
 import { StatisticRepository } from "../Repositories/statistic_repository";
+import { UserRepository } from "../Repositories/user_repository";
 
 export class StatisticService {
   private repository: StatisticRepository;
+  private userrepository: UserRepository = new UserRepository();
 
   constructor() {
     this.repository = new StatisticRepository();
+    this.userrepository = new UserRepository();
   }
 
-  async systemStatistic(user_id:number) {
-    if (user_id != 1) {
-      throw new Error("Csak az admin kérheti le!");
+  async systemStatistic(user_id: number): Promise<ISystemStatistic[]> {
+    const moderators = await this.userrepository.getModerators();
+
+    const isModerator = moderators.some(
+      (m: { user_id: number }) => m.user_id == user_id,
+    );
+
+    if (!isModerator) {
+      throw new HttpException(405, "Csak a moderátor kérheti le!");
     }
     const results = await this.repository.systemStatistic();
     if (!results || results.length === 0) {
@@ -18,7 +29,7 @@ export class StatisticService {
     return results;
   }
 
-  async profileStatistic(user_id: number) {
+  async profileStatistic(user_id: number): Promise<IProfileStats[]> {
     const results = await this.repository.profileStatistic(user_id);
     if (!results || results.length === 0) {
       throw new Error("Nincs egy db statisztika se.");

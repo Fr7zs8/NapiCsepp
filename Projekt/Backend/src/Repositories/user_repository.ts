@@ -14,7 +14,6 @@ export class UserRepository {
     return results[0].id;
   }
 
-
   async getUser(user_id: number) {
     const connection = await mysql.createConnection(config.database);
 
@@ -62,27 +61,27 @@ export class UserRepository {
       if (user.username !== undefined) {
         updateFields.push("username = ?");
         values.push(user.username);
-      };
+      }
 
       if (user.email !== undefined) {
         updateFields.push("email = ?");
         values.push(user.email);
-      };
+      }
 
       if (user.language !== undefined) {
         updateFields.push("language = ?");
         values.push(user.language);
-      };
+      }
 
       if (user.role !== undefined && adminId == 1) {
         updateFields.push("role = ?");
         values.push(user.role);
-      };
+      }
 
       if (user.password !== undefined) {
         updateFields.push("users.password =  pwd_encrypt(?)");
         values.push(user.password);
-      };
+      }
 
       if (updateFields.length === 0) {
         throw new Error("Nincs frissítendő mező!");
@@ -118,5 +117,4 @@ export class UserRepository {
     await connection.end();
     return results;
   }
-
 }
