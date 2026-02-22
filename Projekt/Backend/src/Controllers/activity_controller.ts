@@ -47,9 +47,10 @@ export class ActivityController {
 
   async putActivity(req: any, res: Response) {
     try {
+      const userId = req.user.user_id;
       const activityId = Number(req.params.id);
       const updateData = req.body;
-      await service.putActivity(activityId, updateData);
+      await service.putActivity(activityId, updateData, userId);
       res.status(200).send("Sikeres módosítás!");
     } catch (err: any) {
       res.status(400).send({ message: err.message });

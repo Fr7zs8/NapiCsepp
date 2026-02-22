@@ -140,7 +140,8 @@ INSERT INTO `activities` (`activity_id`, `activity_name`, `activity_type_id`, `a
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `language`, `role`, `register_date`) VALUES
 (1, 'admin', 'admin@gmail.com', 'admin123', 'hu', 'admin', '2025-11-27 00:00:00'),
 (2, 'Fruzsi', 'abcd@gmail.com', '1234', 'hu', 'user', '2025-11-27 00:00:00'),
-(3, 'Abi', 'dcba@gmail.com', 'jelszo', 'hu', 'user', '2025-11-27 00:00:00');
+(3, 'Abi', 'dcba@gmail.com', 'jelszo', 'hu', 'user', '2025-11-27 00:00:00'),
+(4, 'Teszt', "emptytest@gmail.com", '1234', 'hu', 'user', '2026-02-22 00:00:00');
 
 INSERT INTO `events` (`event_id`, `event_name`, `event_start_time`, `event_end_time`) VALUES
 (1, 'Anya szülinap', '2025-10-15 15:00:00', '2025-10-15 16:00:00'),

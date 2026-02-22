@@ -49,3 +49,14 @@ Cypress.Commands.add("login", () => {
       return token;
     });
 });
+
+Cypress.Commands.add("loginWithEmptyUser", () => {
+  return cy
+    .request("POST", "/napicsepp/login", {
+      email: "emptytest@gmail.com",
+      password: "1234",
+    })
+    .then((resp) => {
+      return resp.body.token;
+    });
+});

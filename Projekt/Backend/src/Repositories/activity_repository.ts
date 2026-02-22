@@ -3,7 +3,7 @@ import config from "../config/config";
 import { Activity } from "../Models/activity_model";
 
 export class ActivityRepository {
-  async getAllActivitiesByUser(userId: number) {
+  async getAllActivitiesByUser(userId: number): Promise<Activity[]> {
     const connection = await mysql.createConnection(config.database);
     const [results] = (await connection.query("CALL pr_pullactivities(?)", [
       userId,
@@ -13,7 +13,7 @@ export class ActivityRepository {
     return results[0];
   }
 
-  async getHabits(userId: number) {
+  async getHabits(userId: number): Promise<Activity[]> {
     const connection = await mysql.createConnection(config.database);
 
     const [result] = (await connection.query("CALL pr_pullhabits(?)", [
@@ -24,7 +24,7 @@ export class ActivityRepository {
     return result[0];
   }
 
-  async deleteActivity(activity_id: number) {
+  async deleteActivity(activity_id: number): Promise<mysql.ResultSetHeader> {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query(
@@ -35,7 +35,10 @@ export class ActivityRepository {
     return results;
   }
 
-  private async getTypeId(connection: mysql.Connection, typeName: string) {
+  private async getTypeId(
+    connection: mysql.Connection,
+    typeName: string,
+  ): Promise<number> {
     const [rows]: any = await connection.query(
       "SELECT type_id FROM types WHERE type_name = ?",
       [typeName],
@@ -51,7 +54,7 @@ export class ActivityRepository {
   private async getDifficultyId(
     connection: mysql.Connection,
     difficultyName: string,
-  ) {
+  ): Promise<number> {
     const [rows]: any = await connection.query(
       "SELECT difficulty_id FROM difficulties WHERE difficulty_name = ?",
       [difficultyName],
@@ -68,7 +71,7 @@ export class ActivityRepository {
     connection: mysql.Connection,
     userId: number,
     activityId: number,
-  ) {
+  ): Promise<void> {
     await connection.query(
       "INSERT INTO users_activities (user_id, activity_id) VALUES (?, ?)",
       [userId, activityId],
@@ -80,7 +83,7 @@ export class ActivityRepository {
     newelem: Activity,
     typeId: number,
     difficultyId: number,
-  ) {
+  ): Promise<number> {
     const [result]: any = await connection.query(
       `INSERT INTO activities 
        (activity_name, activity_type_id, activity_difficulty_id, activity_achive, activity_start_date, activity_end_date, progress_counter)
@@ -99,7 +102,7 @@ export class ActivityRepository {
     return result.insertId;
   }
 
-  async postActivity(newelem: Activity, userId: number) {
+  async postActivity(newelem: Activity, userId: number): Promise<number> {
     const connection = await mysql.createConnection(config.database);
 
     try {
@@ -134,7 +137,11 @@ export class ActivityRepository {
     }
   }
 
-  async putActivity(activityId: number, activity: Partial<Activity>) {
+  async putActivity(
+    activityId: number,
+    activity: Partial<Activity>,
+    userId: number,
+  ): Promise<mysql.ResultSetHeader> {
     if (!activity || Object.keys(activity).length === 0) {
       throw new Error("Nincs frissítendő adat!");
     }
@@ -193,11 +200,13 @@ export class ActivityRepository {
       }
 
       values.push(activityId);
+      values.push(userId);
 
       const sql = `
         UPDATE activities
+        JOIN users_activities ON users_activities.activity_id = activities.activity_id
         SET ${updateFields.join(", ")}
-        WHERE activity_id = ?
+        WHERE activities.activity_id = ? AND users_activities.user_id = ?
       `;
 
       const [result]: any = await connection.query(sql, values);
