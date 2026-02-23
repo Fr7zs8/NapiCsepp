@@ -9,7 +9,9 @@ export class TypeController {
       const results = await service.getTypes();
       res.status(200).send(results);
     } catch (err: any) {
-      res.status(404).send({ message: err.message });
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 }

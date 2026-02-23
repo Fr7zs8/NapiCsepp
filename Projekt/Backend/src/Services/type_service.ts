@@ -1,3 +1,5 @@
+import { HttpException } from "../middleware/error";
+import { IType } from "../Models/type_model";
 import { TypeRepository } from "../Repositories/type_repository";
 
 export class TypeService {
@@ -7,10 +9,10 @@ export class TypeService {
     this.repository = new TypeRepository();
   }
 
-  async getTypes() {
+  async getTypes(): Promise<IType[]> {
     const results = await this.repository.getTypes();
     if (!results || results.length === 0) {
-      throw new Error("Nincs egy db típus se.");
+      throw new HttpException(404, "Nincs egy db típus se.");
     }
     return results;
   }

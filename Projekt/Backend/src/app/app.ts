@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-cron.schedule("0 0 * * *", () => {
+cron.schedule("*/10 * * * *", () => {
   resetHabitState();
 });
 
