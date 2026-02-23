@@ -15,6 +15,7 @@ export async function resetHabitState() {
 
     console.log(result);
     console.log(results);
+    console.log("A cron lefutott");
   } catch (e) {
     console.log(e);
   }

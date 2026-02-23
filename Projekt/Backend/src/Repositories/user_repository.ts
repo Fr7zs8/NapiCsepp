@@ -1,9 +1,9 @@
-import mysql from "mysql2/promise";
+import mysql, { ResultSetHeader } from "mysql2/promise";
 import config from "../config/config";
 import { User } from "../Models/user_model";
 
 export class UserRepository {
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<number> {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query("SELECT login(?,?) as id", [
@@ -14,7 +14,7 @@ export class UserRepository {
     return results[0].id;
   }
 
-  async getUser(user_id: number) {
+  async getUser(user_id: number): Promise<User> {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query(
@@ -26,7 +26,7 @@ export class UserRepository {
     return results;
   }
 
-  async getAllUser() {
+  async getAllUser(): Promise<User[]> {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query(
@@ -37,7 +37,7 @@ export class UserRepository {
     return results;
   }
 
-  async createUser(user: User, role: string, date: string) {
+  async createUser(user: User, role: string, date: string): Promise<number> {
     const connection = await mysql.createConnection(config.database);
     const [results] = (await connection.query(
       "INSERT INTO users (username, email, password, language, role, register_date) VALUES (?,?,?,?,?,?)",
@@ -47,7 +47,11 @@ export class UserRepository {
     return results.insertId;
   }
 
-  async editUser(userId: number, user: Partial<User>, adminId: number) {
+  async editUser(
+    userId: number,
+    user: Partial<User>,
+    adminId: number,
+  ): Promise<ResultSetHeader> {
     if (!user || Object.keys(user).length === 0) {
       throw new Error("Nincs frissítendő adat!");
     }
@@ -107,11 +111,37 @@ export class UserRepository {
     }
   }
 
-  async getModerators() {
+  async getModerators(): Promise<User[]> {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query(
       "SELECT users.user_id, users.username, users.email, users.language, users.role, DATE_FORMAT(users.register_date, '%Y-%m-%d') AS register_date FROM users WHERE users.role = 'moderator'",
+    )) as Array<any>;
+
+    await connection.end();
+    return results;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const connection = await mysql.createConnection(config.database);
+    const [rows]: any = await connection.query(
+      "SELECT * FROM users WHERE email = ? LIMIT 1",
+      [email],
+    );
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    return rows[0] as User;
+  }
+
+  async deletUser(user_id: number): Promise<ResultSetHeader> {
+    const connection = await mysql.createConnection(config.database);
+
+    const [results] = (await connection.query(
+      "DELETE FROM users WHERE users.user_id = ?",
+      [user_id],
     )) as Array<any>;
 
     await connection.end();

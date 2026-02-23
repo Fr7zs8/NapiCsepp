@@ -16,7 +16,9 @@ export class UserController {
       const token = await service.login(email, password);
       res.status(200).send({ token: token });
     } catch (err: any) {
-      res.status(404).send({ message: err.message });
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 
@@ -26,7 +28,9 @@ export class UserController {
       const results = await service.getUser(id);
       res.status(200).send(results);
     } catch (err: any) {
-      res.status(404).send({ message: err.message });
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 
@@ -36,7 +40,9 @@ export class UserController {
       const results = await service.getAllUser(id);
       res.status(200).send(results);
     } catch (err: any) {
-      res.status(404).send({ message: err.message });
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 
@@ -51,7 +57,9 @@ export class UserController {
       const success = await service.register(newUser);
       if (success) res.status(201).send("Sikeres adatrögzítés!");
     } catch (err: any) {
-      res.status(400).send({ error: err.message });
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 
@@ -65,9 +73,10 @@ export class UserController {
       if (success) {
         res.status(200).send("Sikeres modositás!");
       }
-    }
-    catch (e: any) {
-      res.status(400).send({ error: e.message })
+    } catch (err: any) {
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 
@@ -80,9 +89,22 @@ export class UserController {
       if (success) {
         res.status(200).send(success);
       }
+    } catch (err: any) {
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
-    catch (e: any) {
-      res.status(400).send({ error: e.message })
+  }
+  async deletUser(req: any, res: Response) {
+    try {
+      const user_id = req.params.id;
+      const moderator_id = req.user.user_id;
+      await service.deleteUser(user_id, moderator_id);
+      res.status(200).send("Sikeres törlés.");
+    } catch (err: any) {
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
 }

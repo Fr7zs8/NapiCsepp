@@ -20,7 +20,20 @@ router.get(
 
 router.post("/napicsepp/regisztrate", controller.register.bind(controller));
 
-router.put("/napicsepp/users/:id", verifyToken, controller.putUser.bind(controller));
+router.put(
+  "/napicsepp/users/:id",
+  verifyToken,
+  controller.putUser.bind(controller),
+);
 
-router.get("/napicsepp/moderators", verifyToken, controller.getModerators.bind(controller))
+router.get(
+  "/napicsepp/moderators",
+  verifyToken,
+  controller.getModerators.bind(controller),
+);
+router.delete(
+  "/napicsepp/users/:id",
+  verifyToken,
+  controller.deletUser.bind(controller),
+);
 export default router;
