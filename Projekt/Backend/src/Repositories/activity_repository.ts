@@ -1,6 +1,7 @@
 import mysql from "mysql2/promise";
 import config from "../config/config";
 import { Activity } from "../Models/activity_model";
+import { HttpException } from "../middleware/error";
 
 export class ActivityRepository {
   async getAllActivitiesByUser(userId: number): Promise<Activity[]> {
@@ -45,7 +46,7 @@ export class ActivityRepository {
     );
 
     if (rows.length === 0) {
-      throw new Error("Nincs ilyen típus");
+      throw new HttpException(404, "Nincs ilyen típus");
     }
 
     return rows[0].type_id;
@@ -61,7 +62,7 @@ export class ActivityRepository {
     );
 
     if (rows.length === 0) {
-      throw new Error("Nincs ilyen nehézség");
+      throw new HttpException(404, "Nincs ilyen nehézség");
     }
 
     return rows[0].difficulty_id;
@@ -143,7 +144,7 @@ export class ActivityRepository {
     userId: number,
   ): Promise<mysql.ResultSetHeader> {
     if (!activity || Object.keys(activity).length === 0) {
-      throw new Error("Nincs frissítendő adat!");
+      throw new HttpException(404, "Nincs frissítendő adat!");
     }
 
     const connection = await mysql.createConnection(config.database);
@@ -196,7 +197,7 @@ export class ActivityRepository {
       }
 
       if (updateFields.length === 0) {
-        throw new Error("Nincs frissítendő mező!");
+        throw new HttpException(404, "Nincs frissítendő mező!");
       }
 
       values.push(activityId);

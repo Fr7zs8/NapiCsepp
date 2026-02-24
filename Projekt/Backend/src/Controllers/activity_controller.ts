@@ -33,7 +33,7 @@ export class ActivityController {
       const userId = req.user.user_id;
       const newelem = req.body;
       await service.postActivity(newelem, userId);
-      res.status(200).send("Sikeres adatrögzítés!");
+      res.status(201).send("Sikeres adatrögzítés!");
     } catch (err: any) {
       res
         .status(err.status || 500)
