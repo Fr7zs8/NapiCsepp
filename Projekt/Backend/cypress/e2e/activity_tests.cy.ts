@@ -1,6 +1,9 @@
 /// <reference types="cypress" />
 
 describe("Testing Activity endpoints", () => {
+  beforeEach(() => {
+    cy.task("resetDb");
+  });
   let token: string;
 
   before(() => {
