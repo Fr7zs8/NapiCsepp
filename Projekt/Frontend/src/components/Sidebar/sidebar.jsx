@@ -11,6 +11,7 @@ import {
   Target,
   LogOut,
   Menu,
+  Droplet,
   X,
 } from "lucide-react";
 
@@ -39,7 +40,10 @@ export function Sidebar() {
 
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          <h2>NapiCsepp</h2>
+          <div className="brand">
+            <Droplet size={28} className="brand-drop" />
+            <h2 className="brand-text">NapiCsepp</h2>
+          </div>
         </div>
 
         <nav className="sidebar-nav">

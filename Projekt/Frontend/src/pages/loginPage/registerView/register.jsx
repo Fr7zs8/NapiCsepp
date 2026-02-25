@@ -54,83 +54,86 @@ export function RegisterView(){
                     <img src={image4} alt=""/>
                 </div>
                 <div className='register-content-div'>
-                    <div className="register-header-div">
-                        <h1>Üdvözülünk a NapiCsepp Weboldalán!</h1>
-                        <h3>DailyDrop - A tökéletes szokáskövető mindennapi használatra!</h3>
-                    </div>
-
-                    <form onSubmit={handleRegister}>
-                        <div className="register-form-div">
-                            <LoginRegisterSwitch currentPage="register"/>
-                            <label className="switchlabel">Hozz létre új fiókot</label>
-
-                            {error && <div className="error-message">{error}</div>}
-                        </div>
-
-                        <div className="register-form-input-div">
-                            <div className="input-label-row"> 
-                                <CircleUser size={20}/>
-                                <label>Felhasználó név</label> <br />
+                    <div className="auth-card">
+                        <div className="auth-card-inner">
+                            <div className="register-header-div">
+                                <h1>Üdvözülünk a NapiCsepp Weboldalán!</h1>
+                                <h3>DailyDrop - A tökéletes szokáskövető mindennapi használatra!</h3>
                             </div>
-                            <input 
-                                type="text" 
-                                placeholder="KovacsJanos"
-                                required
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                        </div>
 
-                        <div className="register-form-input-div">
-                            <div className="input-label-row">
-                                <UserRound size={20}/>
-                                <label>Email</label> <br />
+                            <form onSubmit={handleRegister}>
+                                <div className="register-form-div">
+                                    <LoginRegisterSwitch currentPage="register"/>
+                                    <label className="switchlabel">Hozz létre új fiókot</label>
+
+                                    {error && <div className="error-message">{error}</div>}
+                                </div>
+
+                                <div className="register-form-input-div">
+                                    <div className="input-label-row"> 
+                                        <CircleUser size={20}/>
+                                        <label>Felhasználó név</label> <br />
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        placeholder="KovacsJanos"
+                                        required
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="register-form-input-div">
+                                    <div className="input-label-row">
+                                        <UserRound size={20}/>
+                                        <label>Email</label> <br />
+                                    </div>
+                                    <input 
+                                        type="email" 
+                                        placeholder="pelda@gmail.com"
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="register-form-input-div">
+                                    <div className="input-label-row">
+                                        <Lock size={20}/>
+                                        <label>Jelszó</label> <br />
+                                    </div>
+                                    <input 
+                                        type="password" 
+                                        placeholder="Jelszó"
+                                        required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="register-form-input-div">
+                                    <div className="input-label-row">
+                                        <Lock size={20}/>
+                                        <label>Jelszó megerősítése</label> <br />
+                                    </div>
+                                    <input 
+                                        type="password" 
+                                        placeholder="Jelszó újra"
+                                        required
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="register-button-div">
+                                    <button type="submit" disabled={loading}>{loading?"Regisztráció...":"Regisztráció"}</button>
+                                </div>
+                            </form>
+
+                            <div>
+                                <label>Van fiókod? <a onClick={() => navigate("/login")} style={{cursor: 'pointer'}}>Belépés</a></label>
                             </div>
-                            <input 
-                                type="email" 
-                                placeholder="pelda@gmail.com"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
                         </div>
-
-                        <div className="register-form-input-div">
-                            <div className="input-label-row">
-                                <Lock size={20}/>
-                                <label>Jelszó</label> <br />
-                            </div>
-                            <input 
-                                type="password" 
-                                placeholder="Jelszó"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="register-form-input-div">
-                            <div className="input-label-row">
-                                <Lock size={20}/>
-                                <label>Jelszó megerősítése</label> <br />
-                            </div>
-                            <input 
-                                type="password" 
-                                placeholder="Jelszó újra"
-                                required
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="register-button-div">
-                            <button type="submit" disabled={loading}>{loading?"Regisztráció...":"Regisztráció"}</button>
-                            <button type="button" onClick={() => navigate("/")}>Vendég Mód</button>
-                        </div>
-                    </form>
-
-                    <div>
-                        <label>Van fiókod? <a onClick={() => navigate("/login")} style={{cursor: 'pointer'}}>Belépés</a></label>
                     </div>
                 </div>
                 

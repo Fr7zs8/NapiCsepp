@@ -15,7 +15,7 @@
 .sidebar-header {
     padding: 2rem 2rem;
     border-bottom: 1px solid #e0e0e0;
-    background: #27ae60;
+    background: linear-gradient(135deg, #27ae60 0%, #20a095 100%);
     color: #fff;
 }
 
@@ -24,6 +24,32 @@
     font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: 0.05em;
+    color: #fff;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.brand-drop {
+    color: #fff;
+    background: rgba(255,255,255,0.06);
+    /* make the svg match the text size */
+    width: 1.75rem;
+    height: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+
+.brand-text {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
     color: #fff;
 }
 
@@ -54,6 +80,8 @@
     background: #27ae60;
     color: #fff;
     font-weight: 700;
+    width: 90%;
+    margin: auto;
 }
 
 /* kategória cím */
@@ -83,12 +111,13 @@
     position: fixed;
     top: 1rem;
     left: 1rem;
-    background: #111;
+    background: linear-gradient(135deg, #27ae60 0%, #20a095 100%);
     color: #fff;
     border: none;
     cursor: pointer;
     z-index: 1001;
     padding: 0.5rem;
+    border-radius: 7px;
 }
 
 
@@ -137,6 +166,8 @@
 @media (max-width: 480px) {
     .sidebar {
         width: 200px;
+        border-radius: 0 12px 12px 0;
+        overflow: hidden;
     }
 
     .sidebar-link {

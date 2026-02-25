@@ -146,7 +146,7 @@ export function MonthlyView(){
                     <button onClick={() => changeMonth(1)}><ArrowRight size={20}/></button>
                 </div>
                 <div className="info-text-div">
-                    <p>{monthName}</p>
+                    <p className="month-name">{monthName}</p>
                 </div>
                 <div className="view-switch-div">
                     <div className={`view-switch-small ${isMobile ? 'is-mobile' : ''}`}>

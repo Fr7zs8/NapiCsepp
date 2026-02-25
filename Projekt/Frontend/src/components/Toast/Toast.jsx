@@ -1,20 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
 import "./Toast.css";
 
-export function showToast(message, type = "success") {
-  window.dispatchEvent(new CustomEvent("showToast", { detail: { message, type } }));
+const DEFAULT_TOAST_DURATION = 3000; // ms
+
+export function showToast(message, type = "success", duration = DEFAULT_TOAST_DURATION) {
+  window.dispatchEvent(new CustomEvent("showToast", { detail: { message, type, duration } }));
 }
 
 export function Toast() {
   const [toasts, setToasts] = useState([]);
 
   const addToast = useCallback((e) => {
-    const { message, type } = e.detail;
+    const { message, type, duration } = e.detail;
     const id = Date.now() + Math.random();
-    setToasts((prev) => [...prev, { id, message, type }]);
+    const toastDuration = typeof duration === 'number' ? duration : DEFAULT_TOAST_DURATION;
+    setToasts((prev) => [...prev, { id, message, type, duration: toastDuration }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3000);
+    }, toastDuration);
   }, []);
 
   useEffect(() => {
@@ -32,6 +35,10 @@ export function Toast() {
             {toast.type === "success" ? "✓" : "✕"}
           </span>
           <span className="nc-toast-message">{toast.message}</span>
+          {/* progress bar showing remaining time */}
+          <div className="nc-toast-progress">
+            <div className="nc-toast-progress-fill" style={{ animationDuration: `${toast.duration}ms` }} />
+          </div>
         </div>
       ))}
     </div>

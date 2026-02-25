@@ -32,6 +32,20 @@
     background: #fff;
 }
 
+/* Auth card with green gradient border */
+.auth-card{
+    padding: 2px; /* gradient border thickness */
+    border-radius: 14px;
+    background: linear-gradient(90deg, #27ae60 0%, #16a085 100%);
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.07);
+}
+.auth-card-inner{
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
 /* Header */
 .login-header-div {
     margin-bottom: 2rem;
