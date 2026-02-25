@@ -116,85 +116,38 @@ export function TaskView() {
   }, []);
 
   useEffect(() => {
-    async function fetchDifficulties() {
+    async function fetchMeta() {
       try {
-        setLoading(true);
-        const data = await activityService.getAllDifficulties();
-
-        const diffObj = data.map((item) => ({
-          difficulty_id: item.difficulty_id,
-          difficulty_name: item.difficulty_name,
-        }));
-
-        setDifficulties(diffObj);
+        const [diffsData, typesData] = await Promise.all([
+          activityService.getAllDifficulties(),
+          activityService.getAllTypes(),
+        ]);
+        setDifficulties(diffsData.map((d) => ({ difficulty_id: d.difficulty_id, difficulty_name: d.difficulty_name })));
+        setTypes(typesData.map((t) => ({ type_id: t.type_id, type_name: t.type_name })));
       } catch (err) {
         setError(err.message || "Hiba az adatok betöltése során!");
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     }
-
-    fetchDifficulties();
-  }, []);
-
-  useEffect(() => {
-    async function fetchTypes() {
-      try {
-        setLoading(true);
-        const data = await activityService.getAllTypes();
-
-        const diffObj = data.map((item) => ({
-          type_id: item.type_id,
-          type_name: item.type_name,
-        }));
-
-        setTypes(diffObj);
-      } catch (err) {
-        setError(err.message || "Hiba az adatok betöltése során!");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchTypes();
+    fetchMeta();
   }, []);
 
   async function addTask() {
     if (!taskName || !typeName || !difficultyName) return;
 
     try {
-      const taskData = {
+      await activityService.createTask({
         activity_name: taskName,
         activity_type_name: typeName,
         activity_difficulty_name: difficultyName,
         activity_start_date: new Date().toISOString().split("T")[0],
         activity_end_date: new Date().toISOString().split("T")[0],
         activity_achive: 0,
-      };
-      await activityService.createTask(taskData);
-
-      const data = await activityService.getAllActivities();
-      const taskObject = data.map(
-        (item) =>
-          new Task(
-            item.activity_id || Math.random(),
-            item.activity_name,
-            item.type_name,
-            item.difficulty_name,
-            item.activity_achive === 1,
-            item.activity_start_date,
-            item.activity_end_date,
-            true,
-          ),
-      );
-      setTasks(taskObject);
+      });
       resetForm();
-      try {
-        window.dispatchEvent(new Event("activitiesUpdated"));
-        window.dispatchEvent(new Event("itemSaved"));
-      } catch (e) {}
+      await refreshActivities();
+      window.dispatchEvent(new Event("activitiesUpdated"));
+      window.dispatchEvent(new Event("itemSaved"));
     } catch (err) {
       setError(err.message || "Hiba a feladat hozzáadása során!");
       console.error(err);
@@ -211,26 +164,9 @@ export function TaskView() {
   async function deleteTask(id) {
     try {
       await activityService.deleteTask(id);
-
-      const data = await activityService.getAllActivities();
-      const taskObject = data.map(
-        (item) =>
-          new Task(
-            item.activity_id || Math.random(),
-            item.activity_name,
-            item.type_name,
-            item.difficulty_name,
-            item.activity_achive === 1,
-            item.activity_start_date,
-            item.activity_end_date,
-            true,
-          ),
-      );
-      setTasks(taskObject);
-      try {
-        window.dispatchEvent(new Event("activitiesUpdated"));
-        window.dispatchEvent(new Event("itemSaved"));
-      } catch (e) {}
+      await refreshActivities();
+      window.dispatchEvent(new Event("activitiesUpdated"));
+      window.dispatchEvent(new Event("itemSaved"));
     } catch (err) {
       setError(err.message || "Hiba a feladat törlése során!");
       console.error(err);
@@ -248,40 +184,15 @@ export function TaskView() {
 
   async function saveTask() {
     try {
-      const updateData = {
+      await activityService.updateTask(editId, {
         activity_name: taskName,
         activity_type_name: typeName,
         activity_difficulty_name: difficultyName,
-      };
-      try {
-        await activityService.updateTask(editId, updateData);
-      } catch (e) {
-        console.warn(
-          "Update failed on backend, applying optimistic UI update",
-          e,
-        );
-      }
-
-      const data = await activityService.getAllActivities();
-      const taskObject = data.map(
-        (item) =>
-          new Task(
-            item.activity_id || Math.random(),
-            item.activity_name,
-            item.type_name,
-            item.difficulty_name,
-            item.activity_achive === 1,
-            item.activity_start_date,
-            item.activity_end_date,
-            true,
-          ),
-      );
-      setTasks(taskObject);
+      });
       resetForm();
-      try {
-        window.dispatchEvent(new Event("activitiesUpdated"));
-        window.dispatchEvent(new Event("itemSaved"));
-      } catch (e) {}
+      await refreshActivities();
+      window.dispatchEvent(new Event("activitiesUpdated"));
+      window.dispatchEvent(new Event("itemSaved"));
     } catch (err) {
       setError(err.message || "Hiba a feladat szerkesztése során!");
       console.error(err);
@@ -291,36 +202,11 @@ export function TaskView() {
   async function toggleTaskAchieved(taskId, currentValue) {
     try {
       const newVal = currentValue ? 0 : 1;
-
-      // Frissítjük a task activity_achive mezőjét
+      // Csak az activity_achive mezőt frissítjük – a progress_counter-t a cron kezeli
       await activityService.updateTask(taskId, { activity_achive: newVal });
-
-      // Ha ez egy szokásból generált to-do, akkor frissítjük a habit progress_counter-ét is
-      const task = tasks.find((t) => t.taskId === taskId);
-      if (task && task.typeName === "Szokás" && newVal === 1) {
-        try {
-          // Megkeressük az eredeti habit-et név alapján
-          const habitsData = await activityService.getAllHabits();
-          const parentHabit = habitsData.find(
-            (h) => h.activity_name === task.taskName,
-          );
-
-          if (parentHabit) {
-            // Növeljük a progress_counter-t
-            const newProgressCounter = (parentHabit.progress_counter || 0) + 1;
-            await activityService.updateHabit(parentHabit.activity_id, {
-              progress_counter: newProgressCounter,
-            });
-          }
-        } catch (e) {
-          console.error("Hiba a habit progress counter frissítése során:", e);
-        }
-      }
-
       await refreshActivities();
-      try {
-        window.dispatchEvent(new Event("activitiesUpdated"));
-      } catch (e) {}
+      window.dispatchEvent(new Event("activitiesUpdated"));
+      window.dispatchEvent(new Event("itemSaved"));
     } catch (e) {
       console.error(e);
       setError(e.message || "Hiba a feladat státuszának frissítése során");

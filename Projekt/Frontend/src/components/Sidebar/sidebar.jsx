@@ -1,6 +1,7 @@
 import "./sidebar.css";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { clientService } from "../../router/apiRouter";
 import {
   Home,
   User,
@@ -15,7 +16,14 @@ import {
 
 export function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+
+  function handleLogout() {
+    clientService.logout();
+    setIsOpen(false);
+    navigate("/login");
+  }
 
   if (location.pathname === "/login" || location.pathname === "/register") {
     return null;
@@ -97,10 +105,10 @@ export function Sidebar() {
         </nav>
 
         <div className="sidebar-footer">
-          <Link to="/login" className="sidebar-link" onClick={() => setIsOpen(false)}>
+          <button className="sidebar-link" onClick={handleLogout}>
             <LogOut size={20} />
             <span>Kijelentkezés</span>
-          </Link>
+          </button>
         </div>
       </aside>
     </>

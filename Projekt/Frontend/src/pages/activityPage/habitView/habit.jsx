@@ -14,7 +14,7 @@ export function HabitView() {
   const [habitName, setHabitName] = useState("");
   const [difficultyName, setDifficultyName] = useState("");
   const [targetDays, setTargetDays] = useState("");
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
   const [editId, setEditId] = useState(null);
   const [difficulties, setDifficulties] = useState([]);
   const [flashSave, setFlashSave] = useState(false);
@@ -36,7 +36,7 @@ export function HabitView() {
     setHabitName("");
     setDifficultyName("");
     setTargetDays("");
-    setStartDate("");
+    setStartDate(new Date().toISOString().split("T")[0]);
     setEditId(null);
   }
 
@@ -56,6 +56,7 @@ export function HabitView() {
           .toISOString()
           .split("T")[0],
         activity_achive: 0,
+        progress_counter: 0,
       };
       await activityService.createHabit(habitData);
       const data = await activityService.getAllHabits();

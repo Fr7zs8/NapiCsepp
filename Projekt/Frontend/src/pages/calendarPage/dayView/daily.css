@@ -101,7 +101,7 @@ section.day-calendar-section{
     border-radius: 6px;
     transition: all 0.3s ease;
     z-index: 1;
-    background: #22c55e;
+    background: transparent;
 }
 
 
@@ -135,6 +135,8 @@ section.day-calendar-section{
 
 .view-switch-small input:checked + label {
     color: #fff;
+    background-color: #3b82f6;
+    border-radius: 7px;
 }
 
 #view-month:checked ~ .switch-slider {

@@ -20,15 +20,17 @@
     margin-left: 0;
 }
 
-@media (max-width: 768px) {
+/* A hamburger breakpointtal (960px) szinkronban */
+@media (max-width: 960px) {
     .main-content {
         margin-left: 0;
-        padding: 1rem;
+        /* top: hamburger gomb (~56px) + extra tér; left: hamburger gomb (~60px) + tér */
+        padding: 4rem 1.25rem 1.25rem 1.25rem;
     }
 }
 
 @media (max-width: 480px) {
     .main-content {
-        padding: 0.75rem;
+        padding: 3.5rem 0.75rem 0.75rem 0.75rem;
     }
 }

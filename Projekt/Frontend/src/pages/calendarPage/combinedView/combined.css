@@ -21,8 +21,9 @@
 }
 .combined-calendar-view {
     padding: 2rem;
-    background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
+    background: #f9fafb;
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
 .hour-cell {
@@ -77,8 +78,8 @@
 }
 
 .view-switch-small input:checked + label {
-    color: darkgoldenrod;
-    background-color: #292951;
+    color: #fff;
+    background-color: #3b82f6;
     border-radius: 7px;
 }
 
@@ -196,6 +197,7 @@
     padding: 1.5rem;
     width: 100%;
     overflow-x: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .week-grid {
@@ -203,6 +205,10 @@
     gap: 0.75rem;
     justify-content: space-between;
     flex-wrap: wrap;
+    color: #2d2d2d;
+    background: #fff;
+    border-radius: 10px;
+    padding: 0.5rem;
 }
 
 .day-card {
@@ -215,6 +221,10 @@
     cursor: pointer;
     transition: all 0.2s ease;
     border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .day-card:hover {
@@ -261,8 +271,11 @@
 
 .day-date {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 400;
     color: #2d2d2d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .daily-schedule-div {

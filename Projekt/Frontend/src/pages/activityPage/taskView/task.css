@@ -113,7 +113,7 @@ div.task-list-div{
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1rem;
-    background: #c9c8cf;
+    background: #fff;
 }
 
 .task-name-input:focus {
@@ -244,12 +244,9 @@ div.task-list-div{
     gap: 0.75rem;
 }
 
-.edit-btn,
-
 .edit-btn {
     padding: 0.5rem 1rem;
     border-radius: 10px;
-    border: none;
     cursor: pointer;
     background: #f4f6f7;
     color: #218838;
@@ -261,11 +258,6 @@ div.task-list-div{
     border-radius: 10px;
     border: 1px solid #ddd;
     cursor: pointer;
-    background: #d32f2f;
-    color: white;
-}
-
-.delete-btn {
     background: #d32f2f;
     color: white;
 }

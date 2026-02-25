@@ -11,18 +11,18 @@ export default class UserService{
         const data = await this.apiService.post("/napicsepp/login", {email, password});
         if (data.token){
             localStorage.setItem("authToken", data.token);
-        }
-        if (data.user) {
-            const user = new User(
-                data.user.user_id,
-                data.user.email,
-                undefined,
-                data.user.username,
-                data.user.role,
-                data.user.register_date
-            );
-            localStorage.setItem("user", JSON.stringify(user.toJSON()));
-            return user;
+            
+            try {
+                const profile = await this.getProfile();
+                console.log("Profil lekérése sikeres:", profile);
+                
+                if (profile && profile.user_id) {
+                    localStorage.setItem("user", JSON.stringify(profile.toJSON()));
+                    return profile;
+                }
+            } catch (e) {
+                console.error("Profil lekérése sikertelen:", e);
+            }
         }
         return data;
     }
@@ -47,21 +47,26 @@ export default class UserService{
 
 
     logout(){
-        localStorage.removeItem("authToken");
+        localStorage.removeItem("token");
         localStorage.removeItem("user");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("id");
     }
 
 
     async getProfile(){
         const data = await this.apiService.get("/napicsepp/profile");
-        if (data.user_id) {
+        
+        const userData = Array.isArray(data) ? data[0] : data;
+        
+        if (userData && userData.user_id) {
             return new User(
-                data.user_id,
-                data.email,
+                userData.user_id,
+                userData.email,
                 undefined,
-                data.username,
-                data.role,
-                data.register_date
+                userData.username,
+                userData.role,
+                userData.register_date
             );
         }
         return data;
@@ -69,6 +74,41 @@ export default class UserService{
 
     getStatistics(){
         return this.apiService.get("/napicsepp/stats");
+    }
+
+    async updateProfile(data) {
+        let user = null;
+        const stored = localStorage.getItem("user");
+        
+        if (stored && stored !== "undefined") {
+            try {
+                user = JSON.parse(stored);
+            } catch (e) {
+                user = null;
+            }
+        }
+        
+        if (Array.isArray(user)) {
+            user = user[0];
+        }
+        
+        let userId = user?.user_id || user?.userId;
+        
+        if (!userId) {
+            const profile = await this.getProfile();
+            userId = profile.user_id;
+            if (userId) {
+                user = profile.toJSON();
+                localStorage.setItem("user", JSON.stringify(user));
+            }
+        }
+        
+        if (!userId) throw new Error("Felhasználó azonosító nem található!");
+        const result = await this.apiService.put(`/napicsepp/users/${userId}`, data);
+        
+        const updated = { ...user, ...data };
+        localStorage.setItem("user", JSON.stringify(updated));
+        return result;
     }
 
     async getAllUsers() {
@@ -88,3 +128,5 @@ export default class UserService{
         return [];
     }
 }
+
+console.log(localStorage.getItem("user"));

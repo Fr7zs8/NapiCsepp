@@ -6,6 +6,7 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .popup-overlay {
@@ -136,6 +137,9 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .navigation-buttons {
@@ -474,23 +478,32 @@
     }
 
     .month-view-div {
-        padding: 0.5rem;
+        padding: 0.35rem;
         margin-bottom: 1rem;
+        border-radius: 8px;
     }
 
     .calendar-grid {
         gap: 0;
+        min-height: auto;
     }
 
     .day-header {
-        padding: 0.35rem;
-        font-size: 0.75rem;
+        padding: 0.25rem 0.1rem;
+        font-size: 0.7rem;
     }
 
     .calendar-day {
-        padding: 0.5rem;
-        min-height: 50px;
-        font-size: 0.8rem;
+        padding: 0.25rem 0.15rem;
+        min-height: 42px;
+        font-size: 0.72rem;
+    }
+
+    .counter-badge {
+        font-size: 0.62em;
+        padding: 1px 3px;
+        min-width: 14px;
+        margin: 1px 1px;
     }
 
     .explanation-div {

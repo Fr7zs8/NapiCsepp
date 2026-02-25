@@ -210,7 +210,7 @@ export function StatisticsView(){
                 <div className="priority-stats-div">
                     <div className="explanation-div">
                         <Activity size={20}/>
-                        <p className="section-title">Prioritások eloszlása</p>
+                        <p className="section-title">Nehézségek eloszlása</p>
                     </div>
                     <div className="priority-item high-difficulty">
                         <p>Magas nehézség</p>
@@ -258,9 +258,13 @@ export function StatisticsView(){
                 <div className="diagram-div">
                     <div className="chart-container">
                         <div className="y-axis">
-                            {[maxValue, Math.floor(maxValue * 0.75), Math.floor(maxValue * 0.5), Math.floor(maxValue * 0.25), 0].map((value, index) => (
-                                <span key={index} className="y-axis-label">{value}</span>
-                            ))}
+                            {(() => {
+                                const raw = [maxValue, Math.round(maxValue * 0.75), Math.round(maxValue * 0.5), Math.round(maxValue * 0.25), 0];
+                                const unique = [...new Set(raw)];
+                                return unique.map((value, index) => (
+                                    <span key={index} className="y-axis-label">{value}</span>
+                                ));
+                            })()}
                         </div>
                         <div className="chart-content">
                             {weekData.map((data, index) => {

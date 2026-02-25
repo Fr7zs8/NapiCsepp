@@ -317,6 +317,176 @@
     }
 }
 
+/* Edit Profile Popup */
+.edit-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.edit-popup-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    padding: 2rem;
+    width: 100%;
+    max-width: 440px;
+}
+
+.edit-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.edit-popup-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.edit-popup-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0.25rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s, background 0.2s;
+}
+
+.edit-popup-close:hover {
+    color: #e53e3e;
+    background: #fee2e2;
+}
+
+.edit-popup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.edit-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.optional-label {
+    font-weight: 400;
+    color: #9ca3af;
+    font-size: 0.8rem;
+}
+
+.edit-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    background: #f9fafb;
+    transition: border-color 0.2s;
+}
+
+.edit-input-row:focus-within {
+    border-color: #3b82f6;
+    background: #fff;
+}
+
+.edit-input-row svg {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.edit-input-row input {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 0.95rem;
+    color: #1f2937;
+    width: 100%;
+}
+
+.edit-error {
+    margin: 0;
+    color: #dc2626;
+    font-size: 0.875rem;
+    background: #fee2e2;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+}
+
+.edit-success {
+    margin: 0;
+    color: #16a34a;
+    font-size: 0.875rem;
+    background: #dcfce7;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+}
+
+.edit-popup-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+.edit-cancel-btn {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #f9fafb;
+    color: #374151;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.edit-cancel-btn:hover {
+    background: #e5e7eb;
+}
+
+.edit-save-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.edit-save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.edit-save-btn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
 @media (max-width: 480px) {
     .profile-section {
         padding: 1rem;

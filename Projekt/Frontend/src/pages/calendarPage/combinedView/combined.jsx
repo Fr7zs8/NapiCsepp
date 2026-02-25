@@ -51,7 +51,6 @@ export function CombinedView(){
     const [calendarManager, setCalendarManager] = useState(null);
 
     const [miniPopupEvent, setMiniPopupEvent] = useState(null);
-    const [miniPopupPosition, setMiniPopupPosition] = useState({ x: 0, y: 0 });
     const [showEventPopup, setShowEventPopup] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
     const [selectedHour, setSelectedHour] = useState(null);
@@ -158,7 +157,6 @@ export function CombinedView(){
         return slots;
     };
     
-    const weekData = calendarManager ? calendarManager.getCombinedView(currentWeek) : null;
     const weekDays = calendarManager ? calendarManager.getWeekView(currentWeek, selectedDay) : [];
     const timeSlots = generateTimeSlots();
 
@@ -178,9 +176,6 @@ export function CombinedView(){
         setEventsListDate(new Date(fullDate));
         setShowEventsList(true);
     };
-
-    const today = new Date();
-
 
     return(
         <section className="combined-calendar-view">
@@ -205,43 +200,29 @@ export function CombinedView(){
                 <div className="info-text-div">
                     <p>{monthName}</p>
                 </div>
-                <div className="view-switch-div">
-                    <div className={`view-switch-small ${isMobile ? 'is-mobile' : ''}`}>
-                        <input type="radio" id="view-month" name="view" 
-                            checked={window.location.pathname.includes('monthly')} 
-                            onChange={() => navigate('/calendar/monthly')} />
-                        <label htmlFor="view-month">Hónap</label>
+                <div className={`view-switch-small ${isMobile ? 'is-mobile' : ''}`}>
+                    <input type="radio" id="view-month" name="view" 
+                        checked={window.location.pathname.includes('monthly')} 
+                        onChange={() => navigate('/calendar/monthly')} />
+                    <label htmlFor="view-month">Hónap</label>
 
-                        <input type="radio" id="view-week" name="view" 
-                            checked={window.location.pathname.includes('weekly') || window.location.pathname.includes('combined')} 
-                            onChange={() => navigate('/calendar/weekly')} />
-                        <label htmlFor="view-week">Hét</label>
+                    <input type="radio" id="view-week" name="view" 
+                        checked={window.location.pathname.includes('weekly') || window.location.pathname.includes('combined')} 
+                        onChange={() => navigate('/calendar/weekly')} />
+                    <label htmlFor="view-week">Hét</label>
 
-                        {!isMobile && (
-                            <>
-                                <input type="radio" id="view-day" name="view" 
-                                    checked={window.location.pathname.includes('daily')} 
-                                    onChange={() => navigate('/calendar/daily')} />
-                                <label htmlFor="view-day">Nap</label>
-                            </>
-                        )}
-                    </div>
+                    {!isMobile && (
+                        <>
+                            <input type="radio" id="view-day" name="view" 
+                                checked={window.location.pathname.includes('daily')} 
+                                onChange={() => navigate('/calendar/daily')} />
+                            <label htmlFor="view-day">Nap</label>
+                        </>
+                    )}
                 </div>
             </div>
 
             <div className="combined-layout">
-                <div className="week-toggle-div">
-                    <button className="week-toggle-btn back" onClick={() => changeWeek(-1)}>
-                        ← Előző
-                    </button>
-                    <button className="week-toggle-btn" onClick={() => navigate("/calendar/weekly")}>
-                        Heti nézet
-                    </button>
-                    <button className="week-toggle-btn back" onClick={() => changeWeek(1)}>
-                        Következő →
-                    </button>
-                </div>
-
                 <div className="weekly-overview-div">
                     <div className="week-grid">
                         {weekDays.map((day, index) => (

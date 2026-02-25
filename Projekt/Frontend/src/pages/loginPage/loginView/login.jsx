@@ -45,7 +45,7 @@ export function LoginView(){
                     <form onSubmit={handleLogin}>
                        <div className="login-form-div">
                             <LoginRegisterSwitch currentPage="login"/>
-                            <label>Jelentkezz be a fiókodba</label>
+                            <label className="switchlabel">Jelentkezz be a fiókodba</label>
 
                             {error && <div className="error-message">{error}</div>}
                         </div>

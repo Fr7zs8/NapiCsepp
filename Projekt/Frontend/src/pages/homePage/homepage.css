@@ -18,7 +18,8 @@ main.main-content{
 }
 
 p.stat-value {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    color: #2a364b;
 }
 
 .info-text-div {
@@ -137,12 +138,13 @@ p.stat-value {
 
 .main-content-wrapper {
     display: flex;
+    flex-direction: column;
     gap: 2rem;
 }
 
 .quick-access-section,
 .todays-statistics-section {
-    flex: 1;
+    width: 100%;
 }
 
 .quick-access-section h3,
@@ -155,6 +157,8 @@ p.stat-value {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .access-div {
@@ -171,6 +175,9 @@ p.stat-value {
     border: 1px solid #e5e7eb;
     box-shadow: none;
     border-left: 6px solid transparent;
+    overflow: hidden;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 .access-div.calendar { border-left-color: #3b82f6; }
@@ -244,23 +251,23 @@ p.stat-value {
 }
 
 .stat-div.tasks {
-    background: #bfa1ff;
-    border-left: 5px solid #8b5cf6;
+    background: linear-gradient(135deg, #f3f0ff 0%, #ede9fe 100%);
+    border-left: 3px solid #8b5cf6;
 }
 
 .stat-div.finished {
-    background: #7fe3a6;
-    border-left: 5px solid #22c55e;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-left: 3px solid #22c55e;
 }
 
 .stat-div.events {
-    background: #86b6ff;
-    border-left: 5px solid #3b82f6;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-left: 3px solid #3b82f6;
 }
 
 .stat-div.habits {
-    background: #ea8dc1;
-    border-left: 5px solid #ec4899;
+    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+    border-left: 3px solid #ec4899;
 }
 
 .stat-label {
@@ -278,14 +285,14 @@ p.stat-value {
     font-weight: 600;
     grid-column: 2;
     grid-row: 2;
-    font-size: 0.75rem;
+    font-size:1rem;
 }
 
 .stat-value {
     margin: 0;
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: #1f2937;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #2a364b;
     grid-column: 2;
     grid-row: 3;
 }
@@ -324,7 +331,7 @@ p.stat-value {
     }
 
     .main-content-wrapper {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         max-width: 100%;
         overflow-x: hidden;
     }
@@ -375,7 +382,10 @@ p.stat-value {
     }
 
     .stat-value {
-        font-size: 0.85rem;
+        font-size: 1rem;
+        font-weight: 400;
+        
+        color: #2a364b;
     }
 }
 
@@ -474,14 +484,6 @@ p.stat-value {
         width: 100%;
         box-sizing: border-box;
         gap: 0.1rem 0.35rem;
-    }
-
-    .stat-value {
-        font-size: 0.65rem;
-    }
-
-    .stat-name {
-        font-size: 0.9rem;
     }
 
     .stat-label {

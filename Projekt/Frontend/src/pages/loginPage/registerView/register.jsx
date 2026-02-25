@@ -62,7 +62,7 @@ export function RegisterView(){
                     <form onSubmit={handleRegister}>
                         <div className="register-form-div">
                             <LoginRegisterSwitch currentPage="register"/>
-                            <label>Hozz létre új fiókot</label>
+                            <label className="switchlabel">Hozz létre új fiókot</label>
 
                             {error && <div className="error-message">{error}</div>}
                         </div>

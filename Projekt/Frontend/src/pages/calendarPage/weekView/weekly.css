@@ -98,7 +98,7 @@
 .switch-slider {
     position: absolute;
     height: calc(100% - 8px);
-    background: #22c55e;
+    background: transparent;
     border-radius: 6px;
     transition: all 0.3s ease;
     z-index: 1;
@@ -134,7 +134,7 @@
 
 .view-switch-small input:checked + label {
     color: #fff;
-    background-color: transparent;
+    background-color: #3b82f6;
     border-radius: 7px;
 }
 
