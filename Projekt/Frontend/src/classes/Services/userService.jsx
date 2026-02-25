@@ -48,6 +48,7 @@ export default class UserService{
 
     logout(){
         localStorage.removeItem("token");
+        localStorage.removeItem("authToken");
         localStorage.removeItem("user");
         localStorage.removeItem("userId");
         localStorage.removeItem("id");

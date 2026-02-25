@@ -15,6 +15,11 @@ export default class ApiService{
         }
 
         if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("user");
+                window.location.href = "/login";
+            }
             throw new Error(data.message || "Hiba történt a kérés során.");
         }
         return data;
