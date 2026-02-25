@@ -3,6 +3,20 @@
     background: linear-gradient(135deg, #e8eef5 0%, #f5e8f0 50%, #f5ede8 100%);
 }
 
+.habit-disclaimer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #e3f2fd, #e8f5e9);
+    border: 1px solid #b3d4fc;
+    border-radius: 10px;
+    padding: 0.75rem 1.2rem;
+    margin-bottom: 1rem;
+    color: #1565c0;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
 .back-row {
     margin: 0 0 1.5rem 0;
 }

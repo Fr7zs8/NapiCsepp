@@ -6,6 +6,7 @@ import CalendarManager from "../../../classes/Views/calendarManager";
 import { eventService } from "../../../router/apiRouter";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
+import { showToast } from "../../../components/Toast/Toast";
 
 export function DailyView(){
     const navigate = useNavigate();
@@ -75,14 +76,16 @@ export function DailyView(){
         try {
             if (editingEvent) {
                 await eventService.updateEvent(editingEvent.event_id, eventData);
+                showToast("Esemény sikeresen módosítva!", "success");
             } else {
                 await eventService.createEvent(eventData);
+                showToast("Esemény sikeresen létrehozva!", "success");
             }
             fetchEvents();
             setShowEventPopup(false);
             setEditingEvent(null);
         } catch (err) {
-            alert("Hiba történt az esemény mentésekor!");
+            showToast("Hiba történt az esemény mentésekor!", "error");
         }
     };
 
@@ -96,9 +99,10 @@ export function DailyView(){
         try {
             await eventService.deleteEvent(eventId);
             fetchEvents();
+            showToast("Esemény sikeresen törölve!", "success");
             setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
         } catch (err) {
-            alert("Hiba történt az esemény törlésekor!");
+            showToast("Hiba történt az esemény törlésekor!", "error");
         }
     };
 

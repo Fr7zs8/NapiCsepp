@@ -7,6 +7,7 @@ import CalendarManager from "../../../classes/Views/calendarManager";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 import { eventService } from "../../../router/apiRouter";
+import { showToast } from "../../../components/Toast/Toast";
 
 export function MonthlyView(){
     const navigate = useNavigate();
@@ -96,10 +97,11 @@ export function MonthlyView(){
         try {
             await eventService.deleteEvent(eventId);
             fetchData();
+            showToast("Esemény sikeresen törölve!", "success");
             setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
             setShowDayEventsPopup(false);
         } catch (err) {
-            alert("Hiba történt az esemény törlésekor!");
+            showToast("Hiba történt az esemény törlésekor!", "error");
         }
     };
 
@@ -109,14 +111,16 @@ export function MonthlyView(){
         try {
             if (editingEvent) {
                 await eventService.updateEvent(editingEvent.event_id, eventData);
+                showToast("Esemény sikeresen módosítva!", "success");
             } else {
                 await eventService.createEvent(eventData);
+                showToast("Esemény sikeresen létrehozva!", "success");
             }
             fetchData();
             setShowEventPopup(false);
             setEditingEvent(null);
         } catch (err) {
-            alert("Hiba történt az esemény mentésekor!");
+            showToast("Hiba történt az esemény mentésekor!", "error");
         }
     };
     const handleEventClick = (event, e) => {

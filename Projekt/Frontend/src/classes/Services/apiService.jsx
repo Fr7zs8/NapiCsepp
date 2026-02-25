@@ -15,7 +15,7 @@ export default class ApiService{
         }
 
         if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
+            if ((response.status === 401 || response.status === 403) && localStorage.getItem("authToken")) {
                 localStorage.removeItem("authToken");
                 localStorage.removeItem("user");
                 window.location.href = "/login";

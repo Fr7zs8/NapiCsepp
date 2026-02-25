@@ -1,9 +1,10 @@
 import "./habit.css";
-import { Plus, Pencil, Trash2, Calendar, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Calendar, Loader2, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Habit from "../../../classes/Views/habit.jsx";
 import { activityService } from "../../../router/apiRouter.jsx";
+import { showToast } from "../../../components/Toast/Toast";
 
 export function HabitView() {
   const navigate = useNavigate();
@@ -93,11 +94,13 @@ export function HabitView() {
       });
       setHabits(habitObj);
       resetForm();
+      showToast("Szokás sikeresen hozzáadva!", "success");
       try { 
         window.dispatchEvent(new Event('activitiesUpdated'));
         window.dispatchEvent(new Event('itemSaved'));
       } catch(e){}
     } catch (err) {
+      showToast(err.message || "Hiba a szokás hozzáadása során!", "error");
       setError(err.message || "Hiba a szokás hozzáadása során!");
       console.error(err);
     }
@@ -166,11 +169,13 @@ export function HabitView() {
       });
       setHabits(habitObj);
       resetForm();
+      showToast("Szokás sikeresen módosítva!", "success");
       try { 
         window.dispatchEvent(new Event('activitiesUpdated'));
         window.dispatchEvent(new Event('itemSaved'));
       } catch(e){}
     } catch (err) {
+      showToast(err.message || "Hiba a szokás szerkesztése során!", "error");
       setError(err.message || "Hiba a szokás szerkesztése során!");
       console.error(err);
     }
@@ -212,11 +217,13 @@ export function HabitView() {
         );
       });
       setHabits(habitObj);
+      showToast("Szokás sikeresen törölve!", "success");
       try { 
         window.dispatchEvent(new Event('activitiesUpdated'));
         window.dispatchEvent(new Event('itemSaved'));
       } catch(e){}
     } catch (err) {
+      showToast(err.message || "Hiba a szokás törlése során!", "error");
       setError(err.message || "Hiba a szokás törlése során!");
       console.error(err);
     }
@@ -288,6 +295,12 @@ export function HabitView() {
         <p>Szokások (Habits)</p>
         <p>Adj hozzá szokást megadott időtartammal és kezdési dátummal.</p>
       </div>
+
+      <div className="habit-disclaimer">
+        <Info size={16} />
+        <span>A haladás számláló (progress counter) minden éjfélkor automatikusan frissül.</span>
+      </div>
+
       <div className="back-row">
         <button className="back-btn" onClick={() => navigate("/")}>Vissza a főoldalra</button>
       </div>

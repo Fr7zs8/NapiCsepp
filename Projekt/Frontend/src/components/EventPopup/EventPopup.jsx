@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import "./EventPopup.css";
+import { showToast } from "../Toast/Toast";
 
 export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour, existingEvent, eventsForDay }) {
     const [eventData, setEventData] = useState({
@@ -48,7 +49,7 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!eventData.event_name.trim()) {
-            alert("Kérlek add meg az esemény nevét!");
+            showToast("Kérlek add meg az esemény nevét!", "error");
             return;
         }
 
@@ -59,7 +60,7 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
 
         // Ellenőrzés: kezdés < befejezés
         if (newStart >= newEnd) {
-            alert("A kezdési időnek korábbinak kell lennie, mint a befejezésnek!");
+            showToast("A kezdési időnek korábbinak kell lennie, mint a befejezésnek!", "error");
             return;
         }
 
@@ -68,7 +69,7 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
         const startDay = newStart.toISOString().split('T')[0];
         const endDay = newEnd.toISOString().split('T')[0];
         if (startDay !== endDay) {
-            alert("Az esemény nem nyúlhat át több napra!");
+            showToast("Az esemény nem nyúlhat át több napra!", "error");
             return;
         }
 
@@ -82,7 +83,7 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
                 return newStart < evEnd && newEnd > evStart;
             });
             if (overlap) {
-                alert("Ebben az időzónában már van egy esemény. Kérlek válassz másik időt!");
+                showToast("Ebben az időzónában már van egy esemény. Kérlek válassz másik időt!", "error");
                 return;
             }
         }

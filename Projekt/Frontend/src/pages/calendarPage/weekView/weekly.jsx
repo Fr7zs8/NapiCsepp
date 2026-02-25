@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 import { eventService } from "../../../router/apiRouter";
+import { showToast } from "../../../components/Toast/Toast";
 
 
 export function WeeklyView(){
@@ -74,14 +75,16 @@ export function WeeklyView(){
         try {
             if (editingEvent) {
                 await eventService.updateEvent(editingEvent.event_id || editingEvent.eventId, eventData);
+                showToast("Esemény sikeresen módosítva!", "success");
             } else {
                 await eventService.createEvent(eventData);
+                showToast("Esemény sikeresen létrehozva!", "success");
             }
             fetchEvents();
             setShowEventPopup(false);
             setEditingEvent(null);
         } catch (err) {
-            alert("Hiba történt az esemény mentésekor!");
+            showToast("Hiba történt az esemény mentésekor!", "error");
         }
     };
 
@@ -98,17 +101,18 @@ export function WeeklyView(){
                 id = eventId.event_id || eventId.eventId;
             }
             if (!id || isNaN(Number(id))) {
-                alert("Hibás esemény azonosító!");
+                showToast("Hibás esemény azonosító!", "error");
                 return;
             }
             await eventService.deleteEvent(Number(id));
             fetchEvents();
+            showToast("Esemény sikeresen törölve!", "success");
             setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
         } catch (err) {
             if (err && err.message) {
-                alert("Hiba történt az esemény törlésekor: " + err.message);
+                showToast("Hiba történt az esemény törlésekor: " + err.message, "error");
             } else {
-                alert("Hiba történt az esemény törlésekor!");
+                showToast("Hiba történt az esemény törlésekor!", "error");
             }
             console.error("Delete event error:", err);
         }

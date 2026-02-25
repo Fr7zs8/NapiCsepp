@@ -5,6 +5,7 @@ import Task from "../../../classes/Views/task.jsx";
 import Habit from "../../../classes/Views/habit.jsx";
 import { activityService } from "../../../router/apiRouter.jsx";
 import { useNavigate } from "react-router-dom";
+import { showToast } from "../../../components/Toast/Toast";
 
 export function TaskView() {
   const [tasks, setTasks] = useState([]);
@@ -146,9 +147,11 @@ export function TaskView() {
       });
       resetForm();
       await refreshActivities();
+      showToast("Feladat sikeresen hozzáadva!", "success");
       window.dispatchEvent(new Event("activitiesUpdated"));
       window.dispatchEvent(new Event("itemSaved"));
     } catch (err) {
+      showToast(err.message || "Hiba a feladat hozzáadása során!", "error");
       setError(err.message || "Hiba a feladat hozzáadása során!");
       console.error(err);
     }
@@ -165,9 +168,11 @@ export function TaskView() {
     try {
       await activityService.deleteTask(id);
       await refreshActivities();
+      showToast("Feladat sikeresen törölve!", "success");
       window.dispatchEvent(new Event("activitiesUpdated"));
       window.dispatchEvent(new Event("itemSaved"));
     } catch (err) {
+      showToast(err.message || "Hiba a feladat törlése során!", "error");
       setError(err.message || "Hiba a feladat törlése során!");
       console.error(err);
     }
@@ -191,9 +196,11 @@ export function TaskView() {
       });
       resetForm();
       await refreshActivities();
+      showToast("Feladat sikeresen módosítva!", "success");
       window.dispatchEvent(new Event("activitiesUpdated"));
       window.dispatchEvent(new Event("itemSaved"));
     } catch (err) {
+      showToast(err.message || "Hiba a feladat szerkesztése során!", "error");
       setError(err.message || "Hiba a feladat szerkesztése során!");
       console.error(err);
     }
@@ -205,10 +212,12 @@ export function TaskView() {
       // Csak az activity_achive mezőt frissítjük – a progress_counter-t a cron kezeli
       await activityService.updateTask(taskId, { activity_achive: newVal });
       await refreshActivities();
+      showToast(newVal ? "Feladat teljesítve!" : "Feladat visszavonva!", "success");
       window.dispatchEvent(new Event("activitiesUpdated"));
       window.dispatchEvent(new Event("itemSaved"));
     } catch (e) {
       console.error(e);
+      showToast(e.message || "Hiba a feladat státuszának frissítése során", "error");
       setError(e.message || "Hiba a feladat státuszának frissítése során");
     }
   }
