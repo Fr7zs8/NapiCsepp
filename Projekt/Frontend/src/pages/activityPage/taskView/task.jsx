@@ -5,7 +5,7 @@ import Task from "../../../classes/Views/task.jsx";
 import Habit from "../../../classes/Views/habit.jsx";
 import { activityService } from "../../../router/apiRouter.jsx";
 import { useNavigate } from "react-router-dom";
-import { showToast } from "../../../components/Toast/Toast";
+import { showToast } from "../../../components/Toast/showToast";
 
 export function TaskView() {
   const [tasks, setTasks] = useState([]);
@@ -49,7 +49,8 @@ export function TaskView() {
             ed.setHours(0, 0, 0, 0);
             const diff = Math.floor((ed - sd) / (1000 * 60 * 60 * 24));
             targetDaysVal = Math.max(0, diff + 1);
-          } catch (e) {
+          } catch (err) {
+            console.warn(err);
             targetDaysVal = 0;
           }
         } else {

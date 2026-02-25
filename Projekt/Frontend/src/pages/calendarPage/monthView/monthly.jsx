@@ -7,7 +7,7 @@ import CalendarManager from "../../../classes/Views/calendarManager";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 import { eventService } from "../../../router/apiRouter";
-import { showToast } from "../../../components/Toast/Toast";
+import { showToast } from "../../../components/Toast/showToast";
 
 export function MonthlyView(){
     const navigate = useNavigate();
@@ -56,6 +56,8 @@ export function MonthlyView(){
         }
     };
 
+    /* eslint-disable react-hooks/set-state-in-effect */
+    // Calling fetchData here triggers setState within the async call; this is intentional for initial load
     useEffect(() => {
         fetchData();
     }, []);
@@ -101,6 +103,7 @@ export function MonthlyView(){
             setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
             setShowDayEventsPopup(false);
         } catch (err) {
+            console.error(err);
             showToast("Hiba történt az esemény törlésekor!", "error");
         }
     };
@@ -120,6 +123,7 @@ export function MonthlyView(){
             setShowEventPopup(false);
             setEditingEvent(null);
         } catch (err) {
+            console.error(err);
             showToast("Hiba történt az esemény mentésekor!", "error");
         }
     };

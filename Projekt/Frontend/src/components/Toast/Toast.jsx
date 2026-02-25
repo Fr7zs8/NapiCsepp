@@ -1,11 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import "./Toast.css";
-
-const DEFAULT_TOAST_DURATION = 3000; // ms
-
-export function showToast(message, type = "success", duration = DEFAULT_TOAST_DURATION) {
-  window.dispatchEvent(new CustomEvent("showToast", { detail: { message, type, duration } }));
-}
+import { DEFAULT_TOAST_DURATION } from "./showToast";
 
 export function Toast() {
   const [toasts, setToasts] = useState([]);

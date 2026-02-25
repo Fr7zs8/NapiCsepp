@@ -1,5 +1,8 @@
 import "./profile.css"
 import { User, Mail, Database, Lock, Loader2, Award, Target, Calendar, X, Save } from "lucide-react";
+import ProfileCard from "../../components/Profile/ProfileCard";
+import DataItem from "../../components/Profile/DataItem";
+import StatItem from "../../components/Profile/StatItem";
 import { useState, useEffect } from "react";
 import { clientService, activityService } from "../../router/apiRouter";
 import Statistics from "../../classes/Views/statistics";
@@ -109,48 +112,13 @@ export function ProfileView(){
                 <p>Tekintsd meg és kezeld a profil adataidat</p>
             </div>
 
-            <div className="profile-card-div">
-                <div className="profile-avatar">
-                    <User size={48} />
-                </div>
-                <div className="profile-info">
-                    <h2 className="username">@{profile.username.toLowerCase()}</h2>
-                    <p className="email">{profile.email}</p>
-                </div>
-            </div>
+                    <ProfileCard username={profile.username} email={profile.email} AvatarIcon={User} />
 
             <div className="data-list-div">
-                <div className="data-item">
-                    <div className="data-icon-label">
-                        <Lock size={20} />
-                        <p className="data-label">Jelszó</p>
-                    </div>
-                    <p className="data-value">••••••••</p>
-                </div>
-
-                <div className="data-item">
-                    <div className="data-icon-label">
-                        <Mail size={20} />
-                        <p className="data-label">Email cím</p>
-                    </div>
-                    <p className="data-value">{profile?.email}</p>
-                </div>
-
-                <div className="data-item">
-                    <div className="data-icon-label">
-                        <User size={20} />
-                        <p className="data-label">Fiók típus</p>
-                    </div>
-                    <p className="data-value">{roleHu}</p>
-                </div>
-
-                <div className="data-item">
-                    <div className="data-icon-label">
-                        <Calendar size={20} />
-                        <p className="data-label">Regisztráció dátuma</p>
-                    </div>
-                    <p className="data-value">{profile.register_date}</p>
-                </div>
+                <DataItem icon={Lock} label="Jelszó" value={'••••••••'} />
+                <DataItem icon={Mail} label="Email cím" value={profile?.email} />
+                <DataItem icon={User} label="Fiók típus" value={roleHu} />
+                <DataItem icon={Calendar} label="Regisztráció dátuma" value={profile.register_date} />
             </div>
 
             <div className="edit-profile-div">
@@ -166,34 +134,18 @@ export function ProfileView(){
                         <p className="stats-subtitle">Az általános használati statisztikáid</p>
                     </div>
                     <div className="stats-grid">
-                        <div className="stat-item stat-tasks">
-                            <div className="data-icon-label">
-                                <p className="data-label">Összes feladat</p>
-                                <SquareCheckBig size={24} />
-                            </div>
-                            <p className="data-value">{statsObj.totalActivities || 0}</p>
-                        </div>
-                        <div className="stat-item stat-completed">
-                            <div className="data-icon-label">
-                                <p className="data-label">Befejezett aktivitások</p>
-                                <Award size={24} />
-                            </div>
-                            <p className="data-value">{statsObj.completedActivities || 0}</p>
-                        </div>
-                        <div className="stat-item stat-habits">
-                            <div className="data-icon-label">
-                                <p className="data-label">Aktív szokások</p>
-                                <Target size={24} />
-                            </div>
-                            <p className="data-value">{statsObj.getExtra('activeHabitsCount') || 0}</p>
-                        </div>
-                        <div className="stat-item stat-events">
-                            <div className="data-icon-label">
-                                <p className="data-label">Hónapi események</p>
-                                <Calendar size={24} />
-                            </div>
-                            <p className="data-value">{statsObj.monthlyEventsCount || 0}</p>
-                        </div>
+                        <StatItem className="stat-tasks" label="Összes feladat" value={statsObj.totalActivities || 0}>
+                            <><p className="data-label">Összes feladat</p><SquareCheckBig size={24} /></>
+                        </StatItem>
+                        <StatItem className="stat-completed" label="Befejezett aktivitások" value={statsObj.completedActivities || 0}>
+                            <><p className="data-label">Befejezett aktivitások</p><Award size={24} /></>
+                        </StatItem>
+                        <StatItem className="stat-habits" label="Aktív szokások" value={statsObj.getExtra('activeHabitsCount') || 0}>
+                            <><p className="data-label">Aktív szokások</p><Target size={24} /></>
+                        </StatItem>
+                        <StatItem className="stat-events" label="Hónapi események" value={statsObj.monthlyEventsCount || 0}>
+                            <><p className="data-label">Hónapi események</p><Calendar size={24} /></>
+                        </StatItem>
                     </div>
                 </div>
             )}

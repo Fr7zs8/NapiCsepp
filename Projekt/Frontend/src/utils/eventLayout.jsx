@@ -25,7 +25,7 @@ export function calculateEventLayout(events) {
     });
 
 
-    positioned.forEach((event, i) => {
+    positioned.forEach((event) => {
         let overlaps = positioned.filter(e =>
             e !== event &&
             e.startMinutes < event.startMinutes + event.duration &&

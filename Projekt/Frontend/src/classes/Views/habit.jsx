@@ -24,7 +24,7 @@ export default class Habit {
       } else {
         this.startDate = startDate;
       }
-    } catch (e) {
+    } catch {
       this.startDate = startDate;
     }
     this.checkedDays = checkedDays;
@@ -40,7 +40,7 @@ export default class Habit {
         this.endDate = endDate;
         this.totalDays = this.targetDays || 0;
       }
-    } catch (e) {
+    } catch {
       this.endDate = endDate;
       this.totalDays = this.targetDays || 0;
     }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Habit from "../../../classes/Views/habit.jsx";
 import { activityService } from "../../../router/apiRouter.jsx";
-import { showToast } from "../../../components/Toast/Toast";
+import { showToast } from "../../../components/Toast/showToast";
 
 export function HabitView() {
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ export function HabitView() {
         let targetDaysVal = null;
         if (item.target_days || item.target_days === 0) {
           targetDaysVal = Number(item.target_days);
-        } else if (item.activity_start_date && item.activity_end_date) {
+          } else if (item.activity_start_date && item.activity_end_date) {
           try {
             const sd = new Date(item.activity_start_date);
             const ed = new Date(item.activity_end_date);
@@ -73,7 +73,8 @@ export function HabitView() {
             ed.setHours(0,0,0,0);
             const diff = Math.floor((ed - sd) / (1000*60*60*24));
             targetDaysVal = Math.max(0, diff + 1);
-          } catch(e) {
+          } catch (err) {
+            console.warn(err);
             targetDaysVal = 0;
           }
         } else {
@@ -98,7 +99,7 @@ export function HabitView() {
       try { 
         window.dispatchEvent(new Event('activitiesUpdated'));
         window.dispatchEvent(new Event('itemSaved'));
-      } catch(e){}
+      } catch (err) { console.warn(err); }
     } catch (err) {
       showToast(err.message || "Hiba a szokás hozzáadása során!", "error");
       setError(err.message || "Hiba a szokás hozzáadása során!");
@@ -148,7 +149,8 @@ export function HabitView() {
             ed.setHours(0,0,0,0);
             const diff = Math.floor((ed - sd) / (1000*60*60*24));
             targetDaysVal = Math.max(0, diff + 1);
-          } catch (e) {
+          } catch (err) {
+            console.warn(err);
             targetDaysVal = 0;
           }
         } else {
@@ -173,7 +175,7 @@ export function HabitView() {
       try { 
         window.dispatchEvent(new Event('activitiesUpdated'));
         window.dispatchEvent(new Event('itemSaved'));
-      } catch(e){}
+      } catch (err) { console.warn(err); }
     } catch (err) {
       showToast(err.message || "Hiba a szokás szerkesztése során!", "error");
       setError(err.message || "Hiba a szokás szerkesztése során!");
@@ -197,7 +199,8 @@ export function HabitView() {
             ed.setHours(0,0,0,0);
             const diff = Math.floor((ed - sd) / (1000*60*60*24));
             targetDaysVal = Math.max(0, diff + 1);
-          } catch (e) {
+          } catch (err) {
+            console.warn(err);
             targetDaysVal = 0;
           }
         } else {
@@ -221,7 +224,7 @@ export function HabitView() {
       try { 
         window.dispatchEvent(new Event('activitiesUpdated'));
         window.dispatchEvent(new Event('itemSaved'));
-      } catch(e){}
+      } catch (err) { console.warn(err); }
     } catch (err) {
       showToast(err.message || "Hiba a szokás törlése során!", "error");
       setError(err.message || "Hiba a szokás törlése során!");
@@ -247,7 +250,8 @@ export function HabitView() {
               ed.setHours(0,0,0,0);
               const diff = Math.floor((ed - sd) / (1000*60*60*24));
               targetDaysVal = Math.max(0, diff + 1);
-            } catch (e) {
+            } catch (err) {
+              console.warn(err);
               targetDaysVal = 0;
             }
           } else {

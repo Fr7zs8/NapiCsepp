@@ -196,6 +196,8 @@
     align-items: center;
     gap: 0.75rem;
     transition: background-color 0.2s ease;
+    width: 90%;
+    margin: auto;
 }
 
 .stat-item:hover {

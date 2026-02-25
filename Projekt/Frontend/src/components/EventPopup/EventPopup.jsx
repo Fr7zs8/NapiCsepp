@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
 import { X } from "lucide-react";
 import "./EventPopup.css";
-import { showToast } from "../Toast/Toast";
+import { showToast } from "../Toast/showToast";
 
 export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour, existingEvent, eventsForDay }) {
     const [eventData, setEventData] = useState({

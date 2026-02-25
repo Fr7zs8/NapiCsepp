@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 import { eventService } from "../../../router/apiRouter";
-import { showToast } from "../../../components/Toast/Toast";
+import { showToast } from "../../../components/Toast/showToast";
 
 
 export function WeeklyView(){
@@ -21,10 +21,6 @@ export function WeeklyView(){
     const [editingEvent, setEditingEvent] = useState(null);
     const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
 
-    useEffect(() => {
-        fetchEvents();
-    }, []);
-
     const fetchEvents = async () => {
         try {
             const eventsData = await eventService.getOverview();
@@ -34,6 +30,12 @@ export function WeeklyView(){
             console.error("Error fetching events:", err);
         }
     };
+
+    /* eslint-disable react-hooks/set-state-in-effect */
+    // Initial fetch: this calls async fetchEvents which updates state; intentional for initial load
+    useEffect(() => {
+        fetchEvents();
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -84,6 +86,7 @@ export function WeeklyView(){
             setShowEventPopup(false);
             setEditingEvent(null);
         } catch (err) {
+            console.error(err);
             showToast("Hiba történt az esemény mentésekor!", "error");
         }
     };

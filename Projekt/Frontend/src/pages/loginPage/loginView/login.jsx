@@ -1,6 +1,7 @@
 import "./login.css";
 import image1 from "../../../assets/image1.jpg";
 import {Mail, Lock} from "lucide-react";
+import AuthCard from "../../../components/Auth/AuthCard";
 import { LoginRegisterSwitch } from "../login-register-switch/login-register-switch";
 import { useNavigate } from 'react-router-dom'
 import { clientService } from "../../../router/apiRouter";
@@ -37,8 +38,7 @@ export function LoginView(){
                     <img src={image1} alt="Login kép"/>
                 </div>
                 <div className='login-content-div'>
-                    <div className="auth-card">
-                        <div className="auth-card-inner">
+                    <AuthCard>
                             <div className="login-header-div">
                                 <h1>Üdvözülünk a NapiCsepp Weboldalán!</h1>
                                 <h3>DailyDrop - A tökéletes szokáskövető mindennapi használatra!</h3>
@@ -82,8 +82,7 @@ export function LoginView(){
                             <div>
                                 <label>Még nincs fiókod? <a onClick={() => navigate("/register")} style={{cursor: 'pointer'}}>Regisztráció</a></label>
                             </div>
-                        </div>
-                    </div>
+                    </AuthCard>
                 </div>
                 
             </div>

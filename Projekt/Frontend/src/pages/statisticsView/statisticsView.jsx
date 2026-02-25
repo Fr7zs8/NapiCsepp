@@ -10,7 +10,7 @@ export function StatisticsView(){
     const [statsObj, setStatsObj] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [weeklyPerDay, setWeeklyPerDay] = useState([]);
+    // weeklyPerDay state removed (we store weekly data inside statsObj extras)
     const [savedFlash, setSavedFlash] = useState(false);
 
     useEffect(()=>{
@@ -53,7 +53,7 @@ export function StatisticsView(){
             const statsInstance = new Statistics(statsRaw);
 
             const { monday, sunday } = getWeekRange(new Date());
-            const perDay = Array.from({length:7}, (_,i)=>({ completed:0, pending:0 }));
+            const perDay = Array.from({length:7}, () => ({ completed:0, pending:0 }));
 
             (allActivities || []).forEach(a => {
                 const startStr = a.activity_start_date || a.activity_date || a.date;
@@ -70,23 +70,22 @@ export function StatisticsView(){
                             else perDay[idx].pending++;
                         }
                     }
-                } catch(e) {
-                    //error ignorálása
+                } catch (err) {
+                    console.warn(err);
                 }
             });
 
-            setWeeklyPerDay(perDay.map((d, i) => ({ day: ['H','K','Sze','Cs','P','Szo','V'][i], ...d })));
-
+            // attach weekly per-day data to stats instance for later use
             const today = new Date();
             today.setHours(0,0,0,0);
-            const activeCount = (allHabits || []).filter(h => {
+            (allHabits || []).forEach(h => {
                 try {
                     const sd = h.activity_start_date ? new Date(h.activity_start_date + 'T00:00:00') : null;
                     const ed = h.activity_end_date ? new Date(h.activity_end_date + 'T23:59:59') : sd;
                     if (!sd || !ed) return false;
                     return sd <= today && ed >= today;
-                } catch(e) { return false }
-            }).length;
+                } catch (err) { console.warn(err); return false }
+            });
             const activeHabits = Statistics.getActiveHabitsCount(allHabits);
             statsInstance.setExtra('activeHabitsCount', activeHabits);
             statsInstance.setExtra('weeklyPerDay', perDay);

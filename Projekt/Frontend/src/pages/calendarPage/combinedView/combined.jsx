@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { eventService } from "../../../router/apiRouter";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
-import { showToast } from "../../../components/Toast/Toast";
+import { showToast } from "../../../components/Toast/showToast";
 
 function EventsListPopup({ events, onClose, date }) {
     return (
@@ -51,7 +51,7 @@ export function CombinedView(){
     const [selectedDay, setSelectedDay] = useState(new Date());
     const [calendarManager, setCalendarManager] = useState(null);
 
-    const [miniPopupEvent, setMiniPopupEvent] = useState(null);
+    
     const [showEventPopup, setShowEventPopup] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
     const [selectedHour, setSelectedHour] = useState(null);
@@ -63,8 +63,7 @@ export function CombinedView(){
     const handleEditEvent = (event) => {
         setEditingEvent(event);
         setShowEventPopup(true);
-        setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
-        setMiniPopupEvent(null);
+    setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
     };
     const handleDeleteEvent = async (eventId) => {
         try {
@@ -138,6 +137,7 @@ export function CombinedView(){
         }
     };
 
+    // Initial/refresh fetch for the currentWeek. fetchEvents is stable here.
     useEffect(() => {
         fetchEvents();
     }, [currentWeek]);
@@ -183,15 +183,6 @@ export function CombinedView(){
 
     return(
         <section className="combined-calendar-view">
-            {miniPopupEvent && (
-                <EventMiniPopup
-                    event={miniPopupEvent}
-                    position={miniPopupPosition}
-                    onEdit={handleEditEvent}
-                    onDelete={handleDeleteEvent}
-                    onClose={() => setMiniPopupEvent(null)}
-                />
-            )}
             {showEventsList && (
                 <EventsListPopup events={eventsListForDay} date={eventsListDate} onClose={() => setShowEventsList(false)} />
             )}

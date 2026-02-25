@@ -2,6 +2,7 @@ import "./register.css";
 import image4 from "../../../assets/image4.jpg";
 import {Mail, Lock, CircleUser, UserRound} from "lucide-react";
 import { LoginRegisterSwitch } from "../login-register-switch/login-register-switch";
+import AuthCard from "../../../components/Auth/AuthCard";
 import { useNavigate } from 'react-router-dom'
 import { clientService } from "../../../router/apiRouter";
 import { useState } from "react";
@@ -54,8 +55,7 @@ export function RegisterView(){
                     <img src={image4} alt=""/>
                 </div>
                 <div className='register-content-div'>
-                    <div className="auth-card">
-                        <div className="auth-card-inner">
+                    <AuthCard>
                             <div className="register-header-div">
                                 <h1>Üdvözülünk a NapiCsepp Weboldalán!</h1>
                                 <h3>DailyDrop - A tökéletes szokáskövető mindennapi használatra!</h3>
@@ -133,8 +133,7 @@ export function RegisterView(){
                             <div>
                                 <label>Van fiókod? <a onClick={() => navigate("/login")} style={{cursor: 'pointer'}}>Belépés</a></label>
                             </div>
-                        </div>
-                    </div>
+                    </AuthCard>
                 </div>
                 
             </div>

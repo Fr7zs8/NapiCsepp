@@ -6,7 +6,7 @@ import CalendarManager from "../../../classes/Views/calendarManager";
 import { eventService } from "../../../router/apiRouter";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
-import { showToast } from "../../../components/Toast/Toast";
+import { showToast } from "../../../components/Toast/showToast";
 
 export function DailyView(){
     const navigate = useNavigate();
@@ -31,10 +31,6 @@ export function DailyView(){
         return () => window.removeEventListener('resize', handleResize);
     }, [isMobile, navigate]);
 
-    useEffect(() => {
-        fetchEvents();
-    }, []);
-
     const fetchEvents = async () => {
         try {
             const eventsData = await eventService.getOverview();
@@ -43,6 +39,12 @@ export function DailyView(){
             console.error("Error fetching events:", err);
         }
     };
+
+    /* eslint-disable react-hooks/set-state-in-effect */
+    // Initial fetch: this calls async fetchEvents which updates state; intentional for initial load
+    useEffect(() => {
+        fetchEvents();
+    }, []);
 
     const changeDay = (direction) => {
         setCurrentDay(prev => {
@@ -85,6 +87,7 @@ export function DailyView(){
             setShowEventPopup(false);
             setEditingEvent(null);
         } catch (err) {
+            console.error(err);
             showToast("Hiba történt az esemény mentésekor!", "error");
         }
     };
@@ -102,6 +105,7 @@ export function DailyView(){
             showToast("Esemény sikeresen törölve!", "success");
             setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
         } catch (err) {
+            console.error(err);
             showToast("Hiba történt az esemény törlésekor!", "error");
         }
     };

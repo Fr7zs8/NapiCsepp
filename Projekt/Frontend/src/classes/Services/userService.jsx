@@ -84,7 +84,8 @@ export default class UserService{
         if (stored && stored !== "undefined") {
             try {
                 user = JSON.parse(stored);
-            } catch (e) {
+            } catch (err) {
+                console.warn(err);
                 user = null;
             }
         }
