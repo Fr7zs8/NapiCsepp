@@ -8,6 +8,7 @@ Docker konténerben futtatható alkalmazás.
 2. Klónozd a repót vagy töltsd le ZIP-ben:
 
 git clone <A_PROJEKT_REPO_URL>
+
 cd <letöltött-projekt-mappa>/napicsepp/projekt
 
 docker compose up --build
