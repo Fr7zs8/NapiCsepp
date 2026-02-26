@@ -30,7 +30,6 @@ export function Toast() {
             {toast.type === "success" ? "✓" : "✕"}
           </span>
           <span className="nc-toast-message">{toast.message}</span>
-          {/* progress bar showing remaining time */}
           <div className="nc-toast-progress">
             <div className="nc-toast-progress-fill" style={{ animationDuration: `${toast.duration}ms` }} />
           </div>

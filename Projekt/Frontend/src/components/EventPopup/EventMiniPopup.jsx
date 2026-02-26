@@ -4,9 +4,8 @@ export function EventMiniPopup({ event, position, onEdit, onDelete, onClose }) {
     if (!event) return null;
     const handleEdit = () => {
         onEdit(event);
-        onClose(); // Close the popup when editing
+        onClose();
     };
-    // Always extract the correct event_id for deletion
     const getEventId = (ev) => ev?.event_id || ev?.eventId;
     return (
         <div

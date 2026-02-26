@@ -9,7 +9,6 @@ export default class User{
     }
 
     getActivities() {
-        // Placeholder
         return [];
     }
 

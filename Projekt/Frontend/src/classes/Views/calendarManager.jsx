@@ -44,7 +44,6 @@
         };
 
 
-        // Előző hónap
         for (let i = startDay; i > 0; i--) {
             const prevDate = new Date(year, month, 1 - i);
             days.push({
@@ -59,7 +58,6 @@
             });
         }
 
-        // Aktuális hónap
         for (let i = 1; i <= daysInMonth; i++) {
             const dateObj = new Date(year, month, i);
             days.push({
@@ -74,7 +72,6 @@
             });
         }
 
-        // Következő hónap
         const currentLength = days.length;
         const daysInLastRow = currentLength % 7;
         if (daysInLastRow !== 0) {
@@ -96,7 +93,6 @@
         return days;
     }
 
-        // Szokások szűrés adott napra 
         _filterHabitsByDate(date, habits) {
             const target = new Date(date);
             return (habits || []).filter(h => {
@@ -133,7 +129,6 @@
             return days;
         }
 
-        //ugyanaz mint a weekView de egy tömbben adja vissza
         getCombinedView(date = this.currentDate) {
             const weekDays = this.getWeekView(date);
             let combinedActivities = [];
@@ -150,7 +145,6 @@
             };
         }
 
-        // Napi nézet
         getDayView(date = this.currentDate) {
             return {
                 date: new Date(date),
@@ -159,18 +153,16 @@
             };
         }
 
-        // Segédfüggvény
         getStartOfWeek(date) {
             const d = new Date(date);
             const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // hétfő az első nap
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
             return new Date(d.setDate(diff));
         }
 
         filterByDate(date, items) {
             const target = new Date(date);
             return (items || []).map(item => {
-                // Ha Event példány, maradjon, ha nem, konvertáljuk
                 if (item instanceof Event) return item;
                 if (item.event_id || item.eventId) {
                     return new Event(

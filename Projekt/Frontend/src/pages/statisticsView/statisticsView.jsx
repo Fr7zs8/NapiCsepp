@@ -10,7 +10,6 @@ export function StatisticsView(){
     const [statsObj, setStatsObj] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // weeklyPerDay state removed (we store weekly data inside statsObj extras)
     const [savedFlash, setSavedFlash] = useState(false);
 
     useEffect(()=>{
@@ -75,7 +74,6 @@ export function StatisticsView(){
                 }
             });
 
-            // attach weekly per-day data to stats instance for later use
             const today = new Date();
             today.setHours(0,0,0,0);
             (allHabits || []).forEach(h => {

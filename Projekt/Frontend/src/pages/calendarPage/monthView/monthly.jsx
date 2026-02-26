@@ -60,7 +60,6 @@ export function MonthlyView(){
     };
 
     /* eslint-disable react-hooks/set-state-in-effect */
-    // Calling fetchData here triggers setState within the async call; this is intentional for initial load
     useEffect(() => {
         fetchData();
     }, []);

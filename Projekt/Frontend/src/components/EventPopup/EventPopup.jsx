@@ -15,7 +15,6 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
     useEffect(() => {
         if (isOpen) {
             if (existingEvent) {
-                // Support both API and Event class field names
                 const startRaw = existingEvent.event_start_time || existingEvent.startTime;
                 const endRaw = existingEvent.event_end_time || existingEvent.endTime;
                 const nameRaw = existingEvent.event_name || existingEvent.eventName || "";
@@ -29,7 +28,6 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
                 });
             } else {
                 const date = selectedDate ? new Date(selectedDate) : new Date();
-                // Use local date string (YYYY-MM-DD) to avoid UTC offset issues
                 const dateStr = date.toLocaleDateString('en-CA');
                 let startTime = "09:00";
                 let endTime = "10:00";
@@ -59,14 +57,11 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
         const newStart = new Date(startDateTime);
         const newEnd = new Date(endDateTime);
 
-        // Ellenőrzés: kezdés < befejezés
         if (newStart >= newEnd) {
             showToast("A kezdési időnek korábbinak kell lennie, mint a befejezésnek!", "error");
             return;
         }
 
-        // Ellenőrzés: esemény nem nyúlhat át másik napra
-        // Kivétel: ha 00:00-tól 23:59-ig tart ugyanazon a napon, az érvényes
         const startDay = newStart.toISOString().split('T')[0];
         const endDay = newEnd.toISOString().split('T')[0];
         if (startDay !== endDay) {
@@ -74,13 +69,11 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
             return;
         }
 
-        // Check for overlap with other events on the same day
         if (Array.isArray(eventsForDay)) {
             const overlap = eventsForDay.some(ev => {
                 if (existingEvent && ev.event_id === existingEvent.event_id) return false;
                 const evStart = new Date(ev.event_start_time);
                 const evEnd = new Date(ev.event_end_time);
-                // Overlap if: newStart < evEnd && newEnd > evStart
                 return newStart < evEnd && newEnd > evStart;
             });
             if (overlap) {

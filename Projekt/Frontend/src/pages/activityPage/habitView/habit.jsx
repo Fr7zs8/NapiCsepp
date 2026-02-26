@@ -89,8 +89,8 @@ export function HabitView() {
           targetDaysVal,
           item.activity_start_date,
           item.activity_end_date,
-          null, // checkedDays - nem használjuk többé
-          item.progress_counter, // progressCounter a backendből
+          null,
+          item.progress_counter,
         );
       });
       setHabits(habitObj);
@@ -266,8 +266,8 @@ export function HabitView() {
             targetDaysVal,
             item.activity_start_date,
             item.activity_end_date,
-            null, // checkedDays - nem használjuk többé
-            item.progress_counter, // progressCounter a backendből
+            null,
+            item.progress_counter,
           );
         });
         setHabits(habitObj);
@@ -352,7 +352,7 @@ export function HabitView() {
           )}
         </select>
 
-        <input  //<-ezt akarom kiszedni mert nincs nagyon nagy értelme, a naptár megjelenítési helyénél kívül..
+        <input
           type="date"
           className="priority-btn"
           value={startDate}

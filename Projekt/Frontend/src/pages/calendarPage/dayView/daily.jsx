@@ -42,7 +42,6 @@ export function DailyView(){
     };
 
     /* eslint-disable react-hooks/set-state-in-effect */
-    // Initial fetch: this calls async fetchEvents which updates state; intentional for initial load
     useEffect(() => {
         fetchEvents();
     }, []);
@@ -167,7 +166,6 @@ export function DailyView(){
                 
                 {timeSlots.map((time, idx) => (
                     <React.Fragment key={`slot-${idx}`}>
-                        {/* Hour line (border) */}
                         <div style={{
                             position: 'absolute',
                             top: `${idx * 60}px`,

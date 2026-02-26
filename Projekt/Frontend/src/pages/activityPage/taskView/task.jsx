@@ -16,7 +16,6 @@ export function TaskView() {
   const [types, setTypes] = useState([]);
   const [flashSave, setFlashSave] = useState(false);
 
-  //
   const [taskName, setTaskName] = useState("");
   const [typeName, setTypeName] = useState("");
   const [difficultyName, setDifficultyName] = useState("");
@@ -66,6 +65,7 @@ export function TaskView() {
           h.activity_start_date,
           h.activity_end_date,
           checkedCount,
+          h.progress_counter,
         );
         habitMap[h.activity_name] = habitObj;
       });
@@ -210,7 +210,6 @@ export function TaskView() {
   async function toggleTaskAchieved(taskId, currentValue) {
     try {
       const newVal = currentValue ? 0 : 1;
-      // Csak az activity_achive mezőt frissítjük – a progress_counter-t a cron kezeli
       await activityService.updateTask(taskId, { activity_achive: newVal });
       await refreshActivities();
       showToast(newVal ? "Feladat teljesítve!" : "Feladat visszavonva!", "success");

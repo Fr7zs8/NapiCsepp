@@ -137,7 +137,6 @@ export function CombinedView(){
         }
     };
 
-    // Initial/refresh fetch for the currentWeek. fetchEvents is stable here.
     useEffect(() => {
         fetchEvents();
     }, [currentWeek]);

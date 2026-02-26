@@ -32,7 +32,6 @@ export function WeeklyView(){
     };
 
     /* eslint-disable react-hooks/set-state-in-effect */
-    // Initial fetch: this calls async fetchEvents which updates state; intentional for initial load
     useEffect(() => {
         fetchEvents();
     }, []);

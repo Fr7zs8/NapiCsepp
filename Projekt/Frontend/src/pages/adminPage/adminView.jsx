@@ -33,7 +33,6 @@ export function AdminView() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [authorized, setAuthorized] = useState(false);
 
-    // Edit popup state
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [editUsername, setEditUsername] = useState("");
@@ -41,13 +40,11 @@ export function AdminView() {
     const [editRole, setEditRole] = useState("");
     const [editLoading, setEditLoading] = useState(false);
 
-    // Delete popup state
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [deletingUser, setDeletingUser] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
     useEffect(() => {
-        // Check if current user is admin or moderator
         try {
             const stored = localStorage.getItem("user");
             const currentUser = stored ? JSON.parse(stored) : null;
@@ -78,7 +75,6 @@ export function AdminView() {
         }
     };
 
-    // Filtered + searched users
     const filteredUsers = useMemo(() => {
         let result = [...users];
         if (roleFilter !== "all") {
@@ -97,7 +93,6 @@ export function AdminView() {
         return result;
     }, [users, roleFilter, searchQuery]);
 
-    // Pagination
     const totalPages = Math.max(1, Math.ceil(filteredUsers.length / rowsPerPage));
     const paginatedUsers = filteredUsers.slice(
         (currentPage - 1) * rowsPerPage,
@@ -108,13 +103,11 @@ export function AdminView() {
         setCurrentPage(1);
     }, [searchQuery, roleFilter, rowsPerPage]);
 
-    // Stats cards
     const totalUsers = users.length;
     const adminCount = users.filter((u) => u.role?.toLowerCase() === "admin").length;
     const moderatorCount = users.filter((u) => u.role?.toLowerCase() === "moderator").length;
     const userCount = users.filter((u) => u.role?.toLowerCase() === "user").length;
 
-    // Edit handlers
     const openEditPopup = (user, e) => {
         e.stopPropagation();
         setEditingUser(user);
@@ -147,7 +140,6 @@ export function AdminView() {
         }
     };
 
-    // Delete handlers
     const openDeletePopup = (user, e) => {
         e.stopPropagation();
         setDeletingUser(user);
@@ -168,7 +160,6 @@ export function AdminView() {
         }
     };
 
-    // Row click -> navigate to user stats
     const handleRowClick = (user) => {
         navigate(`/admin/user/${user.user_id}`);
     };
@@ -194,7 +185,6 @@ export function AdminView() {
         }
     };
 
-    // Pagination range
     const getPageNumbers = () => {
         const pages = [];
         const maxVisible = 5;
@@ -235,7 +225,6 @@ export function AdminView() {
 
     return (
         <div className="admin-view">
-            {/* Header */}
             <div className="admin-header">
                 <h1>Felhasználókezelés</h1>
                 <p className="admin-subtitle">
@@ -243,7 +232,6 @@ export function AdminView() {
                 </p>
             </div>
 
-            {/* Stats Cards */}
             <div className="admin-stats-grid">
                 <div className="admin-stat-card stat-total">
                     <div className="stat-icon-wrap">
@@ -283,7 +271,6 @@ export function AdminView() {
                 </div>
             </div>
 
-            {/* Toolbar */}
             <div className="admin-toolbar">
                 <div className="admin-search-wrap">
                     <Search size={18} className="search-icon" />
@@ -309,7 +296,6 @@ export function AdminView() {
                 </div>
             </div>
 
-            {/* Table */}
             <div className="admin-table-container">
                 <table className="admin-table">
                     <thead>
@@ -374,7 +360,6 @@ export function AdminView() {
                 </table>
             </div>
 
-            {/* Pagination */}
             <div className="admin-pagination">
                 <div className="pagination-info">
                     <span>Sorok oldalanként:</span>
@@ -436,7 +421,6 @@ export function AdminView() {
                 </div>
             </div>
 
-            {/* Edit Popup */}
             {showEditPopup && (
                 <div className="admin-popup-overlay" onClick={() => setShowEditPopup(false)}>
                     <div className="admin-popup" onClick={(e) => e.stopPropagation()}>
@@ -505,7 +489,6 @@ export function AdminView() {
                 </div>
             )}
 
-            {/* Delete Popup */}
             {showDeletePopup && (
                 <div className="admin-popup-overlay" onClick={() => setShowDeletePopup(false)}>
                     <div

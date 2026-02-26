@@ -2,7 +2,16 @@
         static getActiveHabitsCount(habits) {
             if (!Array.isArray(habits)) return 0;
 
-            return habits.length;
+            return habits.filter(h => {
+                const targetDays = h.target_days ? Number(h.target_days) : 0;
+                const progressCounter = (h.progress_counter !== null && h.progress_counter !== undefined)
+                    ? Number(h.progress_counter)
+                    : null;
+                if (progressCounter !== null && targetDays > 0) {
+                    return progressCounter < targetDays;
+                }
+                return true;
+            }).length;
         }
 
     constructor(data = {}) {

@@ -33,12 +33,10 @@ export function UserStatsView() {
     const fetchUserData = async () => {
         try {
             setLoading(true);
-            // Get all users and find matching one
             const allUsers = await clientService.getAllUsers();
             const foundUser = allUsers.find((u) => String(u.user_id) === String(userId));
             setUser(foundUser || null);
 
-            // Get stats for the target user via admin endpoint
             try {
                 const statsData = await clientService.getUserStatistics(userId);
                 const raw = Array.isArray(statsData) ? statsData[0] : statsData;
@@ -106,7 +104,6 @@ export function UserStatsView() {
 
     return (
         <div className="admin-view">
-            {/* Back button */}
             <div className="user-stats-header">
                 <button className="back-btn" onClick={() => navigate("/admin")}>
                     <ArrowLeft size={20} />
@@ -114,7 +111,6 @@ export function UserStatsView() {
                 </button>
             </div>
 
-            {/* User Profile Card */}
             <div className="user-profile-card">
                 <div className="user-profile-avatar-large">
                     {user.username?.charAt(0)?.toUpperCase() || "?"}
@@ -138,7 +134,6 @@ export function UserStatsView() {
                 </div>
             </div>
 
-            {/* Stats Overview */}
             {stats ? (
                 <>
                     <div className="user-stats-grid">
@@ -180,7 +175,6 @@ export function UserStatsView() {
                         </div>
                     </div>
 
-                    {/* Completion Rates */}
                     <div className="user-stats-section">
                         <h2>
                             <TrendingUp size={20} />
@@ -214,7 +208,6 @@ export function UserStatsView() {
                         </div>
                     </div>
 
-                    {/* Difficulty Distribution */}
                     <div className="user-stats-section">
                         <h2>
                             <BarChart3 size={20} />
@@ -257,7 +250,6 @@ export function UserStatsView() {
                         </div>
                     </div>
 
-                    {/* Weekly Summary */}
                     <div className="user-stats-section">
                         <h2>
                             <Award size={20} />

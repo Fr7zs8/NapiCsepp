@@ -47,17 +47,14 @@ export default class Habit {
   }
 
   getDaysElapsed() {
-    // Ha van progressCounter, használjuk azt
     if (this.progressCounter !== null && this.progressCounter !== undefined) {
       return Math.max(0, Number(this.progressCounter));
     }
-    
-    // Fallback: checkedDays alapján
+
     if (this.checkedDays !== null && !Number.isNaN(Number(this.checkedDays))) {
       return Math.max(0, Number(this.checkedDays));
     }
 
-    // Fallback: dátum alapján számolás
     const start = new Date(this.startDate);
     const today = new Date();
 
@@ -92,7 +89,6 @@ export default class Habit {
   }
 
   getCheckedDays() {
-    // progressCounter használata először
     if (this.progressCounter !== null && this.progressCounter !== undefined) {
       return Number(this.progressCounter);
     }
