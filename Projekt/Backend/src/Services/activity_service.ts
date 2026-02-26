@@ -19,12 +19,6 @@ export class ActivityService {
     }
 
     const results = await this.repository.getAllActivitiesByUser(userId);
-    if (!results || results.length === 0) {
-      throw new HttpException(
-        404,
-        "A felhasználónak nincs egy darab activityije se!",
-      );
-    }
     return results;
   }
 
@@ -36,13 +30,6 @@ export class ActivityService {
       );
     }
     const results = await this.repository.getHabits(userId);
-
-    if (!results || results.length === 0) {
-      throw new HttpException(
-        404,
-        "A felhasználónak nincs egy darab habitja se!",
-      );
-    }
     return results;
   }
 

@@ -116,7 +116,7 @@ export class UserRepository {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query(
-      "SELECT users.user_id, users.username, users.email, users.language, users.role, DATE_FORMAT(users.register_date, '%Y-%m-%d') AS register_date FROM users WHERE users.role = 'moderator'",
+      "SELECT users.user_id, users.username, users.email, users.language, users.role, DATE_FORMAT(users.register_date, '%Y-%m-%d') AS register_date FROM users WHERE users.role = 'moderator' OR users.role = 'admin'",
     )) as Array<any>;
 
     await connection.end();
