@@ -123,16 +123,39 @@ div.task-list-div{
 
 .priority-btn {
     padding: 0.75rem 1.5rem;
-    border: 1px solid #ddd;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
-    background: #f5f5f5;
+    background: #fff;
     cursor: pointer;
     font-size: 0.95rem;
     color: #2d2d2d;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .priority-btn:hover {
-    background: #e5e5e5;
+    background: #f8fafc;
+    border-color: #9ca3af;
+}
+
+.priority-btn:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+select.priority-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 2.6rem;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #6b7280 50%),
+        linear-gradient(135deg, #6b7280 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) calc(50% - 3px),
+        calc(100% - 12px) calc(50% - 3px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
 }
 
 .add-btn {

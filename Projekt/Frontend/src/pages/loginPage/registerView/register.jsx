@@ -1,6 +1,6 @@
 import "./register.css";
 import image4 from "../../../assets/image4.jpg";
-import {Mail, Lock, CircleUser, UserRound} from "lucide-react";
+import {Lock, CircleUser, UserRound} from "lucide-react";
 import { LoginRegisterSwitch } from "../login-register-switch/login-register-switch";
 import AuthCard from "../../../components/Auth/AuthCard";
 import { useNavigate } from 'react-router-dom'
@@ -49,7 +49,7 @@ export function RegisterView(){
 
 
     return(
-        <section className="register-section">
+        <section className="register-page-shell">
             <div className='register-conatiner'>
                 <div className="register-image-div">
                     <img src={image4} alt=""/>
@@ -72,7 +72,7 @@ export function RegisterView(){
                                 <div className="register-form-input-div">
                                     <div className="input-label-row"> 
                                         <CircleUser size={20}/>
-                                        <label>Felhasználó név</label> <br />
+                                        <label>Felhasználó név</label>
                                     </div>
                                     <input 
                                         type="text" 
@@ -86,7 +86,7 @@ export function RegisterView(){
                                 <div className="register-form-input-div">
                                     <div className="input-label-row">
                                         <UserRound size={20}/>
-                                        <label>Email</label> <br />
+                                        <label>Email</label>
                                     </div>
                                     <input 
                                         type="email" 
@@ -100,7 +100,7 @@ export function RegisterView(){
                                 <div className="register-form-input-div">
                                     <div className="input-label-row">
                                         <Lock size={20}/>
-                                        <label>Jelszó</label> <br />
+                                        <label>Jelszó</label>
                                     </div>
                                     <input 
                                         type="password" 
@@ -114,7 +114,7 @@ export function RegisterView(){
                                 <div className="register-form-input-div">
                                     <div className="input-label-row">
                                         <Lock size={20}/>
-                                        <label>Jelszó megerősítése</label> <br />
+                                        <label>Jelszó megerősítése</label>
                                     </div>
                                     <input 
                                         type="password" 
@@ -130,8 +130,8 @@ export function RegisterView(){
                                 </div>
                             </form>
 
-                            <div>
-                                <label>Van fiókod? <a onClick={() => navigate("/login")} style={{cursor: 'pointer'}}>Belépés</a></label>
+                            <div className="form-footer">
+                                <label>Van fiókod? <a onClick={() => navigate("/login")}>Belépés</a></label>
                             </div>
                     </AuthCard>
                 </div>

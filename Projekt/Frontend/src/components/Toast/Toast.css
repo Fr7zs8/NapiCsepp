@@ -76,6 +76,38 @@
   animation-fill-mode: forwards;
 }
 
+@media (max-width: 768px) {
+  .nc-toast-container {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    gap: 8px;
+  }
+
+  .nc-toast {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 1rem;
+    gap: 10px;
+  }
+
+  .nc-toast-error {
+    max-width: 100%;
+    max-height: none;
+  }
+
+  .nc-toast-icon {
+    font-size: 1.25rem;
+  }
+
+  .nc-toast-progress {
+    height: 4px;
+  }
+}
+
 @keyframes ncToastProgress {
   from { width: 100%; }
   to { width: 0%; }

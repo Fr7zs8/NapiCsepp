@@ -32,7 +32,7 @@ export function LoginView(){
     };
 
     return(
-        <section>
+        <section className="login-page-shell">
             <div className='login-conatiner'>
                 <div className="login-image-div">
                     <img src={image1} alt="Login kép"/>
@@ -55,7 +55,7 @@ export function LoginView(){
                                 <div className="login-form-input-div">
                                     <div className="input-label-row">
                                         <Mail size={20}/>
-                                        <label>Email</label><br />
+                                        <label>Email</label>
                                     </div>
                                     <input type="email" 
                                         placeholder="pelda@email.hu"
@@ -66,7 +66,7 @@ export function LoginView(){
                                 <div className="login-form-input-div">
                                     <div className="input-label-row">
                                         <Lock size={20}/>
-                                        <label>Jelszó</label><br />
+                                        <label>Jelszó</label>
                                     </div>
                                     <input type="password" 
                                         placeholder="Jelszó"
@@ -79,8 +79,8 @@ export function LoginView(){
                                 </div> 
                             </form>
                             
-                            <div>
-                                <label>Még nincs fiókod? <a onClick={() => navigate("/register")} style={{cursor: 'pointer'}}>Regisztráció</a></label>
+                            <div className="form-footer">
+                                <label>Még nincs fiókod? <a onClick={() => navigate("/register")}>Regisztráció</a></label>
                             </div>
                     </AuthCard>
                 </div>
