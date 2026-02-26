@@ -124,6 +124,6 @@ describe('Homepage / Főoldal', () => {
   });
 
   it('25 - Statisztikák szekció alcíme megjelenik', () => {
-    cy.get('.todays-statistics-section').should('contain.text', 'pillanat');
+    cy.get('.todays-statistics-section').should('contain.text', 'pillantásra');
   });
 });

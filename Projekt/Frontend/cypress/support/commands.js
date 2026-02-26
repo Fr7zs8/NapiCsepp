@@ -94,12 +94,8 @@ Cypress.Commands.add('stubApi', () => {
       {
         event_id: 1,
         event_name: 'Teszt esemény',
-        event_description: 'Leírás',
-        event_start_date: '2026-02-26',
-        event_start_time: '10:00',
-        event_end_date: '2026-02-26',
-        event_end_time: '11:00',
-        event_color: '#22c55e',
+        event_start_time: '2026-02-26 10:00',
+        event_end_time: '2026-02-26 11:00',
       },
     ],
   }).as('getEvents');
