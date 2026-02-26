@@ -1,13 +1,13 @@
 .day-header-cell.current-day {
-    background: linear-gradient(135deg, #e6fff6 0%, #e0f7fa 100%);
-    color: #176b5c;
+    background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #065f46;
     border-bottom: 2px solid #10b981;
 }
 
 .day-header-cell.selected-day {
-    background: linear-gradient(135deg, #fffde4 0%, #e1ffe6 100%);
-    color: #222;
-    border-bottom: 2px solid #f9c846;
+    background: linear-gradient(180deg, #f0fafb 0%, #e4f3f0 100%);
+    color: #2d3b3a;
+    border-bottom: 2px solid #5ebbad;
 }
 .event-block {
     position: absolute;
@@ -207,34 +207,49 @@
 }
 
 .day-header-cell {
-    height: 60px;
+    height: 72px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    background: #f2fbf6;
+    gap: 2px;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(180deg, #f8fafb 0%, #f1f5f4 100%);
     font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.day-header-cell:hover {
+    background: linear-gradient(180deg, #eef6f3 0%, #e8f0ee 100%);
 }
 
 .day-header-cell.weekend {
-    background: #fef5f5;
+    background: linear-gradient(180deg, #fefafa 0%, #faf5f5 100%);
+}
+
+.day-header-cell.weekend:hover {
+    background: linear-gradient(180deg, #fdf2f2 0%, #f8eded 100%);
 }
 
 .day-name {
-    font-size: 0.85rem;
-    color: #666;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 .day-date {
-    font-size: 1rem;
-    color: #2d2d2d;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #374151;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 999px;
+    transition: all 0.2s ease;
 }
 
 .time-cell {
@@ -258,18 +273,19 @@
 }
 
 .day-header-cell.current-day {
-    background: #e6f7ef;
-    color: #1f2937;
+    background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #065f46;
 }
 
 .day-header-cell.current-day .day-name {
-    color: rgba(113, 152, 133, 0.9);
+    color: #059669;
+    font-weight: 600;
 }
 
 .day-header-cell.current-day .day-date {
     color: #fff;
-    border-color: transparent;
-    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 /* Responsive - Tablet */
@@ -315,12 +331,18 @@
     }
 
     .day-header-cell {
-        height: 50px;
+        height: 56px;
         font-size: 0.85rem;
     }
 
+    .day-name {
+        font-size: 0.7rem;
+    }
+
     .day-date {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+        width: 28px;
+        height: 28px;
     }
 
     .time-cell {
