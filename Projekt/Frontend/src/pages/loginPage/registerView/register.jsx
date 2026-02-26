@@ -3,6 +3,7 @@ import image4 from "../../../assets/image4.jpg";
 import {Lock, CircleUser, UserRound} from "lucide-react";
 import { LoginRegisterSwitch } from "../../../components/login-register-switch/login-register-switch"
 import AuthCard from "../../../components/Auth/AuthCard";
+import PasswordInput from "../../../components/PasswordInput/PasswordInput";
 import { useNavigate } from 'react-router-dom'
 import { clientService } from "../../../router/apiRouter";
 import { useState } from "react";
@@ -102,8 +103,7 @@ export function RegisterView(){
                                         <Lock size={20}/>
                                         <label>Jelszó</label>
                                     </div>
-                                    <input 
-                                        type="password" 
+                                    <PasswordInput
                                         placeholder="Jelszó"
                                         required
                                         value={password}
@@ -116,8 +116,7 @@ export function RegisterView(){
                                         <Lock size={20}/>
                                         <label>Jelszó megerősítése</label>
                                     </div>
-                                    <input 
-                                        type="password" 
+                                    <PasswordInput
                                         placeholder="Jelszó újra"
                                         required
                                         value={confirmPassword}

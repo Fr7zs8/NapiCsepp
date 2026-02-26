@@ -1,6 +1,7 @@
 import "./profile.css"
 import { User, Mail, Database, Lock, Loader2, Award, Target, Calendar, X, Save } from "lucide-react";
 import ProfileCard from "../../components/Profile/ProfileCard";
+import PasswordInput from "../../components/PasswordInput/PasswordInput";
 import DataItem from "../../components/Profile/DataItem";
 import StatItem from "../../components/Profile/StatItem";
 import { useState, useEffect } from "react";
@@ -193,8 +194,8 @@ export function ProfileView(){
                                 <label>Új jelszó <span className="optional-label">(hagyja üresen, ha nem változtatja)</span></label>
                                 <div className="edit-input-row">
                                     <Lock size={16} />
-                                    <input
-                                        type="password"
+                                    <PasswordInput
+                                        className="profile-pw"
                                         value={editPassword}
                                         onChange={e => setEditPassword(e.target.value)}
                                         placeholder="Új jelszó"
