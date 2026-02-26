@@ -36,4 +36,19 @@ export class StatisticService {
     }
     return results;
   }
+
+  async userProfileStatistic(adminId: number, targetUserId: number): Promise<IProfileStats[]> {
+    const moderators = await this.userrepository.getModerators();
+    const isModerator = moderators.some(
+      (m: { user_id: number }) => m.user_id == adminId,
+    );
+    if (!isModerator) {
+      throw new HttpException(403, "Csak moderátor vagy admin kérheti le!");
+    }
+    const results = await this.repository.profileStatistic(targetUserId);
+    if (!results || results.length === 0) {
+      throw new HttpException(404, "Nincs egy db statisztika se.");
+    }
+    return results;
+  }
 }

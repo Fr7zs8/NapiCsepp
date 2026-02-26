@@ -102,13 +102,30 @@ export function HomepageView(){
                 <p className="stat-header-text">A mai dátum: {getTodayDate()}</p>
             </div>
             <div className="progress-view-div">
-                <div className="progress-row">
-                    <p>Mai haladás</p>
-                    <span>{completionRate}%</span>
+                <div className="progress-header">
+                    <div className="progress-title-group">
+                        <TrendingUp size={18} className="progress-icon"/>
+                        <p>Mai haladás</p>
+                    </div>
+                    <span className="progress-badge">{completionRate}%</span>
                 </div>
                 <div className="progress-bar">
                     <div className="progress-bar-fill" style={{ width: `${completionRate}%` }}></div>
                 </div>
+                <div className="progress-milestones">
+                    <span>0%</span>
+                    <span>25%</span>
+                    <span>50%</span>
+                    <span>75%</span>
+                    <span>100%</span>
+                </div>
+                <p className="progress-motivation">
+                    {completionRate >= 100 ? "Kiváló! Minden feladatot teljesítettél!"
+                    : completionRate >= 75 ? "Szinte kész vagy, hajrá!"
+                    : completionRate >= 50 ? "Már félúton jársz, csak így tovább!"
+                    : completionRate > 0 ? "Jó kezdés, ne add fel!"
+                    : "Kezdd el a mai feladataidat!"}
+                </p>
             </div>
             <div className="text-carousel-div">
                 <Sparkles className="sparkles-icon"/>
@@ -164,7 +181,7 @@ export function HomepageView(){
                             <p className="stat-value green">{statsObj?.completedActivities || 0} / {statsObj?.totalActivities || 0}</p>
                         </div>
                         <div className="stat-div events">
-                            <p className="stat-label blue">Ma</p>
+                            <p className="stat-label blue">Mostanában</p>
                             <Calendar/>
                             <p className="stat-name">Események</p>
                             <p className="stat-value blue">{statsObj?.monthlyEventsCount || 0} db</p>

@@ -18,4 +18,10 @@ router.get(
   controller.profileStatistic.bind(controller),
 );
 
+router.get(
+  "/napicsepp/stats/:userId",
+  verifyToken,
+  controller.userProfileStatistic.bind(controller),
+);
+
 export default router;

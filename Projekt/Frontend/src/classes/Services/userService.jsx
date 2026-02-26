@@ -129,6 +129,20 @@ export default class UserService{
         }
         return [];
     }
-}
 
-console.log(localStorage.getItem("user"));
+    async deleteUser(userId) {
+        return await this.apiService.delete(`/napicsepp/users/${userId}`);
+    }
+
+    async editUser(userId, data) {
+        return await this.apiService.put(`/napicsepp/users/${userId}`, data);
+    }
+
+    async getUserStatistics(userId) {
+        return await this.apiService.get(`/napicsepp/stats/${userId}`);
+    }
+
+    async getSystemStats() {
+        return await this.apiService.get("/napicsepp/system-stats");
+    }
+}

@@ -27,4 +27,17 @@ export class StatisticController {
         .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
+
+  async userProfileStatistic(req: any, res: Response) {
+    const adminId = req.user.user_id;
+    const targetUserId = Number(req.params.userId);
+    try {
+      const results = await service.userProfileStatistic(adminId, targetUserId);
+      res.status(200).send(results);
+    } catch (err: any) {
+      res
+        .status(err.status || 500)
+        .send({ message: err.message || "Hiba történt a lekérés során." });
+    }
+  }
 }

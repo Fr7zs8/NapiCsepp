@@ -21,11 +21,12 @@
 }
 .popup-content {
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-    padding: 2rem 1.5rem 1.5rem 1.5rem;
-    min-width: 320px;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+    padding: 1.5rem 1.5rem 1.25rem;
+    min-width: 340px;
     max-width: 95vw;
+    width: 420px;
     position: relative;
 }
 .popup-header {
@@ -33,6 +34,117 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1rem;
+}
+
+.popup-header h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+/* ── Tabs ─────────────────────────────────── */
+
+.popup-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: 1rem;
+}
+
+.popup-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 0.55rem 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.popup-tab:hover {
+    color: #374151;
+}
+
+.popup-tab.active {
+    color: #22c55e;
+    border-bottom-color: #22c55e;
+}
+
+.tab-badge {
+    background: #22c55e;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 99px;
+    padding: 0 0.4rem;
+    line-height: 1.5;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* ── List items ───────────────────────────── */
+
+.popup-empty {
+    color: #9ca3af;
+    font-size: 0.88rem;
+    text-align: center;
+    padding: 1.5rem 0;
+    margin: 0;
+}
+
+.popup-event-time {
+    font-size: 0.82rem;
+    color: #9ca3af;
+    white-space: nowrap;
+}
+
+.popup-item-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.5rem 0.25rem;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.popup-item-row:last-child {
+    border-bottom: none;
+}
+
+.popup-status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.popup-status-dot.done    { background: #22c55e; }
+.popup-status-dot.pending { background: #d1d5db; }
+.popup-status-dot.habit   { background: #f59e0b; }
+
+/* ── Actions ──────────────────────────────── */
+
+.popup-link {
+    font-size: 0.85rem;
+    color: #22c55e;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.popup-link:hover {
+    color: #16a34a;
+    text-decoration: underline;
 }
 .close-btn {
     background: none;
@@ -68,17 +180,18 @@
     gap: 1rem;
 }
 .btn-save {
-    background: #2196f3;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 0.5rem 1.2rem;
+    font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: opacity 0.2s;
 }
 .btn-save:hover {
-    background: #1769aa;
+    opacity: 0.88;
 }
 /* Calendar counter badges */
 .counter-badge {

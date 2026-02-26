@@ -99,10 +99,74 @@
 }
 
 .sidebar-footer {
-    padding: 1.25rem 2rem;
+    padding: 1rem 1.25rem 1.25rem;
     border-top: 1px solid #e0e0e0;
     font-size: 1rem;
     color: #bdbdbd;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-mini-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 0.9rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.sidebar-mini-profile:hover {
+    border-color: #86efac;
+    box-shadow: 0 2px 10px rgba(34, 197, 94, 0.12);
+}
+
+.mini-profile-counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+.counter-num {
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.mini-profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.mini-profile-username {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-profile-email {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 

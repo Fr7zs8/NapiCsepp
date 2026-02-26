@@ -1,3 +1,4 @@
+import React from "react";
 import "./daily.css"
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from 'react-router-dom'
@@ -165,9 +166,9 @@ export function DailyView(){
             <div className="day-timeline" style={{ position: 'relative', height: '1440px', width: '100%', margin: '0 auto' }}>
                 
                 {timeSlots.map((time, idx) => (
-                    <>
+                    <React.Fragment key={`slot-${idx}`}>
                         {/* Hour line (border) */}
-                        <div key={`line-${time}`} style={{
+                        <div style={{
                             position: 'absolute',
                             top: `${idx * 60}px`,
                             left: 0,
@@ -179,7 +180,7 @@ export function DailyView(){
                             <span style={{ position: 'absolute', left: 0, top: '-10px', width: '80px', color: '#666', fontSize: '0.9rem', background: 'white', zIndex: 2 }}>{time}</span>
                         </div>
                         
-                        <div key={`overlay-${time}`} style={{
+                        <div style={{
                             position: 'absolute',
                             top: `${idx * 60}px`,
                             left: 0,
@@ -194,7 +195,7 @@ export function DailyView(){
                                 handleHourClick(idx, e);
                             }}
                         />
-                    </>
+                    </React.Fragment>
                 ))}
                 {dayData.events.map((event, idx) => {
                     const startTime = new Date(event.startTime);

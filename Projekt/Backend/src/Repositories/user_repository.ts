@@ -30,7 +30,7 @@ export class UserRepository {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query(
-      "SELECT users.username, users.email, users.language, users.role, DATE_FORMAT(users.register_date, '%Y-%m-%d') AS register_date FROM users",
+      "SELECT users.user_id, users.username, users.email, users.language, users.role, DATE_FORMAT(users.register_date, '%Y-%m-%d') AS register_date FROM users",
     )) as Array<any>;
 
     await connection.end();

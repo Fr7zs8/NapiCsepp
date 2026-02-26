@@ -1,6 +1,6 @@
 import "./sidebar.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { clientService } from "../../router/apiRouter";
 import {
   Home,
@@ -13,12 +13,36 @@ import {
   Menu,
   Droplet,
   X,
+  Shield,
 } from "lucide-react";
 
 export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(null);
+
+  const currentUser = (() => {
+    try {
+      const stored = localStorage.getItem("user");
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  })();
+  const isAdmin = currentUser?.role?.toLowerCase() === "admin" || currentUser?.role?.toLowerCase() === "moderator";
+
+  useEffect(() => {
+    const fetchPending = async () => {
+      try {
+        const stats = await clientService.getStatistics();
+        const raw = Array.isArray(stats) ? stats[0] : stats;
+        const pending = Math.max(0, (raw?.total_activity || 0) - (raw?.completed || 0));
+        setPendingCount(pending);
+      } catch {
+        setPendingCount(null);
+      }
+    };
+    fetchPending();
+  }, [location.pathname]);
 
   function handleLogout() {
     clientService.logout();
@@ -106,9 +130,38 @@ export function Sidebar() {
             <Target size={20} />
             <span>Szokások</span>
           </Link>
+
+          {isAdmin && (
+            <>
+              <div className="sidebar-divider"></div>
+              <p className="sidebar-category">Adminisztráció</p>
+              <Link
+                to="/admin"
+                className={`sidebar-link ${location.pathname.startsWith("/admin") ? "active" : ""}`}
+                onClick={() => setIsOpen(false)}
+              >
+                <Shield size={20} />
+                <span>Admin</span>
+              </Link>
+            </>
+          )}
         </nav>
 
         <div className="sidebar-footer">
+          <div
+            className="sidebar-mini-profile"
+            onClick={() => { navigate("/tasks"); setIsOpen(false); }}
+            title="Nyitott feladatok – kattints a feladatokhoz"
+          >
+            <div className="mini-profile-counter">
+              <span className="counter-num">{pendingCount ?? "–"}</span>
+            </div>
+            <div className="mini-profile-info">
+              <span className="mini-profile-username">@{(currentUser?.username || "").toLowerCase()}</span>
+              <span className="mini-profile-email">{currentUser?.email}</span>
+            </div>
+          </div>
+
           <button className="sidebar-link" onClick={handleLogout}>
             <LogOut size={20} />
             <span>Kijelentkezés</span>

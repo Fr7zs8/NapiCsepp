@@ -3,16 +3,6 @@ section {
     background: none;
 }
 
-div.progress-view-div {
-    background: whitesmoke;
-    padding: 1.5rem 0;
-    border-radius: 0;
-    margin-bottom: 2rem;
-    border: 1px solid #ddd;
-    box-shadow: none;
-    border-radius: 7px;
-}
-
 main.main-content{
     background: linear-gradient(rgb(242, 242, 247),white, rgb(244, 241, 245))
 }
@@ -22,12 +12,14 @@ p.stat-value {
     color: #2a364b;
 }
 
+/* ── Info header ─────────────────────────────── */
+
 .info-text-div {
     margin-bottom: 1.5rem;
 }
 
 .info-text-div h3 {
-    color: #2d2d2d;
+    color: #1f2937;
     font-size: 1.6rem;
 }
 
@@ -35,39 +27,100 @@ p.stat-value {
     color: #767575;
 }
 
+/* ── Progress card ───────────────────────────── */
+
+div.progress-view-div,
 .progress-view-div {
-    padding: 1.5rem 0;
-    background: none;
-    border-radius: 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border-radius: 16px;
     margin-bottom: 2rem;
-    box-shadow: none;
+    border: 1px solid #bbf7d0;
+    box-shadow: 0 2px 12px rgba(34, 197, 94, 0.08);
 }
 
-.progress-view-div p { font-size: 0.95rem; margin: 0; color: #666; }
-.progress-view-div span { font-size: 1.25rem; font-weight: 700; }
-
-.progress-row {
+.progress-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.progress-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.progress-title-group p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.progress-icon {
+    color: #22c55e;
+}
+
+.progress-badge {
+    background: linear-gradient(135deg, #22c55e, #10b981);
+    color: white;
+    border-radius: 20px;
+    padding: 0.2rem 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
 }
 
 .progress-bar {
-    margin-top: 0.75rem;
-    height: 10px;
+    height: 14px;
     width: 100%;
-    background: #e5e7eb;
+    background: #d1fae5;
     border-radius: 999px;
     overflow: hidden;
 }
 
 .progress-bar-fill {
     height: 100%;
-    background: #22c55e;
+    background: linear-gradient(90deg, #22c55e, #10b981, #06b6d4);
     border-radius: 999px;
-    transition: width 0.3s ease;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
 }
+
+.progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+    animation: shimmer 2.2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -60%; }
+    100% { left: 160%; }
+}
+
+.progress-milestones {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+.progress-motivation {
+    margin: 0.75rem 0 0 0;
+    font-size: 0.85rem;
+    color: #059669;
+    font-weight: 500;
+}
+
+/* ── Carousel ────────────────────────────────── */
 
 .text-carousel-div {
     position: relative;
@@ -87,12 +140,8 @@ p.stat-value {
 }
 
 @keyframes fadeInCarousel {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .carousel-text {
@@ -126,15 +175,11 @@ p.stat-value {
 }
 
 @keyframes expandDot {
-    from {
-        width: 10px;
-        border-radius: 50%;
-    }
-    to {
-        width: 30px;
-        border-radius: 5px;
-    }
+    from { width: 10px; border-radius: 50%; }
+    to   { width: 30px; border-radius: 5px; }
 }
+
+/* ── Layout wrapper ──────────────────────────── */
 
 .main-content-wrapper {
     display: flex;
@@ -149,9 +194,13 @@ p.stat-value {
 
 .quick-access-section h3,
 .todays-statistics-section h3 {
-    color: #2d2d2d;
+    color: #1f2937;
+    font-size: 1.05rem;
+    font-weight: 700;
     margin-bottom: 1rem;
 }
+
+/* ── Quick access cards ──────────────────────── */
 
 .quick-access-list-div {
     display: grid;
@@ -173,23 +222,34 @@ p.stat-value {
     background: #fff;
     border-radius: 14px;
     border: 1px solid #e5e7eb;
-    box-shadow: none;
-    border-left: 6px solid transparent;
-    overflow: hidden;
+    border-left: 4px solid #22c55e;
     box-sizing: border-box;
     min-width: 0;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.access-div:hover {
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.14);
+    transform: translateY(-2px);
 }
 
 .access-div.calendar { border-left-color: #3b82f6; }
-.access-div.tasks { border-left-color: #a855f7; }
-.access-div.habits { border-left-color: #ec4899; }
+.access-div.tasks    { border-left-color: #a855f7; }
+.access-div.habits   { border-left-color: #ec4899; }
 
 .arrow-icon {
     position: static;
-    color: #666;
+    color: #9ca3af;
     grid-column: 3;
     grid-row: 1 / span 2;
     justify-self: end;
+    transition: color 0.2s ease;
+}
+
+.access-div:hover .arrow-icon {
+    color: #555;
 }
 
 .access-div svg:not(.arrow-icon) {
@@ -203,7 +263,7 @@ p.stat-value {
 .access-title {
     margin: 0;
     font-weight: 600;
-    color: #2d2d2d;
+    color: #1f2937;
     grid-column: 2;
     grid-row: 1;
 }
@@ -211,10 +271,12 @@ p.stat-value {
 .access-desc {
     margin: 0;
     font-size: 0.85rem;
-    color: #666;
+    color: #6b7280;
     grid-column: 2;
     grid-row: 2;
 }
+
+/* ── Statistics section ──────────────────────── */
 
 .statistics-header {
     display: flex;
@@ -225,7 +287,7 @@ p.stat-value {
 .statistics-subtitle {
     font-size: 0.9rem;
     margin: 0.5rem 0 1.5rem 0;
-    color: #666;
+    color: #6b7280;
 }
 
 .statistics-list-div {
@@ -238,16 +300,21 @@ p.stat-value {
 
 .stat-div {
     position: relative;
-    padding: 0.65rem 0.9rem;
+    padding: 0.75rem 0.9rem;
     text-align: left;
     background: #fff;
-    border-radius: 10px;
+    border-radius: 12px;
     border: 1px solid #e5e7eb;
-    box-shadow: none;
+    border-left: 3px solid #22c55e;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.15rem 0.45rem;
     align-items: center;
+    transition: box-shadow 0.2s ease;
+}
+
+.stat-div:hover {
+    box-shadow: 0 3px 12px rgba(34, 197, 94, 0.1);
 }
 
 .stat-div.tasks {
@@ -273,7 +340,7 @@ p.stat-value {
 .stat-label {
     position: static;
     font-size: 0.7rem;
-    color: #4b5563;
+    color: #6b7280;
     justify-self: end;
     grid-column: 2;
     grid-row: 1;
@@ -285,45 +352,60 @@ p.stat-value {
     font-weight: 600;
     grid-column: 2;
     grid-row: 2;
-    font-size:1rem;
+    font-size: 1rem;
 }
 
 .stat-value {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 400;
-    color: #2a364b;
+    color: #374151;
     grid-column: 2;
     grid-row: 3;
 }
 
 .stat-div svg {
     color: #1f2937;
+    grid-row: 1 / span 3;
 }
 
-.stat-div.tasks svg {
-    color: #6d28d9;
+.stat-div.tasks svg    { color: #6d28d9; }
+.stat-div.finished svg { color: #15803d; }
+.stat-div.events svg   { color: #1d4ed8; }
+.stat-div.habits svg   { color: #be185d; }
+
+/* ── Loading / Error states ──────────────────── */
+
+.loading-state,
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 4rem 2rem;
+    color: #6b7280;
 }
 
-.stat-div.finished svg {
-    color: #15803d;
+.error-state button {
+    padding: 0.5rem 1.25rem;
+    background: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
 }
 
-.stat-div.events svg {
-    color: #1d4ed8;
-}
-
-.stat-div.habits svg {
-    color: #be185d;
-}
+/* ── Responsive: tablet ──────────────────────── */
 
 @media (max-width: 768px) {
-    /* center habits quick-access on tablet if only 2 visible */
     .quick-access-list-div .access-div:nth-child(3) {
         grid-column: 1 / -1;
         width: fit-content;
         margin: 0 auto;
     }
+
     section {
         padding: 1.5rem;
         max-width: 100%;
@@ -383,11 +465,11 @@ p.stat-value {
 
     .stat-value {
         font-size: 1rem;
-        font-weight: 400;
-        
-        color: #2a364b;
+        color: #374151;
     }
 }
+
+/* ── Responsive: mobile ──────────────────────── */
 
 @media (max-width: 480px) {
     section {
@@ -415,16 +497,6 @@ p.stat-value {
         margin-bottom: 1.25rem;
         width: 100%;
         box-sizing: border-box;
-    }
-
-    .progress-view-div div {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    .progress-view-div span {
-        font-size: 1.5rem;
     }
 
     .text-carousel-div {

@@ -1,31 +1,31 @@
 .nc-toast-container {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 1.5rem;
+  right: 1.5rem;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.5rem;
   pointer-events: none;
-  opacity: 0.70;
+  opacity: 0.93;
 }
 
 .nc-toast {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 18px;
-  /* roughly 2x larger padding */
-  padding: 28px 44px;
-  border-radius: 14px;
-  /* larger font-size for message */
-  font-size: 1.9rem;
+  gap: 0.75rem;
+  padding: 1rem 1.4rem 1.35rem;
+  border-radius: 12px;
+  font-size: 1rem;
   font-weight: 500;
   color: #fff;
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.18);
-  animation: ncToastSlideIn 0.3s ease, ncToastFadeOut 0.4s ease 2.6s forwards;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+  animation: ncToastSlideIn 0.25s ease, ncToastFadeOut 0.35s ease 2.65s forwards;
   pointer-events: auto;
-  min-width: 420px;
-  max-width: 760px;
+  min-width: 280px;
+  max-width: 420px;
+  overflow: hidden;
 }
 
 .nc-toast-success {
@@ -34,88 +34,82 @@
 
 .nc-toast-error {
   background: linear-gradient(135deg, #e53935, #ef5350);
-  max-width: 600px;
-  max-height: 300px;
-  font-weight: 350;
 }
 
 .nc-toast-icon {
-  font-size: 2.4rem;
+  font-size: 1.1rem;
   font-weight: 700;
   flex-shrink: 0;
+  opacity: 0.9;
 }
 
 .nc-toast-message {
   flex: 1;
+  line-height: 1.4;
 }
 
-/* progress bar container */
-.nc-toast {
-  position: relative;
-}
-
+/* progress bar */
 .nc-toast-progress {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 6px;
-  background: rgba(255,255,255,0.12);
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
   overflow: hidden;
 }
 
 .nc-toast-progress-fill {
   width: 100%;
   height: 100%;
-  background: rgba(255,255,255,0.88);
+  background: rgba(255, 255, 255, 0.75);
   transform-origin: left;
   animation-name: ncToastProgress;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
 }
 
+/* ── Mobile ──────────────────────────── */
+
 @media (max-width: 768px) {
   .nc-toast-container {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    gap: 8px;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    gap: 0.5rem;
   }
 
   .nc-toast {
     min-width: 0;
     width: 100%;
     max-width: 100%;
-    padding: 14px 16px;
-    border-radius: 12px;
-    font-size: 1rem;
-    gap: 10px;
-  }
-
-  .nc-toast-error {
-    max-width: 100%;
-    max-height: none;
+    padding: 0.7rem 1rem 1rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    gap: 0.6rem;
   }
 
   .nc-toast-icon {
-    font-size: 1.25rem;
+    font-size: 0.95rem;
   }
 
   .nc-toast-progress {
-    height: 4px;
+    height: 3px;
   }
 }
 
+/* ── Animations ──────────────────────── */
+
 @keyframes ncToastProgress {
   from { width: 100%; }
-  to { width: 0%; }
+  to   { width: 0%; }
 }
 
 @keyframes ncToastSlideIn {
   from {
-    transform: translateX(100%);
+    transform: translateX(110%);
     opacity: 0;
   }
   to {
@@ -131,6 +125,6 @@
   }
   to {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translateX(110%);
   }
 }

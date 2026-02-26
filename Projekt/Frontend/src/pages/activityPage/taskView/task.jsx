@@ -1,5 +1,5 @@
 import "./task.css";
-import { Plus, Pencil, Trash2, Check, Loader2, Calendar } from "lucide-react";
+import { Plus, Pencil, Trash2, Check, Loader2, Calendar, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import Task from "../../../classes/Views/task.jsx";
 import Habit from "../../../classes/Views/habit.jsx";
@@ -235,7 +235,11 @@ export function TaskView() {
     <section className="tasks-section">
       <div className="info-text-div">
         <p>Mai teendők</p>
-        <p>Csak az aktuális naphoz tartozó elemek láthatók.</p>
+        <p>Adj hozzá új feladatot a listához nehézség és típus szerint.</p>
+      </div>
+      <div className="task-disclaimer">
+        <Info size={16} />
+        <span>Csak az aktuális naphoz tartozó elemek láthatók. Ha szokáshoz tartozó elemeket szeretnél látni/ törölni, válts a szokások nézetre.</span>
       </div>
       <div className="back-row">
         <button className="back-btn" onClick={() => navigate("/")}>
