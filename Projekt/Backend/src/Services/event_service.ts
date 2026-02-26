@@ -12,9 +12,7 @@ export class EventService {
 
   async getEvent(userId: number): Promise<IEvent[]> {
     const results = await this.repository.getEvent(userId);
-    if (!results || results.length === 0) {
-      throw new HttpException(404, "Nincs egy db event se.");
-    }
+
     return results;
   }
 
