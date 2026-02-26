@@ -1,6 +1,7 @@
 import mysql, { ResultSetHeader } from "mysql2/promise";
 import config from "../config/config";
 import { User } from "../Models/user_model";
+import { HttpException } from "../middleware/error";
 
 export class UserRepository {
   async login(email: string, password: string): Promise<number> {
@@ -60,6 +61,17 @@ export class UserRepository {
     const connection = await mysql.createConnection(config.database);
 
     try {
+      const moderators = await this.getModerators();
+
+      const isModerator = moderators.some(
+        (m: { user_id: number }) => m.user_id === adminId,
+      );
+
+      const isAdmin = adminId === 1;
+
+      if (!isAdmin && !isModerator) {
+        throw new HttpException(403, "Nincs jogosultságod szerkeszteni!");
+      }
       const updateFields: string[] = [];
       const values: any[] = [];
 
@@ -78,7 +90,7 @@ export class UserRepository {
         values.push(user.language);
       }
 
-      if (user.role !== undefined && adminId == 1) {
+      if (user.role !== undefined && (isAdmin || isModerator)) {
         updateFields.push("role = ?");
         values.push(user.role);
       }
