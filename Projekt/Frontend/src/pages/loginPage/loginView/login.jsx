@@ -2,7 +2,7 @@ import "./login.css";
 import image1 from "../../../assets/image1.jpg";
 import {Mail, Lock} from "lucide-react";
 import AuthCard from "../../../components/Auth/AuthCard";
-import { LoginRegisterSwitch } from "../login-register-switch/login-register-switch";
+import { LoginRegisterSwitch } from "../../../components/login-register-switch/login-register-switch"
 import { useNavigate } from 'react-router-dom'
 import { clientService } from "../../../router/apiRouter";
 import { useState } from "react";

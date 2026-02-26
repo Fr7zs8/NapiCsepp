@@ -1,7 +1,7 @@
 import "./register.css";
 import image4 from "../../../assets/image4.jpg";
 import {Lock, CircleUser, UserRound} from "lucide-react";
-import { LoginRegisterSwitch } from "../login-register-switch/login-register-switch";
+import { LoginRegisterSwitch } from "../../../components/login-register-switch/login-register-switch"
 import AuthCard from "../../../components/Auth/AuthCard";
 import { useNavigate } from 'react-router-dom'
 import { clientService } from "../../../router/apiRouter";
