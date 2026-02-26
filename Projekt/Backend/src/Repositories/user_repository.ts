@@ -26,6 +26,7 @@ export class UserRepository {
     return results;
   }
 
+  //abi -kellet egy id
   async getAllUser(): Promise<User[]> {
     const connection = await mysql.createConnection(config.database);
 

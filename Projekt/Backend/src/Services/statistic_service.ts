@@ -37,6 +37,7 @@ export class StatisticService {
     return results;
   }
 
+  //abi - kellett egy get idkkal
   async userProfileStatistic(adminId: number, targetUserId: number): Promise<IProfileStats[]> {
     const moderators = await this.userrepository.getModerators();
     const isModerator = moderators.some(

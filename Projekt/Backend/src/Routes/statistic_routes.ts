@@ -18,6 +18,7 @@ router.get(
   controller.profileStatistic.bind(controller),
 );
 
+//abi - kellett egy get idkkal
 router.get(
   "/napicsepp/stats/:userId",
   verifyToken,
