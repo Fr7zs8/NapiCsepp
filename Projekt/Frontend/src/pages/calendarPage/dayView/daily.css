@@ -135,7 +135,7 @@ section.day-calendar-section{
 
 .view-switch-small input:checked + label {
     color: #fff;
-    background-color: #3b82f6;
+    background-color: #22c55e;
     border-radius: 7px;
 }
 
