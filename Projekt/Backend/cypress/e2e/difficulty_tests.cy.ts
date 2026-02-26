@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-describe("Testing Activity endpoints", () => {
+describe("Testing difficulty endpoints", () => {
   beforeEach(() => {
     cy.task("resetDb");
   });
