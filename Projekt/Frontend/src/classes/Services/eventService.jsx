@@ -6,7 +6,12 @@ export default class EventService {
 
 
     async getOverview(){
-        return this.apiService.get("/napicsepp/events");
+        try {
+            const data = await this.apiService.get("/napicsepp/events");
+            return Array.isArray(data) ? data : [];
+        } catch {
+            return [];
+        }
     }
 
     async createEvent(data){

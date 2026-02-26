@@ -57,6 +57,8 @@
 .sidebar-nav {
     flex: 1;
     padding: 0.75rem 0;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 .sidebar-link {

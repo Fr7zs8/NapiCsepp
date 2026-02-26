@@ -44,6 +44,8 @@ export function AdminView() {
     const [deletingUser, setDeletingUser] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
+    const [currentUserRole, setCurrentUserRole] = useState("");
+
     useEffect(() => {
         try {
             const stored = localStorage.getItem("user");
@@ -51,6 +53,7 @@ export function AdminView() {
             const role = currentUser?.role?.toLowerCase();
             if (role === "admin" || role === "moderator") {
                 setAuthorized(true);
+                setCurrentUserRole(role);
                 fetchUsers();
             } else {
                 setAuthorized(false);
@@ -125,11 +128,14 @@ export function AdminView() {
         }
         setEditLoading(true);
         try {
-            await clientService.editUser(editingUser.user_id, {
+            const payload = {
                 username: editUsername.trim(),
                 email: editEmail.trim(),
-                role: editRole,
-            });
+            };
+            if (currentUserRole === "admin" || currentUserRole === "moderator") {
+                payload.role = editRole;
+            }
+            await clientService.editUser(editingUser.user_id, payload);
             showToast("Felhasználó sikeresen frissítve!", "success");
             setShowEditPopup(false);
             fetchUsers();
@@ -338,20 +344,24 @@ export function AdminView() {
                                         {formatDate(user.register_date)}
                                     </td>
                                     <td className="cell-actions">
-                                        <button
-                                            className="action-btn edit-btn"
-                                            onClick={(e) => openEditPopup(user, e)}
-                                            title="Szerkesztés"
-                                        >
-                                            <Pencil size={16} />
-                                        </button>
-                                        <button
-                                            className="action-btn delete-btn"
-                                            onClick={(e) => openDeletePopup(user, e)}
-                                            title="Törlés"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        {!(currentUserRole === "moderator" && user.role?.toLowerCase() === "admin") && (
+                                            <>
+                                                <button
+                                                    className="action-btn edit-btn"
+                                                    onClick={(e) => openEditPopup(user, e)}
+                                                    title="Szerkesztés"
+                                                >
+                                                    <Pencil size={16} />
+                                                </button>
+                                                <button
+                                                    className="action-btn delete-btn"
+                                                    onClick={(e) => openDeletePopup(user, e)}
+                                                    title="Törlés"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </>
+                                        )}
                                     </td>
                                 </tr>
                             ))
@@ -452,17 +462,21 @@ export function AdminView() {
                                     required
                                 />
                             </div>
-                            <div className="popup-field">
-                                <label>Szerepkör</label>
-                                <select
-                                    value={editRole}
-                                    onChange={(e) => setEditRole(e.target.value)}
-                                >
-                                    <option value="user">Felhasználó</option>
-                                    <option value="moderator">Moderátor</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
+                            {(currentUserRole === "admin" || currentUserRole === "moderator") && (
+                                <div className="popup-field">
+                                    <label>Szerepkör</label>
+                                    <select
+                                        value={editRole}
+                                        onChange={(e) => setEditRole(e.target.value)}
+                                    >
+                                        <option value="user">Felhasználó</option>
+                                        <option value="moderator">Moderátor</option>
+                                        {currentUserRole === "admin" && (
+                                            <option value="admin">Admin</option>
+                                        )}
+                                    </select>
+                                </div>
+                            )}
                             <div className="popup-actions">
                                 <button
                                     type="button"

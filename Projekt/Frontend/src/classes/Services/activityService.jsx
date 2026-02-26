@@ -4,12 +4,22 @@ export default class ActivityService{
         this.apiService = apiService;
     }
 
-    getAllActivities(){
-        return this.apiService.get("/napicsepp/activities");
+    async getAllActivities(){
+        try {
+            const data = await this.apiService.get("/napicsepp/activities");
+            return Array.isArray(data) ? data : [];
+        } catch {
+            return [];
+        }
     }
 
-    getAllHabits(){
-        return this.apiService.get("/napicsepp/activities/habits");
+    async getAllHabits(){
+        try {
+            const data = await this.apiService.get("/napicsepp/activities/habits");
+            return Array.isArray(data) ? data : [];
+        } catch {
+            return [];
+        }
     }
 
     getAllEvents(){
