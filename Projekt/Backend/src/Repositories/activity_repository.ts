@@ -213,7 +213,7 @@ export class ActivityRepository {
       const [result]: any = await connection.query(sql, values);
 
       if (result.affectedRows === 0) {
-        throw new Error("Nincs ilyen activity!");
+        throw new HttpException(404, "Nincs ilyen activity!");
       }
 
       return result;

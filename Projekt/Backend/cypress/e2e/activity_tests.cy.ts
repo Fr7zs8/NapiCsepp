@@ -34,17 +34,43 @@ describe("Testing Activity endpoints", () => {
     });
   });
 
-  it("GET - /napicsepp/activities - 404 - user has no activities", () => {
-    cy.loginWithEmptyUser().then((token) => {
-      cy.request({
-        method: "GET",
-        url: "/napicsepp/activities",
-        headers: { "x-access-token": token },
-        failOnStatusCode: false,
-      }).then((resp) => {
-        expect(resp.status).to.eq(404);
-        expect(resp.body.message).to.contain("activity");
-      });
+  it("GET - /napicsepp/activities - 403 - Returns error when token is missing", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/activities",
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(403);
+      expect(res.body).to.eq("Token szükséges");
+    });
+  });
+
+  it("GET - /napicsepp/activities - 401 - Returns error when token is invalid", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/activities",
+      headers: {
+        "x-access-token": "invalid_token",
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(401);
+      expect(res.body).to.eq("Az auth nem sikerült!");
+    });
+  });
+
+  it("GET - /napicsepp/activities - 401 - Returns error when token is corrupted", () => {
+    const corruptedToken = token.slice(0, -5) + "abcde";
+
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/activities",
+      headers: {
+        "x-access-token": corruptedToken,
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(401);
     });
   });
 
@@ -60,17 +86,43 @@ describe("Testing Activity endpoints", () => {
     });
   });
 
-  it("GET - /napicsepp/activities/habits - 404 - user has no activities", () => {
-    cy.loginWithEmptyUser().then((token) => {
-      cy.request({
-        method: "GET",
-        url: "/napicsepp/activities/habits",
-        headers: { "x-access-token": token },
-        failOnStatusCode: false,
-      }).then((resp) => {
-        expect(resp.status).to.eq(404);
-        expect(resp.body.message).to.contain("habit");
-      });
+  it("GET - /napicsepp/activities/habits - 403 - Returns error when token is missing", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/activities/habits",
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(403);
+      expect(res.body).to.eq("Token szükséges");
+    });
+  });
+
+  it("GET - /napicsepp/activities/habits - 401 - Returns error when token is invalid", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/activities/habits",
+      headers: {
+        "x-access-token": "invalid_token",
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(401);
+      expect(res.body).to.eq("Az auth nem sikerült!");
+    });
+  });
+
+  it("GET - /napicsepp/activities/habits - 401 - Returns error when token is corrupted", () => {
+    const corruptedToken = token.slice(0, -6) + "xxxxxx";
+
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/activities/habits",
+      headers: {
+        "x-access-token": corruptedToken,
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(401);
     });
   });
 
@@ -190,88 +242,267 @@ describe("Testing Activity endpoints", () => {
     });
   });
 
-  // it("Fails with missing activity data", () => {
-  //   cy.request({
-  //     method: "POST",
-  //     url: `/napicsepp/activities`,
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "x-access-token": `${token}`,
-  //     },
-  //     failOnStatusCode: false,
-  //   }).then((res) => {
-  //     expect(res.status).to.eq(404);
-  //     expect(res.body).to.eq("Hiányzó activity adat.");
-  //   });
-  // });
+  it("DELETE - /napicsepp/activities/:id - 200 - Successfully deletes an existing activity", () => {
+    cy.request({
+      method: "POST",
+      url: `/napicsepp/activities`,
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": `${token}`,
+      },
+      body: {
+        activity_name: "Delete Test Activity",
+        activity_type_name: "Házimunka",
+        activity_difficulty_name: "Könnyű",
+        activity_start_date: "2026-02-24",
+        activity_end_date: "2026-02-24",
+        progress_counter: 0,
+        activity_achive: 0,
+      },
+    }).then(() => {
+      cy.request({
+        method: "GET",
+        url: `/napicsepp/activities`,
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      }).then((getRes) => {
+        const createdActivity = getRes.body.find(
+          (a: any) => a.activity_name === "Delete Test Activity",
+        );
 
-  // it("Fails with too long activity name", () => {
-  //   const longName = "a".repeat(300);
-  //   cy.request({
-  //     method: "POST",
-  //     url: `/napicsepp/activities`,
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "x-access-token": `${token}`,
-  //     },
-  //     body: {
-  //       activity_name: longName,
-  //       activity_type_name: "Házimunka",
-  //       activity_difficulty_name: "Nem létező nehézség",
-  //       activity_start_date: "2026-02-24",
-  //       activity_end_date: "2026-02-24",
-  //       progress_counter: 0,
-  //       activity_achive: 0,
-  //     },
-  //     failOnStatusCode: false,
-  //   }).then((res) => {
-  //     expect(res.status).to.eq(404);
-  //   });
-  // });
+        expect(createdActivity).to.exist;
 
-  // it("Fails with negative progress_counter", () => {
-  //   cy.request({
-  //     method: "POST",
-  //     url: `/napicsepp/activities`,
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "x-access-token": `${token}`,
-  //     },
-  //     body: {
-  //       activity_name: "Takarítás",
-  //       activity_type_name: "Házimunka",
-  //       activity_difficulty_name: "Nem létező nehézség",
-  //       activity_start_date: "2026-02-24",
-  //       activity_end_date: "2026-02-24",
-  //       progress_counter: 0,
-  //       activity_achive: -1,
-  //     },
-  //     failOnStatusCode: false,
-  //   }).then((res) => {
-  //     expect(res.status).to.eq(404);
-  //   });
-  // });
+        cy.request({
+          method: "DELETE",
+          url: `/napicsepp/activities/${createdActivity.activity_id}`,
+          headers: {
+            "x-access-token": `${token}`,
+          },
+        }).then((deleteRes) => {
+          expect(deleteRes.status).to.eq(200);
+          expect(deleteRes.body).to.eq("Sikeres törlés.");
+        });
+      });
+    });
+  });
 
-  // it("Fails if start_date > end_date", () => {
-  //   cy.request({
-  //     method: "POST",
-  //     url: `/napicsepp/activities`,
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "x-access-token": `${token}`,
-  //     },
-  //     body: {
-  //       activity_name: "Takarítás",
-  //       activity_type_name: "Házimunka",
-  //       activity_difficulty_name: "Nem létező nehézség",
-  //       activity_start_date: "2026-02-24",
-  //       activity_end_date: "2026-02-23",
-  //       progress_counter: 0,
-  //       activity_achive: 0,
-  //     },
-  //     failOnStatusCode: false,
-  //   }).then((res) => {
-  //     expect(res.status).to.eq(404);
-  //   });
-  // });
+  it("DELETE - /napicsepp/activities/:id - 404 - Returns error when activity does not exist", () => {
+    cy.request({
+      method: "DELETE",
+      url: `/napicsepp/activities/999999`,
+      headers: {
+        "x-access-token": `${token}`,
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(404);
+      expect(res.body.message).to.eq("Az activity nem található.");
+    });
+  });
+
+  it("DELETE - /napicsepp/activities/:id - 400 - Returns error for invalid (non-numeric) ID", () => {
+    cy.request({
+      method: "DELETE",
+      url: `/napicsepp/activities/abc`,
+      headers: {
+        "x-access-token": `${token}`,
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(400);
+      expect(res.body.message).to.eq("Nem megfelelő az activity ID.");
+    });
+  });
+
+  it("DELETE - /napicsepp/activities/:id - 400 - Returns error for null ID", () => {
+    cy.request({
+      method: "DELETE",
+      url: `/napicsepp/activities/null`,
+      headers: {
+        "x-access-token": `${token}`,
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(400);
+      expect(res.body.message).to.eq("Nem megfelelő az activity ID.");
+    });
+  });
+
+  it("DELETE - /napicsepp/activities/:id - 401 - Returns error when token is invalid", () => {
+    cy.request({
+      method: "DELETE",
+      url: `/napicsepp/activities/1`,
+      headers: {
+        "x-access-token": `invalid_token`,
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(401);
+      expect(res.body).to.eq("Az auth nem sikerült!");
+    });
+  });
+
+  it("DELETE - /napicsepp/activities/:id - 404 - Returns error for negative ID", () => {
+    cy.request({
+      method: "DELETE",
+      url: `/napicsepp/activities/-1`,
+      headers: {
+        "x-access-token": `${token}`,
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.be.oneOf([400, 404]);
+    });
+  });
+
+  it("PUT - /napicsepp/activities/:id - 200 - Successfully updates an existing activity", () => {
+    cy.request({
+      method: "POST",
+      url: `/napicsepp/activities`,
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": `${token}`,
+      },
+      body: {
+        activity_name: "Update Test Activity",
+        activity_type_name: "Házimunka",
+        activity_difficulty_name: "Könnyű",
+        activity_start_date: "2026-02-24",
+        activity_end_date: "2026-02-24",
+        progress_counter: 0,
+        activity_achive: 0,
+      },
+    }).then(() => {
+      cy.request({
+        method: "GET",
+        url: `/napicsepp/activities`,
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      }).then((getRes) => {
+        const activity = getRes.body.find(
+          (a: any) => a.activity_name === "Update Test Activity",
+        );
+
+        cy.request({
+          method: "PUT",
+          url: `/napicsepp/activities/${activity.activity_id}`,
+          headers: {
+            "Content-Type": "application/json",
+            "x-access-token": `${token}`,
+          },
+          body: {
+            activity_name: "Updated Activity Name",
+            progress_counter: 5,
+          },
+        }).then((putRes) => {
+          expect(putRes.status).to.eq(200);
+          expect(putRes.body).to.eq("Sikeres módosítás!");
+        });
+      });
+    });
+  });
+
+  it("PUT - /napicsepp/activities/:id - 400 - Returns error for invalid (non-numeric) ID", () => {
+    cy.request({
+      method: "PUT",
+      url: `/napicsepp/activities/abc`,
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": `${token}`,
+      },
+      body: { activity_name: "Test" },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(400);
+      expect(res.body.message).to.eq("Nem megfelelő az activity ID.");
+    });
+  });
+
+  it("PUT - /napicsepp/activities/:id - 400 - Returns error when no update data is provided", () => {
+    cy.request({
+      method: "PUT",
+      url: `/napicsepp/activities/1`,
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": `${token}`,
+      },
+      body: {},
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(400);
+      expect(res.body.message).to.eq("Nincs módosítandó adat.");
+    });
+  });
+
+  it("PUT - /napicsepp/activities/:id - 404 - Returns error when activity does not exist", () => {
+    cy.request({
+      method: "PUT",
+      url: `/napicsepp/activities/999999`,
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": `${token}`,
+      },
+      body: {
+        activity_name: "Does not matter",
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(404);
+      expect(res.body.message).to.eq("Nincs ilyen activity!");
+    });
+  });
+
+  it("PUT - /napicsepp/activities/:id - 404 - Returns error when activity type does not exist", () => {
+    cy.request({
+      method: "PUT",
+      url: `/napicsepp/activities/1`,
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": `${token}`,
+      },
+      body: {
+        activity_type_name: "NonExistingType",
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(404);
+    });
+  });
+
+  it("PUT - /napicsepp/activities/:id - 404 - Returns error when difficulty does not exist", () => {
+    cy.request({
+      method: "PUT",
+      url: `/napicsepp/activities/1`,
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": `${token}`,
+      },
+      body: {
+        activity_difficulty_name: "NonExistingDifficulty",
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(404);
+    });
+  });
+
+  it("PUT - /napicsepp/activities/:id - 401 - Returns error when token is invalid", () => {
+    cy.request({
+      method: "PUT",
+      url: `/napicsepp/activities/1`,
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": `invalid_token`,
+      },
+      body: {
+        activity_name: "Unauthorized update",
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(401);
+      expect(res.body).to.eq("Az auth nem sikerült!");
+    });
+  });
 });

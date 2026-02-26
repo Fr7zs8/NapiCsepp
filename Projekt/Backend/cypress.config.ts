@@ -9,7 +9,6 @@ export default defineConfig({
     setupNodeEvents(on) {
       on("task", {
         async resetDb() {
-          console.log(config.database);
           const connection = await mysql.createConnection(config.database);
 
           const sql = fs.readFileSync("cypress/db/seed.sql", "utf8");
