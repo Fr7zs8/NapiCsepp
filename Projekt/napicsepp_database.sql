@@ -207,3 +207,42 @@ END $$
 DELIMITER ;
 
 UPDATE users SET users.password =  pwd_encrypt("12345") WHERE users.user_id = 2;
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `overview`(IN p_user_id INT)
+BEGIN
+    SELECT
+        summary.date,
+        SUM(summary.activity_count) AS activity_count,
+        SUM(summary.habit_count) AS habit_count,
+        SUM(summary.event_count) AS event_count
+    FROM (
+        SELECT
+            DATE_FORMAT(activities.activity_start_date, '%Y-%m-%d %H:%i') AS date,
+            SUM(types.type_name <> 'Szokás') AS activity_count,
+            SUM(types.type_name = 'Szokás') AS habit_count,
+            0 AS event_count
+        FROM activities
+        JOIN types ON types.type_id = activities.activity_type_id
+        JOIN users_activities ON users_activities.activity_id = activities.activity_id
+        WHERE users_activities.user_id = p_user_id
+        GROUP BY activities.activity_start_date
+
+        UNION ALL
+        
+        SELECT
+            DATE_FORMAT(events.event_start_time, '%Y-%m-%d %H:%i') AS date,
+            0 AS activity_count,
+            0 AS habit_count,
+            COUNT(*) AS event_count
+        FROM events
+        JOIN users_events ON users_events.event_id = events.event_id
+        WHERE users_events.user_id = p_user_id
+        GROUP BY DATE_FORMAT(events.event_start_time, '%Y-%m-%d %H:%i')
+    ) AS summary
+    GROUP BY summary.date
+    ORDER BY summary.date;
+END$$
+
+DELIMITER ;

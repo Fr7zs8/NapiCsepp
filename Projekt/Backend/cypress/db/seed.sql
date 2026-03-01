@@ -262,32 +262,39 @@ BEGIN
            AND a.activity_achive = 1) AS weekly_tasks_completed;
 END;
 
-CREATE PROCEDURE IF NOT EXISTS overview()
+CREATE PROCEDURE IF NOT EXISTS `overview`(IN p_user_id INT)
 BEGIN
     SELECT
-        d.date,
-        SUM(d.activity_count) AS activity_count,
-        SUM(d.habit_count) AS habit_count,
-        SUM(d.event_count) AS event_count
+        summary.date,
+        SUM(summary.activity_count) AS activity_count,
+        SUM(summary.habit_count) AS habit_count,
+        SUM(summary.event_count) AS event_count
     FROM (
         SELECT
-            DATE_FORMAT(a.activity_start_date , '%Y-%m-%d %H:%i') AS date,
-            SUM(t.type_name <> 'Szokás') AS activity_count,
-            SUM(t.type_name = 'Szokás') AS habit_count,
+            DATE_FORMAT(activities.activity_start_date, '%Y-%m-%d %H:%i') AS date,
+            SUM(types.type_name <> 'Szokás') AS activity_count,
+            SUM(types.type_name = 'Szokás') AS habit_count,
             0 AS event_count
-        FROM activities a
-        JOIN types t ON t.type_id = a.activity_type_id
-        GROUP BY a.activity_start_date
+        FROM activities
+        JOIN types ON types.type_id = activities.activity_type_id
+        JOIN users_activities ON users_activities.activity_id = activities.activity_id
+        WHERE users_activities.user_id = p_user_id
+        GROUP BY activities.activity_start_date
+
         UNION ALL
+        
         SELECT
-            DATE_FORMAT(e.event_start_time, '%Y-%m-%d %H:%i') AS date,
-            0, 0,
+            DATE_FORMAT(events.event_start_time, '%Y-%m-%d %H:%i') AS date,
+            0 AS activity_count,
+            0 AS habit_count,
             COUNT(*) AS event_count
-        FROM events e
-        GROUP BY DATE_FORMAT(e.event_start_time, '%Y-%m-%d %H:%i')
-    ) d
-    GROUP BY d.date
-    ORDER BY d.date;
+        FROM events
+        JOIN users_events ON users_events.event_id = events.event_id
+        WHERE users_events.user_id = p_user_id
+        GROUP BY DATE_FORMAT(events.event_start_time, '%Y-%m-%d %H:%i')
+    ) AS summary
+    GROUP BY summary.date
+    ORDER BY summary.date;
 END;
 
 CREATE PROCEDURE IF NOT EXISTS pr_pullactivities(IN user_id INT)
