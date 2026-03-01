@@ -30,11 +30,10 @@ export class EventService {
   }
 
   async deleteEvent(event_id: number): Promise<ResultSetHeader> {
-    const results = await this.repository.deleteEvent(event_id);
-
-    if (isNaN(event_id)) {
+    if (!Number.isInteger(event_id) || event_id <= 0) {
       throw new HttpException(400, "Nem megfelelő az id tipusa!");
     }
+    const results = await this.repository.deleteEvent(event_id);
 
     if (results.affectedRows <= 0) {
       throw new HttpException(404, "Nem volt változtatás.");
@@ -49,6 +48,13 @@ export class EventService {
 
     if (!event || Object.keys(event).length === 0) {
       throw new HttpException(400, "Nem küldte el az adatokat megfelelően!");
+    }
+
+    const allowedKeys = ["event_name", "event_start_time", "event_end_time"];
+    const validKeys = Object.keys(event).filter((k) => allowedKeys.includes(k));
+
+    if (validKeys.length === 0) {
+      throw new HttpException(400, "Nincs frissíthető mező!");
     }
 
     const result = await this.repository.updateEvent(id, event);

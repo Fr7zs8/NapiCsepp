@@ -31,7 +31,7 @@ export class EventController {
 
   async deleteEvent(req: any, res: Response) {
     try {
-      const activity_id = req.params.id;
+      const activity_id = Number(req.params.id);
       await service.deleteEvent(activity_id);
       res.status(200).send("Sikeres törlés.");
     } catch (err: any) {
