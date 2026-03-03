@@ -1,0 +1,149 @@
+/// <reference types="cypress" />
+
+describe("Testing User endpoints", () => {
+  beforeEach(() => {
+    cy.task("resetDb");
+  });
+
+  let adminToken: string;
+  let moderatorToken: string;
+  let userToken: string;
+
+  before(() => {
+    cy.login("admin@gmail.com", "admin123").then((t) => {
+      adminToken = t;
+    });
+
+    cy.login("dcba@gmail.com", "jelszo").then((t) => {
+      moderatorToken = t;
+    });
+
+    cy.login("abcd@gmail.com", "1234").then((t) => {
+      userToken = t;
+    });
+  });
+
+  it("POST - /login - 200 - Successful login", () => {
+    cy.request({
+      method: "POST",
+      url: "/napicsepp/login",
+      body: { email: "abcd@gmail.com", password: "1234" },
+    }).then((res) => {
+      expect(res.status).to.eq(200);
+      expect(res.body).to.have.property("token");
+    });
+  });
+
+  it("POST - /login - 401 - Wrong credentials", () => {
+    cy.request({
+      method: "POST",
+      url: "/napicsepp/login",
+      body: { email: "abcd@gmail.com", password: "wrongpass" },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(401);
+      expect(res.body.message).to.eq("Rossz az email vagy a jelszó");
+    });
+  });
+
+  it("GET - /profile - 200 - Returns user info", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/profile",
+      headers: { "x-access-token": userToken },
+    }).then((res) => {
+      expect(res.status).to.eq(200);
+    });
+  });
+
+  it("GET - /users - 200 - Moderator/Admin can get all users", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/users",
+      headers: { "x-access-token": moderatorToken },
+    }).then((res) => {
+      expect(res.status).to.eq(200);
+      expect(res.body).to.be.an("array");
+    });
+  });
+
+  it("GET - /users - 403 - Regular user cannot get all users", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/users",
+      headers: { "x-access-token": userToken },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(403);
+      expect(res.body.message).to.eq("Csak a moderátor kérheti le!");
+    });
+  });
+
+  it("POST - /regisztrate - 201 - Successfully register a new user", () => {
+    const newUser = {
+      username: "NewUser",
+      email: "newuser@gmail.com",
+      password: "1234",
+      language: "hu",
+    };
+
+    cy.request({
+      method: "POST",
+      url: "/napicsepp/regisztrate",
+      body: newUser,
+    }).then((res) => {
+      expect(res.status).to.eq(201);
+      expect(res.body).to.eq("Sikeres adatrögzítés!");
+    });
+  });
+
+  it("POST - /regisztrate - 409 - Duplicate email", () => {
+    cy.request({
+      method: "POST",
+      url: "/napicsepp/regisztrate",
+      body: { username: "User2", email: "abcd@gmail.com", password: "1234", language: "hu" },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(409);
+      expect(res.body.message).to.eq("Az email cím már használatban van");
+    });
+  });
+
+  it("GET - /moderators - 200 - Admin can retrieve moderators", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/moderators",
+      headers: { "x-access-token": adminToken },
+    }).then((res) => {
+      expect(res.status).to.eq(200);
+      expect(res.body).to.be.an("array");
+    });
+  });
+
+  it("GET - /moderators - 403 - Non-admin cannot retrieve moderators", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/moderators",
+      headers: { "x-access-token": moderatorToken },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(403);
+      expect(res.body.message).to.eq("Csak az admin kérheti le.");
+    });
+  });
+
+
+  it("DELETE - /users/:id - 404 - Returns error if user does not exist", () => {
+    cy.request({
+      method: "DELETE",
+      url: "/napicsepp/users/999999",
+      headers: { "x-access-token": moderatorToken },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(404);
+      expect(res.body.message).to.eq("Az activity nem található.");
+    });
+  });
+});
+
+//Kell jó és rosssz put és kell a delete jó test
