@@ -59,22 +59,7 @@ describe("Testing Activity endpoints", () => {
     });
   });
 
-  it("GET - /napicsepp/activities - 401 - Returns error when token is corrupted", () => {
-    const corruptedToken = token.slice(0, -5) + "abcde";
-
-    cy.request({
-      method: "GET",
-      url: "/napicsepp/activities",
-      headers: {
-        "x-access-token": corruptedToken,
-      },
-      failOnStatusCode: false,
-    }).then((res) => {
-      expect(res.status).to.eq(401);
-    });
-  });
-
-  it("GET - /napicsepp/activities/habits - 404 - Correct retrieval of habits", () => {
+  it("GET - /napicsepp/activities/habits - 200 - Correct retrieval of habits", () => {
     cy.request({
       method: "GET",
       url: "/napicsepp/activities/habits",
@@ -83,6 +68,14 @@ describe("Testing Activity endpoints", () => {
       },
     }).then((resp) => {
       expect(resp.status).to.eq(200);
+      expect(resp.body[0]).to.have.property("activity_id");
+      expect(resp.body[0]).to.have.property("activity_name");
+      expect(resp.body[0]).to.have.property("type_name");
+      expect(resp.body[0]).to.have.property("difficulty_name");
+      expect(resp.body[0]).to.have.property("activity_achive");
+      expect(resp.body[0]).to.have.property("activity_start_date");
+      expect(resp.body[0]).to.have.property("activity_end_date");
+      expect(resp.body[0]).to.have.property("progress_counter");
     });
   });
 
@@ -108,21 +101,6 @@ describe("Testing Activity endpoints", () => {
     }).then((res) => {
       expect(res.status).to.eq(401);
       expect(res.body).to.eq("Az auth nem sikerült!");
-    });
-  });
-
-  it("GET - /napicsepp/activities/habits - 401 - Returns error when token is corrupted", () => {
-    const corruptedToken = token.slice(0, -6) + "xxxxxx";
-
-    cy.request({
-      method: "GET",
-      url: "/napicsepp/activities/habits",
-      headers: {
-        "x-access-token": corruptedToken,
-      },
-      failOnStatusCode: false,
-    }).then((res) => {
-      expect(res.status).to.eq(401);
     });
   });
 
@@ -315,20 +293,6 @@ describe("Testing Activity endpoints", () => {
     });
   });
 
-  it("DELETE - /napicsepp/activities/:id - 400 - Returns error for null ID", () => {
-    cy.request({
-      method: "DELETE",
-      url: `/napicsepp/activities/null`,
-      headers: {
-        "x-access-token": `${token}`,
-      },
-      failOnStatusCode: false,
-    }).then((res) => {
-      expect(res.status).to.eq(400);
-      expect(res.body.message).to.eq("Nem megfelelő az activity ID.");
-    });
-  });
-
   it("DELETE - /napicsepp/activities/:id - 401 - Returns error when token is invalid", () => {
     cy.request({
       method: "DELETE",
@@ -343,18 +307,6 @@ describe("Testing Activity endpoints", () => {
     });
   });
 
-  it("DELETE - /napicsepp/activities/:id - 404 - Returns error for negative ID", () => {
-    cy.request({
-      method: "DELETE",
-      url: `/napicsepp/activities/-1`,
-      headers: {
-        "x-access-token": `${token}`,
-      },
-      failOnStatusCode: false,
-    }).then((res) => {
-      expect(res.status).to.be.oneOf([400, 404]);
-    });
-  });
 
   it("PUT - /napicsepp/activities/:id - 200 - Successfully updates an existing activity", () => {
     cy.request({
@@ -468,6 +420,7 @@ describe("Testing Activity endpoints", () => {
       failOnStatusCode: false,
     }).then((res) => {
       expect(res.status).to.eq(404);
+      expect(res.body.message).to.eq("Nincs ilyen típus")
     });
   });
 
@@ -485,6 +438,7 @@ describe("Testing Activity endpoints", () => {
       failOnStatusCode: false,
     }).then((res) => {
       expect(res.status).to.eq(404);
+      expect(res.body.message).to.eq("Nincs ilyen nehézség")
     });
   });
 

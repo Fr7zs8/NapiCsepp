@@ -39,4 +39,29 @@ describe("Testing overview endpoints", () => {
       });
     });
   });
+
+  it("GET - /napicsepp/overview - 403 - Returns error when token is missing", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/overview",
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(403);
+      expect(res.body).to.eq("Token szükséges");
+    });
+  });
+
+  it("GET - /napicsepp/overview - 401 - Returns error when token is invalid", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/overview",
+      headers: {
+        "x-access-token": "invalid_token",
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(401);
+      expect(res.body).to.eq("Az auth nem sikerült!");
+    });
+  });
 });
