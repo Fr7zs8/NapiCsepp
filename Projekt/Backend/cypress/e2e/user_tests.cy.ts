@@ -132,6 +132,77 @@ describe("Testing User endpoints", () => {
     });
   });
 
+    it("PUT - /users/:id - 200 - Admin can update user", () => {
+    const updatedData = {
+      username: "updatedUser",
+      language: "en",
+      role: "moderator"
+    };
+
+    cy.request({
+      method: "PUT",
+      url: "/napicsepp/users/3",
+      headers: { "x-access-token": adminToken },
+      body: updatedData,
+    }).then((res) => {
+      expect(res.status).to.eq(200);
+      expect(res.body).to.eq("Sikeres modositás!");
+    });
+  });
+
+  it("PUT - /users/:id - 200 - Moderator can update user", () => {
+    const updatedData = {
+      language: "hu",
+    };
+
+    cy.request({
+      method: "PUT",
+      url: "/napicsepp/users/3",
+      headers: { "x-access-token": moderatorToken },
+      body: updatedData,
+    }).then((res) => {
+      expect(res.status).to.eq(200);
+    });
+  });
+
+  it("PUT - /users/:id - 403 - Regular user cannot update user", () => {
+    cy.request({
+      method: "PUT",
+      url: "/napicsepp/users/3",
+      headers: { "x-access-token": userToken },
+      body: { username: "hack" },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(403);
+      expect(res.body.message).to.eq("Nincs jogosultságod szerkeszteni!");
+    });
+  });
+
+  it("PUT - /users/:id - 400 - No data to update", () => {
+    cy.request({
+      method: "PUT",
+      url: "/napicsepp/users/3",
+      headers: { "x-access-token": adminToken },
+      body: {},
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(404); 
+      expect(res.body.message).to.eq("Nincs frissítendő adat!");
+    });
+  });
+
+  it("PUT - /users/:id - 404 - User does not exist", () => {
+    cy.request({
+      method: "PUT",
+      url: "/napicsepp/users/999999",
+      headers: { "x-access-token": adminToken },
+      body: { username: "valami" },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(404);
+      expect(res.body.message).to.eq("Nincs ilyen user!");
+    });
+  });
 
   it("DELETE - /users/:id - 404 - Returns error if user does not exist", () => {
     cy.request({
@@ -142,6 +213,25 @@ describe("Testing User endpoints", () => {
     }).then((res) => {
       expect(res.status).to.eq(404);
       expect(res.body.message).to.eq("Az activity nem található.");
+    });
+  });
+
+  it("DELETE - /users/:id - 200 - Moderator can delete user", () => {
+    const newUser = {
+      username: "deleteMe",
+      email: "deleteme@gmail.com",
+      password: "1234",
+      language: "hu",
+    };
+
+    cy.request("POST", "/napicsepp/regisztrate", newUser).then(() => {
+      cy.request({
+        method: "DELETE",
+        url: "/napicsepp/users/4",
+        headers: { "x-access-token": moderatorToken },
+      }).then((res) => {
+        expect(res.status).to.eq(200);
+      });
     });
   });
 });

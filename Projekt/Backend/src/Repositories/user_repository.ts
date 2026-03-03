@@ -55,7 +55,7 @@ export class UserRepository {
     adminId: number,
   ): Promise<ResultSetHeader> {
     if (!user || Object.keys(user).length === 0) {
-      throw new Error("Nincs frissítendő adat!");
+      throw new HttpException(404, "Nincs frissítendő adat!");
     }
 
     const connection = await mysql.createConnection(config.database);
@@ -101,7 +101,7 @@ export class UserRepository {
       }
 
       if (updateFields.length === 0) {
-        throw new Error("Nincs frissítendő mező!");
+        throw new HttpException(404, "Nincs frissítendő mező!");
       }
 
       values.push(userId);
@@ -115,7 +115,7 @@ export class UserRepository {
       const [result]: any = await connection.query(sql, values);
 
       if (result.affectedRows === 0) {
-        throw new Error("Nincs ilyen user!");
+        throw new HttpException(404, "Nincs ilyen user!");
       }
 
       return result;
