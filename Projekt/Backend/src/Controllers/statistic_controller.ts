@@ -28,7 +28,6 @@ export class StatisticController {
     }
   }
 
-  //abi - kellett egy get idkkal
   async userProfileStatistic(req: any, res: Response) {
     const adminId = req.user.user_id;
     const targetUserId = Number(req.params.userId);

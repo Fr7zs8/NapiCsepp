@@ -37,26 +37,15 @@
 // }
 import { setToken } from "./auth";
 
-Cypress.Commands.add("login", () => {
+Cypress.Commands.add("login", (email: string, password: string) => {
   return cy
     .request("POST", "/napicsepp/login", {
-      email: "abcd@gmail.com",
-      password: "1234",
+      email,
+      password,
     })
     .then((resp) => {
       const token = resp.body.token as string;
       setToken(token);
       return token;
-    });
-});
-
-Cypress.Commands.add("loginWithEmptyUser", () => {
-  return cy
-    .request("POST", "/napicsepp/login", {
-      email: "emptytest@gmail.com",
-      password: "1234",
-    })
-    .then((resp) => {
-      return resp.body.token;
     });
 });

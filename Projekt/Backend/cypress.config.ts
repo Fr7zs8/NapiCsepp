@@ -6,6 +6,7 @@ import config from "./src/config/config";
 export default defineConfig({
   e2e: {
     baseUrl: "http://localhost:3000",
+
     setupNodeEvents(on) {
       on("task", {
         async resetDb() {
@@ -13,8 +14,8 @@ export default defineConfig({
 
           const sql = fs.readFileSync("cypress/db/seed.sql", "utf8");
           await connection.query(sql);
-          await connection.end();
 
+          await connection.end();
           return null;
         },
       });

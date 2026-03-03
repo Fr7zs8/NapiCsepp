@@ -7,7 +7,7 @@ describe("Testing event endpoints", () => {
   let token: string;
 
   before(() => {
-    cy.login().then((t) => {
+    cy.login("abcd@gmail.com", "1234").then((t) => {
       token = t;
     });
   });

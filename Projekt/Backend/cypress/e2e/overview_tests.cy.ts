@@ -7,7 +7,7 @@ describe("Testing overview endpoints", () => {
   let token: string;
 
   before(() => {
-    cy.login().then((t) => {
+    cy.login("abcd@gmail.com", "1234").then((t) => {
       token = t;
     });
   });
@@ -25,7 +25,7 @@ describe("Testing overview endpoints", () => {
   });
 
   it("GET - /napicsepp/overview - 200 - Returns empty array for user with no data", () => {
-    cy.loginWithEmptyUser().then((emptyToken) => {
+    cy.login("emptytest@gmail.com", "1234").then((emptyToken) => {
       cy.request({
         method: "GET",
         url: "/napicsepp/overview",
