@@ -25,7 +25,14 @@ export function Toast() {
   return (
     <div className="nc-toast-container">
       {toasts.map((toast) => (
-        <div key={toast.id} className={`nc-toast nc-toast-${toast.type}`}>
+        <div
+          key={toast.id}
+          className={`nc-toast nc-toast-${toast.type}`}
+          style={{
+            '--toast-duration': `${toast.duration}ms`,
+            '--toast-fadeout-delay': `${toast.duration - 350}ms`,
+          }}
+        >
           <span className="nc-toast-icon">
             {toast.type === "success" ? "✓" : "✕"}
           </span>

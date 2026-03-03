@@ -21,7 +21,7 @@
   font-weight: 500;
   color: #fff;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
-  animation: ncToastSlideIn 0.25s ease, ncToastFadeOut 0.35s ease 2.65s forwards;
+  animation: ncToastSlideIn 0.25s ease, ncToastFadeOut 0.35s ease var(--toast-fadeout-delay, 2.65s) forwards;
   pointer-events: auto;
   min-width: 280px;
   max-width: 420px;
@@ -34,6 +34,10 @@
 
 .nc-toast-error {
   background: linear-gradient(135deg, #e53935, #ef5350);
+}
+
+.nc-toast-error .nc-toast-progress {
+  height: 5px;
 }
 
 .nc-toast-icon {

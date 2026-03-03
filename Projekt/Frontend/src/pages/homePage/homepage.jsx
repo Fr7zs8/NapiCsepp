@@ -65,6 +65,7 @@ export function HomepageView(){
             setCurrentQuote((prev) => (prev + 1) % quotes.length);
         }, 5000);
         return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (loading) {

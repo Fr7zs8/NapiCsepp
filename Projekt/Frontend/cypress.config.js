@@ -10,4 +10,11 @@ export default defineConfig({
     viewportHeight: 900,
     defaultCommandTimeout: 8000,
   },
+
+  component: {
+    devServer: {
+      framework: "react",
+      bundler: "vite",
+    },
+  },
 });

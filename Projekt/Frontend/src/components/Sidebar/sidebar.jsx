@@ -1,6 +1,6 @@
 import "./sidebar.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { clientService, activityService } from "../../router/apiRouter";
 import {
   Home,
@@ -30,74 +30,91 @@ export function Sidebar() {
   })();
   const isAdmin = currentUser?.role?.toLowerCase() === "admin" || currentUser?.role?.toLowerCase() === "moderator";
 
-  useEffect(() => {
-    const fetchPending = async () => {
-      try {
-        const [allActivities, habitsData] = await Promise.all([
-          activityService.getAllActivities(),
-          activityService.getAllHabits(),
-        ]);
+  const fetchPending = useCallback(async () => {
+    try {
+      const [allActivities, habitsData] = await Promise.all([
+        activityService.getAllActivities(),
+        activityService.getAllHabits(),
+      ]);
 
-        // Build habit map with checked counts (same logic as task page)
-        const habitMap = {};
-        habitsData.forEach((h) => {
-          const checkedCount = allActivities.filter(
-            (a) =>
-              a.type_name === "Szokás" &&
-              a.activity_name === h.activity_name &&
-              (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
-          ).length;
-          let targetDaysVal = null;
-          if (h.target_days || h.target_days === 0) {
-            targetDaysVal = Number(h.target_days);
-          } else if (h.activity_start_date && h.activity_end_date) {
-            try {
-              const sd = new Date(h.activity_start_date);
-              const ed = new Date(h.activity_end_date);
-              sd.setHours(0, 0, 0, 0);
-              ed.setHours(0, 0, 0, 0);
-              const diff = Math.floor((ed - sd) / (1000 * 60 * 60 * 24));
-              targetDaysVal = Math.max(0, diff + 1);
-            } catch { targetDaysVal = 0; }
-          } else {
-            targetDaysVal = 0;
-          }
-          const progressCounter = h.progress_counter;
-          const daysElapsed = (progressCounter !== null && progressCounter !== undefined)
-            ? Math.max(0, Number(progressCounter))
-            : checkedCount;
-          habitMap[h.activity_name] = { targetDays: targetDaysVal, daysElapsed };
-        });
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const visibleTasks = allActivities.filter((item) => {
-          if (item.activity_start_date) {
-            const startDate = new Date(item.activity_start_date + "T00:00:00");
-            const endDate = item.activity_end_date
-              ? new Date(item.activity_end_date + "T23:59:59")
-              : startDate;
-            if (startDate > today || endDate < today) return false;
-          }
-          if (item.type_name === "Szokás") {
-            const hm = habitMap[item.activity_name];
-            if (hm && hm.targetDays > 0 && hm.daysElapsed >= hm.targetDays) return false;
-          }
-          return true;
-        });
-
-        const pending = visibleTasks.filter(
-          (a) => !(a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1")
+      const habitMap = {};
+      habitsData.forEach((h) => {
+        const checkedCount = allActivities.filter(
+          (a) =>
+            a.type_name === "Szokás" &&
+            a.activity_name === h.activity_name &&
+            (a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1"),
         ).length;
+        let targetDaysVal = null;
+        if (h.target_days || h.target_days === 0) {
+          targetDaysVal = Number(h.target_days);
+        } else if (h.activity_start_date && h.activity_end_date) {
+          try {
+            const sd = new Date(h.activity_start_date);
+            const ed = new Date(h.activity_end_date);
+            sd.setHours(0, 0, 0, 0);
+            ed.setHours(0, 0, 0, 0);
+            const diff = Math.floor((ed - sd) / (1000 * 60 * 60 * 24));
+            targetDaysVal = Math.max(0, diff + 1);
+          } catch { targetDaysVal = 0; }
+        } else {
+          targetDaysVal = 0;
+        }
+        const progressCounter = h.progress_counter;
+        const daysElapsed = (progressCounter !== null && progressCounter !== undefined)
+          ? Math.max(0, Number(progressCounter))
+          : checkedCount;
+        habitMap[h.activity_name] = { targetDays: targetDaysVal, daysElapsed };
+      });
 
-        setPendingCount(pending);
-      } catch {
-        setPendingCount(null);
-      }
-    };
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const visibleTasks = allActivities.filter((item) => {
+        if (item.activity_start_date) {
+          const startDate = new Date(item.activity_start_date + "T00:00:00");
+          const endDate = item.activity_end_date
+            ? new Date(item.activity_end_date + "T23:59:59")
+            : startDate;
+          if (startDate > today || endDate < today) return false;
+        }
+        if (item.type_name === "Szokás") {
+          const hm = habitMap[item.activity_name];
+          if (hm && hm.targetDays > 0 && hm.daysElapsed >= hm.targetDays) return false;
+        }
+        return true;
+      });
+
+      const pending = visibleTasks.filter(
+        (a) => !(a.activity_achive === 1 || a.activity_achive === true || a.activity_achive === "1")
+      ).length;
+
+      setPendingCount(pending);
+    } catch {
+      setPendingCount(null);
+    }
+  }, []);
+
+  // Pathname változásnál azonnal frissít
+  useEffect(() => {
     fetchPending();
-  }, [location.pathname]);
+  }, [location.pathname, fetchPending]);
+
+  // activitiesUpdated event + 10s polling (cron percenként fut, így max 10s késés)
+  useEffect(() => {
+    window.addEventListener("activitiesUpdated", fetchPending);
+    const interval = setInterval(fetchPending, 10_000);
+
+    // Tab visszaváltásakor azonnal frissít
+    const onVisible = () => { if (document.visibilityState === "visible") fetchPending(); };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      window.removeEventListener("activitiesUpdated", fetchPending);
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [fetchPending]);
 
   function handleLogout() {
     clientService.logout();
