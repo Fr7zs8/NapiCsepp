@@ -19,6 +19,8 @@ export function HabitView() {
   const [editId, setEditId] = useState(null);
   const [difficulties, setDifficulties] = useState([]);
   const [flashSave, setFlashSave] = useState(false);
+  const [activeSortBy, setActiveSortBy] = useState("date");
+  const [expiredSortBy, setExpiredSortBy] = useState("date");
 
   useEffect(() => {
     async function fetchDifficulties() {
@@ -285,6 +287,23 @@ export function HabitView() {
     return () => window.removeEventListener('activitiesUpdated', handler);
   }, []);
 
+  const difficultyColor = (name) => {
+    const lower = (name || "").toLowerCase();
+    if (lower.includes("könny")) return "#22c55e";
+    if (lower.includes("neh")) return "#ef4444";
+    return "#ffc107";
+  };
+
+  const difficultyOrder = { Nehéz: 1, Közepes: 2, Könnyű: 3 };
+
+  function sortHabits(list, sortBy) {
+    return [...list].sort((a, b) =>
+      sortBy === "difficulty"
+        ? (difficultyOrder[a.difficultyName] ?? 99) - (difficultyOrder[b.difficultyName] ?? 99)
+        : (a.startDate || "").localeCompare(b.startDate || "")
+    );
+  }
+
   if (loading) {
     return (
       <div className="loading-state">
@@ -366,20 +385,27 @@ export function HabitView() {
         </button>
       </div>
 
-      <div className="task-list-div">
-        {habits.length === 0 && (
-          <p style={{ textAlign: "center", color: "#777", padding: "1rem" }}>
-            Még nincsenek szokások.
-          </p>
-        )}
+      {(() => {
+        const today = new Date().toISOString().split("T")[0];
+        const activeHabits = sortHabits(
+          habits.filter((h) => !h.endDate || h.endDate >= today),
+          activeSortBy
+        );
+        const expiredHabits = sortHabits(
+          habits.filter((h) => h.endDate && h.endDate < today),
+          expiredSortBy
+        );
 
-        {habits.map((habit) => (
-          <div className={`task-item ${habit.isCompleted() ? 'completed' : ''}`} key={habit.habitId}>
+        const renderHabitItem = (habit, isExpired) => (
+          <div
+            className={`task-item ${isExpired ? "expired" : habit.isCompleted() ? "completed" : ""}`}
+            key={habit.habitId}
+          >
             <div className="left-section">
-              <div className="color-bar"></div>
+              <div className="color-bar" style={{ background: difficultyColor(habit.difficultyName) }}></div>
 
               <div className="task-texts">
-                <p className={`task-name ${habit.isCompleted() ? 'completed' : ''}`}>{habit.habitName}</p>
+                <p className={`task-name ${!isExpired && habit.isCompleted() ? "completed" : ""}`}>{habit.habitName}</p>
 
                 <div className="labels">
                   <span className="label">{habit.typeName}</span>
@@ -392,9 +418,9 @@ export function HabitView() {
 
                 <div className="progress-container">
                   <div className="progress-info">
-                          <span className="progress-text">
-                            {habit.getCheckedDays()} / {habit.totalDays || habit.targetDays} nap
-                          </span>
+                    <span className="progress-text">
+                      {habit.getCheckedDays()} / {habit.totalDays || habit.targetDays} nap
+                    </span>
                     <span className="progress-percent">
                       {habit.getProgress()}%
                     </span>
@@ -418,22 +444,64 @@ export function HabitView() {
             </div>
 
             <div className="right-section">
-              <button
-                className="edit-btn"
-                onClick={() => editHabit(habit.habitId)}
-              >
-                <Pencil size={16} /> Szerkesztés
+              <button className="edit-btn" onClick={() => editHabit(habit.habitId)}>
+                <Pencil size={16} /><span className="btn-text"> Szerkesztés</span>
               </button>
-              <button
-                className="delete-btn"
-                onClick={() => deleteHabit(habit.habitId)}
-              >
-                <Trash2 size={16} /> Törlés
+              <button className="delete-btn" onClick={() => deleteHabit(habit.habitId)}>
+                <Trash2 size={16} /><span className="btn-text"> Törlés</span>
               </button>
             </div>
           </div>
-        ))}
-      </div>
+        );
+
+        const renderListHeader = (title, sortBy, setSortBy) => (
+          <div className="habit-list-header">
+            <h3 className="habit-list-title">{title}</h3>
+            <div className="sort-btns">
+              <button
+                className={`sort-btn ${sortBy === "date" ? "active" : ""}`}
+                onClick={() => setSortBy("date")}
+              >
+                Alkotási idő
+              </button>
+              <button
+                className={`sort-btn ${sortBy === "difficulty" ? "active" : ""}`}
+                onClick={() => setSortBy("difficulty")}
+              >
+                Nehézség
+              </button>
+            </div>
+          </div>
+        );
+
+        return (
+          <div className="habits-lists-wrapper">
+            <div className="habit-list-section">
+              {renderListHeader("Aktuális szokások", activeSortBy, setActiveSortBy)}
+              <div className={`task-list-div ${activeHabits.length > 6 ? "scrollable-list" : ""}`}>
+                {activeHabits.length === 0 && (
+                  <p style={{ textAlign: "center", color: "#777", padding: "1rem" }}>
+                    Nincsenek aktuális szokások.
+                  </p>
+                )}
+                {activeHabits.map((habit) => renderHabitItem(habit, false))}
+              </div>
+            </div>
+
+            <div className="habit-list-section">
+              {renderListHeader("Lejárt szokások", expiredSortBy, setExpiredSortBy)}
+              <div className={`task-list-div ${expiredHabits.length > 6 ? "scrollable-list" : ""}`}>
+                {expiredHabits.length === 0 && (
+                  <p style={{ textAlign: "center", color: "#777", padding: "1rem" }}>
+                    Nincsenek lejárt szokások.
+                  </p>
+                )}
+                {expiredHabits.map((habit) => renderHabitItem(habit, true))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
       <div>
         {(() => {
           const isNoDataError =

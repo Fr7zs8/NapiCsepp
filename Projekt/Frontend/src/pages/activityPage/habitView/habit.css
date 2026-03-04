@@ -40,6 +40,85 @@
     filter: saturate(0.6);
 }
 
+.task-item.expired {
+    opacity: 0.55;
+    filter: grayscale(0.5);
+}
+
+.task-item.expired .edit-btn,
+.task-item.expired .delete-btn {
+    opacity: 0.6;
+    filter: saturate(0.6);
+}
+
+.habits-lists-wrapper {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.habit-list-section {
+    min-width: 0;
+}
+
+.habit-list-section:first-child {
+    flex: 2;
+}
+
+.habit-list-section:last-child {
+    flex: 1;
+}
+
+.habit-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.habit-list-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #444;
+    margin: 0;
+}
+
+.sort-btns {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.sort-btn {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #f8fafc;
+    cursor: pointer;
+    font-size: 0.78rem;
+    color: #555;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.sort-btn:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.sort-btn.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.task-list-div.scrollable-list {
+    max-height: 880px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+}
+
 .info-text-div {
     margin-bottom: 2rem;
 }
@@ -174,9 +253,28 @@ select.priority-btn {
     .task-item { flex-direction: column; align-items: flex-start; }
     .left-section { align-items: flex-start; }
     .right-section { align-self: stretch; display: flex; justify-content: space-between; width: 100%; margin-top: 0.5rem; }
-    .left-section { 
-        align-items: flex-start; 
-        width: 100%;          
+    .left-section {
+        align-items: flex-start;
+        width: 100%;
+    }
+    .habits-lists-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .habit-list-section:first-child,
+    .habit-list-section:last-child {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+    .habit-list-section:first-child .btn-text {
+        display: none;
+    }
+    .habit-list-section:first-child .edit-btn,
+    .habit-list-section:first-child .delete-btn {
+        padding: 0.4rem 0.5rem;
+    }
+    .habit-list-section:first-child .labels {
+        flex-wrap: wrap;
     }
 }
 
@@ -228,5 +326,28 @@ select.priority-btn {
 
 .completed-badge {
     color: #22c55e;
+}
+
+/* Kompakt stílus a szűk lejárt listához */
+.habit-list-section:last-child .edit-btn,
+.habit-list-section:last-child .delete-btn {
+    padding: 0.4rem 0.5rem;
+}
+
+.habit-list-section:last-child .btn-text {
+    display: none;
+}
+
+.habit-list-section:last-child .labels {
+    flex-wrap: wrap;
+}
+
+.habit-list-section:last-child .label {
+    font-size: 0.78rem;
+    padding: 3px 8px;
+}
+
+.habit-list-section:last-child .label.date-label {
+    display: none;
 }
 
