@@ -53,6 +53,12 @@ describe("Testing User endpoints", () => {
       headers: { "x-access-token": userToken },
     }).then((res) => {
       expect(res.status).to.eq(200);
+      expect(res.body[0]).to.have.property("user_id");
+      expect(res.body[0]).to.have.property("username");
+      expect(res.body[0]).to.have.property("email");
+      expect(res.body[0]).to.have.property("language");
+      expect(res.body[0]).to.have.property("role");
+      expect(res.body[0]).to.have.property("register_date");
     });
   });
 
@@ -64,6 +70,13 @@ describe("Testing User endpoints", () => {
     }).then((res) => {
       expect(res.status).to.eq(200);
       expect(res.body).to.be.an("array");
+      expect(res.body[0]).to.have.property("user_id");
+      expect(res.body[0]).to.have.property("username");
+      expect(res.body[0]).to.have.property("email");
+      expect(res.body[0]).to.have.property("language");
+      expect(res.body[0]).to.have.property("role");
+      expect(res.body[0]).to.have.property("register_date");
+
     });
   });
 
@@ -117,6 +130,12 @@ describe("Testing User endpoints", () => {
     }).then((res) => {
       expect(res.status).to.eq(200);
       expect(res.body).to.be.an("array");
+      expect(res.body[0]).to.have.property("user_id");
+      expect(res.body[0]).to.have.property("username");
+      expect(res.body[0]).to.have.property("email");
+      expect(res.body[0]).to.have.property("language");
+      expect(res.body[0]).to.have.property("role");
+      expect(res.body[0]).to.have.property("register_date");
     });
   });
 
@@ -162,6 +181,7 @@ describe("Testing User endpoints", () => {
       body: updatedData,
     }).then((res) => {
       expect(res.status).to.eq(200);
+      expect(res.body).to.eq("Sikeres modositás!");
     });
   });
 
@@ -212,7 +232,7 @@ describe("Testing User endpoints", () => {
       failOnStatusCode: false,
     }).then((res) => {
       expect(res.status).to.eq(404);
-      expect(res.body.message).to.eq("Az activity nem található.");
+      expect(res.body.message).to.eq("Az user nem található.");
     });
   });
 
@@ -231,9 +251,8 @@ describe("Testing User endpoints", () => {
         headers: { "x-access-token": moderatorToken },
       }).then((res) => {
         expect(res.status).to.eq(200);
+        expect(res.body).to.eq("Sikeres törlés.")
       });
     });
   });
 });
-
-//Kell jó és rosssz put és kell a delete jó test

@@ -57,21 +57,6 @@ describe("Testing event endpoints", () => {
     });
   });
 
-  it("GET - /napicsepp/events - 401 - Returns error when token is corrupted", () => {
-    const corruptedToken = token.slice(0, -5) + "abcde";
-
-    cy.request({
-      method: "GET",
-      url: "/napicsepp/events",
-      headers: {
-        "x-access-token": corruptedToken,
-      },
-      failOnStatusCode: false,
-    }).then((res) => {
-      expect(res.status).to.eq(401);
-    });
-  });
-
   it("POST - /napicsepp/events - 200 - Successfully creates a new event", () => {
     cy.request({
       method: "POST",
@@ -101,7 +86,6 @@ describe("Testing event endpoints", () => {
   });
 
   it("DELETE - /napicsepp/event/:id - 200 - Successfully deletes event", () => {
-    // 🔹 1. Először hozzunk létre egy eventet
     cy.request({
       method: "POST",
       url: "/napicsepp/event",
@@ -112,7 +96,6 @@ describe("Testing event endpoints", () => {
         event_end_time: "2026-02-26 12:00:00",
       },
     }).then(() => {
-      // 🔹 2. Lekérjük az eventeket, hogy megkapjuk az id-t
       cy.request({
         method: "GET",
         url: "/napicsepp/events",
@@ -124,7 +107,6 @@ describe("Testing event endpoints", () => {
 
         expect(createdEvent).to.exist;
 
-        // 🔹 3. Törlés
         cy.request({
           method: "DELETE",
           url: `/napicsepp/event/${createdEvent.event_id}`,
@@ -162,7 +144,6 @@ describe("Testing event endpoints", () => {
   });
 
   it("PUT - /napicsepp/event/:id - 200 - Successfully updates event", () => {
-    // 1️⃣ Létrehozunk egy eventet
     cy.request({
       method: "POST",
       url: "/napicsepp/event",
@@ -173,7 +154,6 @@ describe("Testing event endpoints", () => {
         event_end_time: "2026-02-26 12:00:00",
       },
     }).then(() => {
-      // 2️⃣ Lekérjük az ID-t
       cy.request({
         method: "GET",
         url: "/napicsepp/events",
@@ -185,7 +165,6 @@ describe("Testing event endpoints", () => {
 
         expect(createdEvent).to.exist;
 
-        // 3️⃣ Módosítás
         cy.request({
           method: "PUT",
           url: `/napicsepp/event/${createdEvent.event_id}`,

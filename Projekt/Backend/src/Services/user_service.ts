@@ -110,7 +110,7 @@ export class UserService {
     const result = await this.repository.deletUser(user_id);
 
     if (!result || result.affectedRows <= 0) {
-      throw new HttpException(404, "Az activity nem található.");
+      throw new HttpException(404, "Az user nem található.");
     }
     return result;
   }

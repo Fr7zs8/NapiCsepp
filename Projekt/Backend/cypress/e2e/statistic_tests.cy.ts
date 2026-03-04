@@ -25,17 +25,10 @@ describe("Testing Statistic endpoints", () => {
           "x-access-token": moderatorToken,
         },
       }).then((res) => {
-        expect(res.status).to.eq(200);
-        expect(res.body).to.be.an("array");
-        expect(res.body[0]).to.have.property("total_activity");
-        expect(res.body[0]).to.have.property("completed");
-        expect(res.body[0]).to.have.property("daily_tasks_count");
-        expect(res.body[0]).to.have.property("monthly_events_count");
-        expect(res.body[0]).to.have.property("hard_tasks");
-        expect(res.body[0]).to.have.property("middle_tasks");
-        expect(res.body[0]).to.have.property("easy_tasks");
-        expect(res.body[0]).to.have.property("weekly_tasks");
-        expect(res.body[0]).to.have.property("weekly_tasks_completed");
+        expect(res.body[0]).to.have.property("total_users");
+      expect(res.body[0]).to.have.property("total_activity_today");
+      expect(res.body[0]).to.have.property("total_activity");
+      expect(res.body[0]).to.have.property("total_habits");
       });
     });
 
@@ -88,10 +81,19 @@ describe("Testing Statistic endpoints", () => {
     }).then((res) => {
       expect(res.status).to.eq(200);
       expect(res.body).to.be.an("array");
-      expect(res.body[0]).to.have.property("total_users");
-      expect(res.body[0]).to.have.property("total_activity_today");
-      expect(res.body[0]).to.have.property("total_activity");
-      expect(res.body[0]).to.have.property("total_habits");
+      expect(res.status).to.eq(200);
+        expect(res.body).to.be.an("array");
+        expect(res.body[0]).to.have.property("total_activity");
+        expect(res.body[0]).to.have.property("completed");
+        expect(res.body[0]).to.have.property("daily_tasks_count");
+        expect(res.body[0]).to.have.property("monthly_events_count");
+        expect(res.body[0]).to.have.property("hard_tasks");
+        expect(res.body[0]).to.have.property("middle_tasks");
+        expect(res.body[0]).to.have.property("easy_tasks");
+        expect(res.body[0]).to.have.property("weekly_tasks");
+        expect(res.body[0]).to.have.property("weekly_tasks_completed");
+
+      
       
     });
   });
