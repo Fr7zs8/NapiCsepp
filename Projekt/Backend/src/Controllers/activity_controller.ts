@@ -1,13 +1,12 @@
 import { Response } from "express";
 import { ActivityService } from "../Services/activity_service";
 
-const service: ActivityService = new ActivityService();
-
 export class ActivityController {
+  private service: ActivityService = new ActivityService();
   async getAllActivities(req: any, res: Response) {
     try {
       const userId = req.user.user_id;
-      const results = await service.getAllActivities(userId);
+      const results = await this.service.getAllActivities(userId);
       res.status(200).send(results);
     } catch (err: any) {
       res
@@ -19,7 +18,7 @@ export class ActivityController {
   async getHabits(req: any, res: Response) {
     try {
       const userId = req.user.user_id;
-      const results = await service.getHabits(userId);
+      const results = await this.service.getHabits(userId);
       res.status(200).send(results);
     } catch (err: any) {
       res
@@ -32,7 +31,7 @@ export class ActivityController {
     try {
       const userId = req.user.user_id;
       const newelem = req.body;
-      await service.postActivity(newelem, userId);
+      await this.service.postActivity(newelem, userId);
       res.status(201).send("Sikeres adatrögzítés!");
     } catch (err: any) {
       res
@@ -44,7 +43,7 @@ export class ActivityController {
   async deleteActivity(req: any, res: Response) {
     try {
       const activity_id = Number(req.params.id);
-      await service.deleteActivity(activity_id);
+      await this.service.deleteActivity(activity_id);
       res.status(200).send("Sikeres törlés.");
     } catch (err: any) {
       res
@@ -58,7 +57,7 @@ export class ActivityController {
       const userId = req.user.user_id;
       const activityId = Number(req.params.id);
       const updateData = req.body;
-      await service.putActivity(activityId, updateData, userId);
+      await this.service.putActivity(activityId, updateData, userId);
       res.status(200).send("Sikeres módosítás!");
     } catch (err: any) {
       res
