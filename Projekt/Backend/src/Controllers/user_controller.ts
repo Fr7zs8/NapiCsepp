@@ -2,9 +2,9 @@ import { User } from "../Models/user_model";
 import { UserService } from "../Services/user_service";
 import { Request, Response } from "express";
 
-const service: UserService = new UserService();
-
 export class UserController {
+  private service: UserService = new UserService();
+
   async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
@@ -13,7 +13,7 @@ export class UserController {
         res.status(400).send({ error: "Nem megfelelők az adatok." });
         return;
       }
-      const token = await service.login(email, password);
+      const token = await this.service.login(email, password);
       res.status(200).send({ token: token });
     } catch (err: any) {
       res
@@ -25,7 +25,7 @@ export class UserController {
   async getUser(req: any, res: Response) {
     const id = req.user.user_id;
     try {
-      const results = await service.getUser(id);
+      const results = await this.service.getUser(id);
       res.status(200).send(results);
     } catch (err: any) {
       res
@@ -37,7 +37,7 @@ export class UserController {
   async getAllUser(req: any, res: Response) {
     const id = req.user.user_id;
     try {
-      const results = await service.getAllUser(id);
+      const results = await this.service.getAllUser(id);
       res.status(200).send(results);
     } catch (err: any) {
       res
@@ -54,7 +54,7 @@ export class UserController {
         return;
       }
 
-      const success = await service.register(newUser);
+      const success = await this.service.register(newUser);
       if (success) res.status(201).send("Sikeres adatrögzítés!");
     } catch (err: any) {
       res
@@ -69,7 +69,7 @@ export class UserController {
       const user = req.body;
       const admin_id = req.user.user_id;
 
-      const success = await service.editUser(user, user_id, admin_id);
+      const success = await this.service.editUser(user, user_id, admin_id);
       if (success) {
         res.status(200).send("Sikeres modositás!");
       }
@@ -84,7 +84,7 @@ export class UserController {
     try {
       const admin_id: number = req.user.user_id;
 
-      const success = await service.getmoderators(admin_id);
+      const success = await this.service.getmoderators(admin_id);
 
       if (success) {
         res.status(200).send(success);
@@ -99,7 +99,7 @@ export class UserController {
     try {
       const user_id = req.params.id;
       const moderator_id = req.user.user_id;
-      await service.deleteUser(user_id, moderator_id);
+      await this.service.deleteUser(user_id, moderator_id);
       res.status(200).send("Sikeres törlés.");
     } catch (err: any) {
       res
