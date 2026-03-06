@@ -1,13 +1,12 @@
 import { OverviewService } from "../Services/overview_service";
 import { Response } from "express";
 
-const service: OverviewService = new OverviewService();
-
 export class OverviewController {
+  private service: OverviewService = new OverviewService();
   async getOverview(req: any, res: Response) {
     const id = Number(req.user.user_id);
     try {
-      const results = await service.getOverview(id);
+      const results = await this.service.getOverview(id);
       res.status(200).send(results);
     } catch (err: any) {
       res

@@ -1,13 +1,12 @@
 import { StatisticService } from "../Services/statistic_service";
 import { Response } from "express";
 
-const service: StatisticService = new StatisticService();
-
 export class StatisticController {
+  private service: StatisticService = new StatisticService();
   async systemStatistic(req: any, res: Response) {
     const id = req.user.user_id;
     try {
-      const results = await service.systemStatistic(id);
+      const results = await this.service.systemStatistic(id);
       res.status(200).send(results);
     } catch (err: any) {
       res
@@ -19,7 +18,7 @@ export class StatisticController {
   async profileStatistic(req: any, res: Response) {
     const id = req.user.user_id;
     try {
-      const results = await service.profileStatistic(id);
+      const results = await this.service.profileStatistic(id);
       res.status(200).send(results);
     } catch (err: any) {
       res
@@ -32,7 +31,10 @@ export class StatisticController {
     const adminId = req.user.user_id;
     const targetUserId = Number(req.params.userId);
     try {
-      const results = await service.userProfileStatistic(adminId, targetUserId);
+      const results = await this.service.userProfileStatistic(
+        adminId,
+        targetUserId,
+      );
       res.status(200).send(results);
     } catch (err: any) {
       res
