@@ -374,6 +374,138 @@ div.progress-view-div,
 .stat-div.events svg   { color: #1d4ed8; }
 .stat-div.habits svg   { color: #be185d; }
 
+/* ── Events row (today + upcoming side by side) ── */
+
+.events-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    align-items: flex-start;
+}
+
+.events-row .upcoming-events-section {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
+}
+
+/* ── Upcoming events ─────────────────────────── */
+
+.upcoming-events-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+}
+
+.today-icon {
+    color: #10b981 !important;
+}
+
+.upcoming-events-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.upcoming-events-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.upcoming-events-title-group h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.upcoming-events-icon {
+    color: #3b82f6;
+}
+
+.upcoming-events-count {
+    font-size: 0.8rem;
+    color: #6b7280;
+    background: #f3f4f6;
+    border-radius: 20px;
+    padding: 0.2rem 0.65rem;
+}
+
+.upcoming-events-list {
+    max-height: calc(6 * 56px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.upcoming-events-empty {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.9rem;
+    padding: 1rem 0;
+}
+
+.upcoming-event-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    min-height: 48px;
+}
+
+.upcoming-event-item:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.upcoming-event-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.upcoming-event-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.upcoming-event-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.upcoming-event-time {
+    font-size: 0.78rem;
+    color: #6b7280;
+}
+
+.upcoming-event-arrow {
+    color: #9ca3af;
+    flex-shrink: 0;
+    transition: color 0.15s;
+}
+
+.upcoming-event-item:hover .upcoming-event-arrow {
+    color: #3b82f6;
+}
+
 /* ── Loading / Error states ──────────────────── */
 
 .loading-state,
@@ -400,6 +532,15 @@ div.progress-view-div,
 /* ── Responsive: tablet ──────────────────────── */
 
 @media (max-width: 768px) {
+    .events-row {
+        flex-direction: column;
+    }
+
+    .events-row .upcoming-events-section {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     .quick-access-list-div .access-div:nth-child(3) {
         grid-column: 1 / -1;
         width: fit-content;

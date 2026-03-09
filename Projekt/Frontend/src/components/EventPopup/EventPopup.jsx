@@ -52,18 +52,20 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
             return;
         }
 
-        const startDateTime = `${eventData.event_date} ${eventData.event_start_time}`;
-        const endDateTime = `${eventData.event_date} ${eventData.event_end_time}`;
-        const newStart = new Date(startDateTime);
-        const newEnd = new Date(endDateTime);
+    // Use ISO-like local datetime (with 'T') to avoid ambiguous parsing
+    const startDateTime = `${eventData.event_date}T${eventData.event_start_time}:00`;
+    const endDateTime = `${eventData.event_date}T${eventData.event_end_time}:00`;
+    const newStart = new Date(startDateTime);
+    const newEnd = new Date(endDateTime);
 
         if (newStart >= newEnd) {
             showToast("A kezdési időnek korábbinak kell lennie, mint a befejezésnek!", "error");
             return;
         }
 
-        const startDay = newStart.toISOString().split('T')[0];
-        const endDay = newEnd.toISOString().split('T')[0];
+    // Compare local calendar dates (en-CA yields YYYY-MM-DD) to avoid timezone shifts
+    const startDay = newStart.toLocaleDateString('en-CA');
+    const endDay = newEnd.toLocaleDateString('en-CA');
         if (startDay !== endDay) {
             showToast("Az esemény nem nyúlhat át több napra!", "error");
             return;

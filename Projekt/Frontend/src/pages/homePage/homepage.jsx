@@ -1,9 +1,11 @@
 import "./homepage.css"
-import { Calendar, SquareCheckBig, Target, TrendingUp, CircleCheck, ArrowRight, Sparkles, Loader2 } from "lucide-react"
+import { Calendar, SquareCheckBig, Target, TrendingUp, CircleCheck, ArrowRight, Sparkles, Loader2, Clock } from "lucide-react"
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { clientService } from "../../router/apiRouter";
-import { activityService } from "../../router/apiRouter";
+import { clientService, activityService, eventService } from "../../router/apiRouter";
+import { EventMiniPopup } from "../../components/EventPopup/EventMiniPopup";
+import { EventPopup } from "../../components/EventPopup/EventPopup";
+import { showToast } from "../../components/Toast/showToast";
 import Statistics from "../../classes/Views/statistics";
 
 export function HomepageView(){
@@ -12,6 +14,11 @@ export function HomepageView(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statsObj, setStatsObj] = useState(null);
+    const [futureEvents, setFutureEvents] = useState([]);
+    const [todayEvents, setTodayEvents] = useState([]);
+    const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
+    const [showEventPopup, setShowEventPopup] = useState(false);
+    const [editingEvent, setEditingEvent] = useState(null);
 
     const navigate = useNavigate();
 
@@ -31,6 +38,22 @@ export function HomepageView(){
             const activeCount = Statistics.getActiveHabitsCount(allHabits);
             statsInstance.setExtra('activeHabitsCount', activeCount);
             setStatsObj(statsInstance);
+
+            const eventsData = await eventService.getOverview();
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            const upcoming = eventsData
+                .filter(e => new Date(e.event_start_time) > now)
+                .sort((a, b) => new Date(a.event_start_time) - new Date(b.event_start_time));
+            setFutureEvents(upcoming);
+            const todays = eventsData
+                .filter(e => {
+                    const d = new Date(e.event_start_time);
+                    const dStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                    return dStr === todayStr;
+                })
+                .sort((a, b) => new Date(a.event_start_time) - new Date(b.event_start_time));
+            setTodayEvents(todays);
         }
         catch(error){
             setError(error.message || "Hiba az adatok betöltése során.");
@@ -195,6 +218,135 @@ export function HomepageView(){
                         </div>
                     </div>
             </section>
+
+            <div className="events-row">
+                <section className="upcoming-events-section">
+                    <div className="upcoming-events-header">
+                        <div className="upcoming-events-title-group">
+                            <Clock size={18} className="upcoming-events-icon today-icon" />
+                            <h3>Mai események</h3>
+                        </div>
+                        <span className="upcoming-events-count">{todayEvents.length} esemény</span>
+                    </div>
+                    <div className="upcoming-events-list">
+                        {todayEvents.length === 0 ? (
+                            <p className="upcoming-events-empty">Nincsenek mai események.</p>
+                        ) : (
+                            todayEvents.map(ev => {
+                                const start = new Date(ev.event_start_time);
+                                const end = new Date(ev.event_end_time || ev.endTime || ev.end_time);
+                                return (
+                                    <div key={ev.event_id} className="upcoming-event-item" onClick={(e) => {
+                                        e.stopPropagation();
+                                        const rect = e.currentTarget.getBoundingClientRect();
+                                        setMiniPopup({ show: true, event: ev, position: { x: rect.right - 160, y: rect.top + 8 } });
+                                    }}>
+                                        <div className="upcoming-event-dot" style={{ background: ev.event_color || '#3b82f6' }}></div>
+                                        <div className="upcoming-event-info">
+                                            <span className="upcoming-event-name">{ev.event_name}</span>
+                                            <span className="upcoming-event-time">
+                                                {start.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
+                                                {(!isNaN(end) ? (` — ${end.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}`) : '')}
+                                            </span>
+                                        </div>
+                                        <ArrowRight size={14} className="upcoming-event-arrow" />
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+                </section>
+
+                <section className="upcoming-events-section">
+                    <div className="upcoming-events-header">
+                        <div className="upcoming-events-title-group">
+                            <Clock size={18} className="upcoming-events-icon" />
+                            <h3>Közelgő események</h3>
+                        </div>
+                        <span className="upcoming-events-count">{futureEvents.length} esemény</span>
+                    </div>
+                    <div className="upcoming-events-list">
+                        {futureEvents.length === 0 ? (
+                            <p className="upcoming-events-empty">Nincsenek közelgő események.</p>
+                        ) : (
+                            futureEvents.map(ev => {
+                                const start = new Date(ev.event_start_time);
+                                const end = new Date(ev.event_end_time || ev.endTime || ev.end_time);
+                                return (
+                                    <div key={ev.event_id} className="upcoming-event-item" onClick={(e) => {
+                                        e.stopPropagation();
+                                        const rect = e.currentTarget.getBoundingClientRect();
+                                        setMiniPopup({ show: true, event: ev, position: { x: rect.right - 160, y: rect.top + 8 } });
+                                    }}>
+                                        <div className="upcoming-event-dot" style={{ background: ev.event_color || '#3b82f6' }}></div>
+                                        <div className="upcoming-event-info">
+                                            <span className="upcoming-event-name">{ev.event_name}</span>
+                                            <span className="upcoming-event-time">
+                                                {start.toLocaleDateString('hu-HU', { month: 'long', day: 'numeric' })}
+                                                {' · '}
+                                                {start.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}
+                                                {(!isNaN(end) ? (` — ${end.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}`) : '')}
+                                            </span>
+                                        </div>
+                                        <ArrowRight size={14} className="upcoming-event-arrow" />
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+                </section>
+            </div>
+                    {miniPopup.show && (
+                        <EventMiniPopup
+                            event={miniPopup.event}
+                            position={miniPopup.position}
+                            onEdit={(ev) => {
+                                setEditingEvent(ev);
+                                setShowEventPopup(true);
+                                setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
+                            }}
+                            onDelete={async (id) => {
+                                try {
+                                    const eventId = typeof id === 'object' ? (id.event_id || id.eventId) : id;
+                                    await eventService.deleteEvent(Number(eventId));
+                                    showToast('Esemény sikeresen törölve!', 'success');
+                                    setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
+                                    fetchData();
+                                } catch (err) {
+                                    console.error('Delete upcoming event error:', err);
+                                    showToast('Hiba történt az esemény törlésekor!', 'error');
+                                }
+                            }}
+                            onClose={() => setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } })}
+                        />
+                    )}
+
+                    {showEventPopup && (
+                        <EventPopup
+                            isOpen={showEventPopup}
+                            onClose={() => { setShowEventPopup(false); setEditingEvent(null); }}
+                            onSave={async (eventData) => {
+                                try {
+                                    if (editingEvent) {
+                                        const id = editingEvent.event_id || editingEvent.eventId;
+                                        await eventService.updateEvent(Number(id), eventData);
+                                        showToast('Esemény sikeresen módosítva!', 'success');
+                                    } else {
+                                        await eventService.createEvent(eventData);
+                                        showToast('Esemény sikeresen létrehozva!', 'success');
+                                    }
+                                    fetchData();
+                                } catch (err) {
+                                    console.error('Save upcoming event error:', err);
+                                    showToast('Hiba történt az esemény mentésekor!', 'error');
+                                }
+                            }}
+                            selectedDate={editingEvent ? new Date(editingEvent.event_start_time) : null}
+                            selectedHour={null}
+                            existingEvent={editingEvent}
+                            eventsForDay={editingEvent ? [editingEvent] : []}
+                        />
+                    )}
         </section>
     )
 }

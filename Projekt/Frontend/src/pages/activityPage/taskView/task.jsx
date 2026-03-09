@@ -15,6 +15,7 @@ export function TaskView() {
   const [difficulties, setDifficulties] = useState([]);
   const [types, setTypes] = useState([]);
   const [flashSave, setFlashSave] = useState(false);
+  const [sortBy, setSortBy] = useState("date");
 
   const [taskName, setTaskName] = useState("");
   const [typeName, setTypeName] = useState("");
@@ -222,6 +223,23 @@ export function TaskView() {
     }
   }
 
+  const difficultyColor = (name) => {
+    const lower = (name || "").toLowerCase();
+    if (lower.includes("könny")) return "#22c55e";
+    if (lower.includes("neh")) return "#ef4444";
+    return "#ffc107";
+  };
+
+  const difficultyOrder = { Nehéz: 1, Közepes: 2, Könnyű: 3 };
+
+  function sortTasks(list, by) {
+    return [...list].sort((a, b) =>
+      by === "difficulty"
+        ? (difficultyOrder[a.difficultyName] ?? 99) - (difficultyOrder[b.difficultyName] ?? 99)
+        : (a.startDate || "").localeCompare(b.startDate || "")
+    );
+  }
+
   if (loading) {
     return (
       <div className="loading-state">
@@ -305,6 +323,24 @@ export function TaskView() {
         )}
       </div>
 
+      <div className="habit-list-header">
+        <h3 className="habit-list-title">Mai feladatok</h3>
+        <div className="sort-btns">
+          <button
+            className={`sort-btn ${sortBy === "date" ? "active" : ""}`}
+            onClick={() => setSortBy("date")}
+          >
+            Dátum
+          </button>
+          <button
+            className={`sort-btn ${sortBy === "difficulty" ? "active" : ""}`}
+            onClick={() => setSortBy("difficulty")}
+          >
+            Nehézség
+          </button>
+        </div>
+      </div>
+
       <div className="task-list-div">
         {tasks.length === 0 && (
           <p style={{ textAlign: "center", color: "#777", padding: "1rem" }}>
@@ -312,7 +348,7 @@ export function TaskView() {
           </p>
         )}
 
-        {tasks.map((task) => (
+        {sortTasks(tasks, sortBy).map((task) => (
           <div
             className={`task-item ${task.typeName === "Szokás" ? "habit-task" : ""} ${task.isCompleted ? "completed" : ""}`}
             key={task.taskId}
@@ -327,7 +363,7 @@ export function TaskView() {
                 }
               />
 
-              <div className="color-bar"></div>
+              <div className="color-bar" style={{ background: difficultyColor(task.difficultyName) }}></div>
 
               <div className="task-texts">
                 <p

@@ -60,13 +60,13 @@ export function WeeklyView(){
         });
     };
 
-    const handleCellClick = (date, hour, e) => {
-        const cellEvents = getEventsForCell(date, hour);
+    const handleCellClick = (date, minuteOfDay, e) => {
+        const cellEvents = getEventsForMinute(date, minuteOfDay);
         if (cellEvents.length > 0) {
             setMiniPopup({ show: true, event: cellEvents[0], position: { x: e.clientX, y: e.clientY } });
         } else {
             setSelectedDate(date);
-            setSelectedHour(hour);
+            setSelectedHour(Math.floor(minuteOfDay / 60));
             setEditingEvent(null);
             setShowEventPopup(true);
         }
@@ -120,17 +120,18 @@ export function WeeklyView(){
         }
     };
 
-    const getEventsForCell = (date, hour) => {
-        const dateStr = date.toISOString().split('T')[0];
+    const localDateStr = (d) =>
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    const getEventsForMinute = (date, minuteOfDay) => {
+        const dateStr = localDateStr(date);
         return events.filter(event => {
             const startTime = new Date(event.event_start_time);
             const endTime = new Date(event.event_end_time);
-            const eventDateStr = startTime.toISOString().split('T')[0];
-            if (eventDateStr !== dateStr) return false;
-            const startHour = startTime.getHours();
-            const endHour = endTime.getHours();
-            const endMinutes = endTime.getMinutes();
-            return hour >= startHour && (hour < endHour || (hour === endHour && endMinutes === 0));
+            if (localDateStr(startTime) !== dateStr) return false;
+            const startMinute = startTime.getHours() * 60 + startTime.getMinutes();
+            const endMinute = endTime.getHours() * 60 + endTime.getMinutes();
+            return minuteOfDay >= startMinute && minuteOfDay < endMinute;
         });
     };
 
@@ -190,7 +191,7 @@ export function WeeklyView(){
                         </div>
                         {weekDays.map((day, dayIndex) => {
                             return (
-                                <div key={`day-${day.date.toISOString()}`} className="day-column" style={{ position: 'relative', height: '1440px' }}>
+                                <div key={`day-${day.date.toISOString()}`} className="day-column" style={{ position: 'relative', height: '1512px' }}>
                                     <div className={`day-header-cell${day.isToday ? ' current-day' : ''}${day.isSelected ? ' selected-day' : ''}`}>
                                         <span className="day-name">{day.date.toLocaleDateString('hu-HU', { weekday: 'long' })}</span>
                                         <span className="day-date">{day.date.getDate()}</span>
@@ -230,16 +231,16 @@ export function WeeklyView(){
                                                         left: 0,
                                                         width: '100%',
                                                         height: '60px',
-                                                        background: isLastRow ? '#fff' : 'transparent',
-                                                        borderBottom: isLastRow ? '1px solid #e5e7eb' : 'none',
-                                                        borderTop: isLastRow ? '1px solid #e5e7eb' : 'none',
-                                                        borderLeft: isLastRow ? '1px solid #e5e7eb' : 'none',
+                                                        background: 'transparent',
                                                         zIndex: 2,
                                                         cursor: 'pointer',
                                                     }}
                                                     onClick={e => {
                                                         e.stopPropagation();
-                                                        handleCellClick(day.date, hour, e);
+                                                        const rect = e.currentTarget.getBoundingClientRect();
+                                                        const minuteOffset = Math.floor(e.clientY - rect.top);
+                                                        const minuteOfDay = hour * 60 + Math.max(0, Math.min(59, minuteOffset));
+                                                        handleCellClick(day.date, minuteOfDay, e);
                                                     }}
                                                 />
                                             </div>
@@ -250,7 +251,7 @@ export function WeeklyView(){
                                         const endTime = new Date(event.endTime);
                                         const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
                                         const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
-                                        const top = Math.max(startMinutes + 60, 0);
+                                        const top = Math.max(startMinutes + 72, 0);
                                         const height = Math.max(endMinutes - startMinutes, 15);
                                         return (
                                             <div
@@ -259,8 +260,9 @@ export function WeeklyView(){
                                                 style={{
                                                     top: `${top}px`,
                                                     height: `${height}px`,
-                                                    left: '5%',
-                                                    right: '5%',
+                                                    left: '4px',
+                                                    right: '4px',
+                                                    width: 'auto',
                                                     backgroundColor: event.event_color || '#0090ff',
                                                     display: 'flex',
                                                     flexDirection: 'column',
@@ -269,8 +271,7 @@ export function WeeklyView(){
                                                     overflow: 'hidden',
                                                     zIndex: 10,
                                                     cursor: 'pointer',
-                                                    position: 'absolute',
-                                                    width: '90%'
+                                                    position: 'absolute'
                                                 }}
                                                 onClick={e => {
                                                     e.stopPropagation();

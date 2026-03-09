@@ -169,10 +169,13 @@ export function CombinedView(){
     const handleDaySelect = (fullDate) => {
         setSelectedDay(new Date(fullDate));
         if (!calendarManager) return;
-        const dateStr = new Date(fullDate).toISOString().split('T')[0];
+        // Compare local calendar dates to avoid timezone shifts (00:00 issues)
+        const dateStr = new Date(fullDate).toLocaleDateString('en-CA');
         const weekData = calendarManager.getCombinedView(currentWeek);
         const dayEvents = (weekData?.events || []).filter(ev => {
-            const evDate = new Date(ev.startTime).toISOString().split('T')[0];
+            const evStart = ev.startTime || ev.event_start_time || ev.eventStartTime;
+            if (!evStart) return false;
+            const evDate = new Date(evStart).toLocaleDateString('en-CA');
             return evDate === dateStr;
         });
         setEventsListForDay(dayEvents);
@@ -290,7 +293,11 @@ export function CombinedView(){
                                 const startMinutes = start.getHours() * 60 + start.getMinutes();
                                 const endMinutes = end.getHours() * 60 + end.getMinutes();
                                 const top = (startMinutes / 60) * 48;
-                                const height = Math.max(((endMinutes - startMinutes) / 60) * 48, 15);
+                                const calculatedHeight = Math.max(((endMinutes - startMinutes) / 60) * 48, 15);
+                                // cap height so it doesn't overflow the time grid container
+                                const containerHeight = timeSlots.length * 48;
+                                const maxHeight = Math.max(containerHeight - top, 15);
+                                const height = Math.min(calculatedHeight, maxHeight);
                                 return (
                                     <div
                                         key={event.event_id || event.eventId || i}
