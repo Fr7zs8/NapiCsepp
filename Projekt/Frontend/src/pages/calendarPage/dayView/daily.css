@@ -107,12 +107,14 @@
     border-radius: 8px;
     background: #f9fafb;
     border: 1px solid #f3f4f6;
-    transition: background 0.15s;
+    border-left: 3px solid var(--event-color, #3b82f6);
+    transition: background 0.15s, border-color 0.15s;
 }
 
 .daily-future-item:hover {
-    background: #eff6ff;
-    border-color: #bfdbfe;
+    background: #f0f9ff;
+    border-color: #e5e7eb;
+    border-left-color: var(--event-color, #3b82f6);
 }
 
 .daily-future-dot {
@@ -121,6 +123,7 @@
     border-radius: 50%;
     flex-shrink: 0;
     margin-top: 4px;
+    background: var(--event-color, #3b82f6);
 }
 
 .daily-future-info {

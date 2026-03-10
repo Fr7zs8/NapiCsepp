@@ -358,11 +358,16 @@ div.progress-view-div,
 .stat-value {
     margin: 0;
     font-size: 1.1rem;
-    font-weight: 400;
+    font-weight: 200;
     color: #374151;
     grid-column: 2;
     grid-row: 3;
 }
+
+.stat-label.purple  { color: #8b5cf6; }
+.stat-label.green   { color: #22c55e; }
+.stat-label.blue    { color: #3b82f6; }
+.stat-label.pink    { color: #ec4899; }
 
 .stat-div svg {
     color: #1f2937;
@@ -457,14 +462,16 @@ div.progress-view-div,
     border-radius: 10px;
     background: #f9fafb;
     border: 1px solid #f3f4f6;
+    border-left: 3px solid var(--event-color, #3b82f6);
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
     min-height: 48px;
 }
 
 .upcoming-event-item:hover {
-    background: #eff6ff;
-    border-color: #bfdbfe;
+    background: #f0f9ff;
+    border-color: #e5e7eb;
+    border-left-color: var(--event-color, #3b82f6);
 }
 
 .upcoming-event-dot {
@@ -472,6 +479,11 @@ div.progress-view-div,
     height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
+    background: var(--event-color, #3b82f6);
+}
+
+.upcoming-event-item:hover .upcoming-event-arrow {
+    color: var(--event-color, #3b82f6);
 }
 
 .upcoming-event-info {
@@ -503,7 +515,7 @@ div.progress-view-div,
 }
 
 .upcoming-event-item:hover .upcoming-event-arrow {
-    color: #3b82f6;
+    color: var(--event-color, #3b82f6);
 }
 
 /* ── Loading / Error states ──────────────────── */

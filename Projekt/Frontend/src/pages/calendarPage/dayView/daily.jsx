@@ -1,5 +1,6 @@
 import React from "react";
 import "./daily.css"
+import { getEventColor } from "../../../utils/eventColors";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from "react";
@@ -253,16 +254,16 @@ export function DailyView(){
                         {futureEvents.length === 0 ? (
                             <p className="daily-future-empty">Nincsenek közelgő események.</p>
                         ) : (
-                            futureEvents.map(ev => {
+                            futureEvents.map((ev, i) => {
                                     const start = new Date(ev.event_start_time);
                                     const end = new Date(ev.event_end_time || ev.endTime || ev.end_time);
                                     return (
-                                        <div key={ev.event_id} className="daily-future-item" onClick={(e) => {
+                                        <div key={ev.event_id} className="daily-future-item" style={{ '--event-color': getEventColor(ev, i) }} onClick={(e) => {
                                             e.stopPropagation();
                                             const rect = e.currentTarget.getBoundingClientRect();
                                             setMiniPopup({ show: true, event: ev, position: { x: rect.right - 160, y: rect.top + 8 } });
                                         }}>
-                                            <div className="daily-future-dot" style={{ background: ev.event_color || '#3b82f6' }}></div>
+                                            <div className="daily-future-dot"></div>
                                             <div className="daily-future-info">
                                                 <span className="daily-future-name">{ev.event_name}</span>
                                                 <span className="daily-future-time">

@@ -1,4 +1,5 @@
 import "./homepage.css"
+import { getEventColor } from "../../utils/eventColors";
 import { Calendar, SquareCheckBig, Target, TrendingUp, CircleCheck, ArrowRight, Sparkles, Loader2, Clock } from "lucide-react"
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
@@ -232,16 +233,16 @@ export function HomepageView(){
                         {todayEvents.length === 0 ? (
                             <p className="upcoming-events-empty">Nincsenek mai események.</p>
                         ) : (
-                            todayEvents.map(ev => {
+                            todayEvents.map((ev, i) => {
                                 const start = new Date(ev.event_start_time);
                                 const end = new Date(ev.event_end_time || ev.endTime || ev.end_time);
                                 return (
-                                    <div key={ev.event_id} className="upcoming-event-item" onClick={(e) => {
+                                    <div key={ev.event_id} className="upcoming-event-item" style={{ '--event-color': getEventColor(ev, i) }} onClick={(e) => {
                                         e.stopPropagation();
                                         const rect = e.currentTarget.getBoundingClientRect();
                                         setMiniPopup({ show: true, event: ev, position: { x: rect.right - 160, y: rect.top + 8 } });
                                     }}>
-                                        <div className="upcoming-event-dot" style={{ background: ev.event_color || '#3b82f6' }}></div>
+                                        <div className="upcoming-event-dot"></div>
                                         <div className="upcoming-event-info">
                                             <span className="upcoming-event-name">{ev.event_name}</span>
                                             <span className="upcoming-event-time">
@@ -269,16 +270,16 @@ export function HomepageView(){
                         {futureEvents.length === 0 ? (
                             <p className="upcoming-events-empty">Nincsenek közelgő események.</p>
                         ) : (
-                            futureEvents.map(ev => {
+                            futureEvents.map((ev, i) => {
                                 const start = new Date(ev.event_start_time);
                                 const end = new Date(ev.event_end_time || ev.endTime || ev.end_time);
                                 return (
-                                    <div key={ev.event_id} className="upcoming-event-item" onClick={(e) => {
+                                    <div key={ev.event_id} className="upcoming-event-item" style={{ '--event-color': getEventColor(ev, i) }} onClick={(e) => {
                                         e.stopPropagation();
                                         const rect = e.currentTarget.getBoundingClientRect();
                                         setMiniPopup({ show: true, event: ev, position: { x: rect.right - 160, y: rect.top + 8 } });
                                     }}>
-                                        <div className="upcoming-event-dot" style={{ background: ev.event_color || '#3b82f6' }}></div>
+                                        <div className="upcoming-event-dot"></div>
                                         <div className="upcoming-event-info">
                                             <span className="upcoming-event-name">{ev.event_name}</span>
                                             <span className="upcoming-event-time">
