@@ -22,16 +22,16 @@ export function RegisterView(){
     const handleRegister = async (e) => {
         e.preventDefault();
         setError(null);
-        setLoading(true);
         if (password !== confirmPassword) {
             setError("A jelszavak nem egyeznek!");
             return;
         }
-        
+
         if (password.length < 5) {
             setError("A jelszónak legalább 5 karakter hosszúnak kell lennie!");
             return;
         }
+        setLoading(true);
 
 
         try {
