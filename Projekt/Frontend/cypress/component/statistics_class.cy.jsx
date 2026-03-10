@@ -118,12 +118,15 @@ describe('Statistics class – minden számítás', () => {
     expect(Statistics.getActiveHabitsCount(undefined)).to.eq(0)
   })
 
-  it('getActiveHabitsCount: kiszűri a befejezetteket (progress >= target)', () => {
+  it('getActiveHabitsCount: kiszűri a lejárt szokásokat (activity_end_date < today)', () => {
+    const pastDate = '2020-01-01'
+    const futureDate = '2099-12-31'
+    const today = new Date().toISOString().split('T')[0]
     const habits = [
-      { target_days: 10, progress_counter: 10 },  // kész → kiszűr
-      { target_days: 10, progress_counter: 5 },   // aktív
-      { target_days: 0, progress_counter: 0 },     // target=0 → aktív (return true)
-      { target_days: 7, progress_counter: null }    // null progress → aktív
+      { activity_end_date: pastDate },     // lejárt → kiszűr
+      { activity_end_date: futureDate },   // aktív
+      { activity_end_date: null },          // nincs end_date → aktív
+      { activity_end_date: today }          // today >= today → aktív
     ]
     expect(Statistics.getActiveHabitsCount(habits)).to.eq(3)
   })

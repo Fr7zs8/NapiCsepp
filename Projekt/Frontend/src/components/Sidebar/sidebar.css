@@ -229,6 +229,37 @@
     }
 }
 
+/* Habit oldalon a sidebar korábban eltűnik */
+@media (max-width: 1280px) {
+    .habit-layout .hamburger-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .habit-layout .sidebar {
+        position: fixed;
+        top: 0;
+        left: -300px;
+        width: 300px;
+        height: 100vh;
+        transition: left 0.3s ease-in-out;
+        z-index: 1000;
+    }
+
+    .habit-layout .sidebar.open {
+        left: 0;
+    }
+
+    .habit-layout .sidebar-backdrop {
+        display: block;
+    }
+
+    .habit-layout .sidebar-backdrop.hidden {
+        display: none;
+    }
+}
+
 @media (max-width: 480px) {
     .sidebar {
         width: 200px;

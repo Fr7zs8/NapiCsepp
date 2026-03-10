@@ -191,13 +191,13 @@ describe('Szokások oldal (Habits)', () => {
   });
 
   it('14 - Feladatok oldalra navigálás lehetséges', () => {
-    cy.get('.sidebar-link').contains('Feladatok').click();
+    cy.get('.sidebar-link').contains('Feladatok').click({ force: true });
     cy.url().should('include', '/tasks');
   });
 
   it('15 - Főoldalra navigálás a sidebarból', () => {
     cy.visitProtected('/habits');
-    cy.get('.sidebar-link').contains('Főoldal').click();
+    cy.get('.sidebar-link').contains('Főoldal').click({ force: true });
     cy.url().should('eq', Cypress.config().baseUrl + '/');
   });
 

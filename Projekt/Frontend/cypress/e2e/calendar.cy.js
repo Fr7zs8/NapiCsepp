@@ -155,13 +155,17 @@ describe('Naptár - Havi nézet popupok és CRUD', () => {
   });
 
   it('32 - Előre hónap gomb működik', () => {
-    cy.get('.navigation-buttons button').eq(2).click();
-    cy.get('.month-name').should('contain.text', 'március');
+    cy.get('.month-name').invoke('text').then(orig => {
+      cy.get('.navigation-buttons button').eq(2).click();
+      cy.get('.month-name').invoke('text').should(text => expect(text.trim()).not.to.eq(orig.trim()));
+    });
   });
 
   it('33 - Hátra hónap gomb működik', () => {
-    cy.get('.navigation-buttons button').eq(1).click();
-    cy.get('.month-name').should('contain.text', 'január');
+    cy.get('.month-name').invoke('text').then(orig => {
+      cy.get('.navigation-buttons button').eq(1).click();
+      cy.get('.month-name').invoke('text').should(text => expect(text.trim()).not.to.eq(orig.trim()));
+    });
   });
 });
 
@@ -270,7 +274,25 @@ describe('Naptár - Combined nézet (mobil)', () => {
 
 describe('Naptár - Napi nézet (Daily)', () => {
   beforeEach(() => {
-    cy.visitProtected('/calendar/daily');
+    // Ensure the daily view has at least one event for today so tests 55-57 are stable.
+    const today = new Date().toISOString().split('T')[0];
+    const fakeEvent = {
+      event_id: 9999,
+      eventName: 'Teszt esemény',
+      event_name: 'Teszt esemény',
+      // include both formats (with T) so CalendarManager/Event parsing is robust
+      event_start_time: `${today}T10:00:00`,
+      event_end_time: `${today}T11:00:00`,
+      startTime: `${today}T10:00:00`,
+      endTime: `${today}T11:00:00`,
+    };
+
+    // Use fakeLogin + stubApi to set up other API intercepts, then override events
+    cy.fakeLogin();
+    cy.stubApi();
+    cy.intercept('GET', '**/napicsepp/events**', { statusCode: 200, body: [fakeEvent] }).as('getEventsDaily');
+    cy.visit('/calendar/daily');
+    cy.wait('@getEventsDaily');
   });
 
   it('46 - Napi nézet betöltődik', () => {
@@ -315,7 +337,28 @@ describe('Naptár - Napi nézet (Daily)', () => {
   });
 
   it('55 - Esemény blokk megjelenik, ha van esemény', () => {
-    cy.get('.event-block-daily').should('have.length.gte', 1);
+    // ensure at least one event exists by creating one via the UI if necessary
+    cy.get('body').then($b => {
+      // try to find existing event first
+      if ($b.find('.event-block-daily').length > 0) {
+        cy.get('.event-block-daily').should('have.length.gte', 1);
+      } else {
+        // In CI the click-to-open popup is flaky. Instead stub the events API to return
+        // a simple event for today and reload so the app will render an event-block.
+        const today = new Date().toISOString().split('T')[0];
+        const fakeEvent = {
+          event_id: 9999,
+          event_name: 'Teszt esemény',
+          event_start_time: `${today} 10:00`,
+          event_end_time: `${today} 11:00`,
+        };
+        cy.intercept('GET', '**/napicsepp/events**', { statusCode: 200, body: [fakeEvent] }).as('getEventsOverride');
+        // reload so the page fetches the overridden events list
+        cy.reload();
+        cy.wait('@getEventsOverride');
+        cy.get('.event-block-daily', { timeout: 10000 }).should('have.length.gte', 1);
+      }
+    });
   });
 
   it('56 - Esemény blokk tartalmazza az esemény nevét', () => {

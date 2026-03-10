@@ -119,7 +119,7 @@ export const appRouter = createBrowserRouter([
     path: "/habits",
     element: (
       <ProtectedRouter>
-        <Layout>
+        <Layout className="habit-layout">
           <HabitView />
         </Layout>
       </ProtectedRouter>

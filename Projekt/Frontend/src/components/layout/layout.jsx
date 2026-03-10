@@ -1,9 +1,9 @@
 import { Sidebar } from "../Sidebar/sidebar";
 import "./layout.css";
 
-export function Layout({ children }) {
+export function Layout({ children, className }) {
   return (
-    <div className="layout">
+    <div className={`layout${className ? " " + className : ""}`}>
       <Sidebar />
       <main className="main-content">{children}</main>
     </div>
