@@ -6,6 +6,7 @@ import { activityService } from "../../../router/apiRouter";
 import CalendarManager from "../../../classes/Views/calendarManager";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
+import { AddTaskPopup } from "../../../components/AddTaskPopup/AddTaskPopup";
 import { eventService } from "../../../router/apiRouter";
 import { showToast } from "../../../components/Toast/showToast";
 
@@ -136,6 +137,7 @@ export function MonthlyView(){
     };
 
     const [editingEvent, setEditingEvent] = useState(null);
+    const [showAddTaskPopup, setShowAddTaskPopup] = useState(false);
 
     const handleSaveEvent = async (eventData) => {
         try {
@@ -306,7 +308,7 @@ export function MonthlyView(){
                                     )}
                                 </div>
                                 <div className="popup-actions">
-                                    <span className="popup-link" onClick={() => { navigate('/tasks'); setShowDayEventsPopup(false); }}>+ Új feladat hozzáadása</span>
+                                    <button className="btn-save" onClick={() => setShowAddTaskPopup(true)}>Új feladat hozzáadása</button>
                                 </div>
                             </>
                         )}
@@ -351,6 +353,13 @@ export function MonthlyView(){
                 selectedDate={selectedDate}
                 existingEvent={editingEvent}
                 eventsForDay={dayEvents}
+            />
+
+            <AddTaskPopup
+                isOpen={showAddTaskPopup}
+                onClose={() => setShowAddTaskPopup(false)}
+                onSuccess={() => { fetchData(); setShowDayEventsPopup(false); }}
+                selectedDate={selectedDate}
             />
         </section>
     )

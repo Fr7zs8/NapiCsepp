@@ -162,6 +162,7 @@
 
         filterByDate(date, items) {
             const target = new Date(date);
+            const targetDay = new Date(target.getFullYear(), target.getMonth(), target.getDate());
             return (items || []).map(item => {
                 if (item instanceof Event) return item;
                 if (item.event_id || item.eventId) {
@@ -174,6 +175,16 @@
                 }
                 return item;
             }).filter(item => {
+                // Events: check if target falls within the start–end date range
+                if (item instanceof Event) {
+                    if (!item.startTime) return false;
+                    const start = new Date(item.startTime);
+                    const end = item.endTime ? new Date(item.endTime) : start;
+                    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+                    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+                    return targetDay >= startDay && targetDay <= endDay;
+                }
+                // Activities / other items: match by start date only
                 let itemDate = null;
                 if (item.startTime) itemDate = new Date(item.startTime);
                 else if (item.date) itemDate = new Date(item.date);

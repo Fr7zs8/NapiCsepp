@@ -54,6 +54,12 @@
     color: #2d2d2d;
 }
 
+.popup-subtitle {
+    margin: 0.25rem 0 0;
+    font-size: 0.82rem;
+    color: #6b7280;
+}
+
 .close-btn {
     background: none;
     border: none;

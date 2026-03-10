@@ -7,7 +7,8 @@ import { showToast } from "../Toast/showToast";
 export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour, existingEvent, eventsForDay }) {
     const [eventData, setEventData] = useState({
         event_name: "",
-        event_date: "",
+        event_start_date: "",
+        event_end_date: "",
         event_start_time: "",
         event_end_time: ""
     });
@@ -18,26 +19,28 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
                 const startRaw = existingEvent.event_start_time || existingEvent.startTime;
                 const endRaw = existingEvent.event_end_time || existingEvent.endTime;
                 const nameRaw = existingEvent.event_name || existingEvent.eventName || "";
-                const startDateTime = new Date(startRaw);
-                const endDateTime = new Date(endRaw);
+                const startDT = new Date(startRaw);
+                const endDT = new Date(endRaw);
                 setEventData({
                     event_name: nameRaw,
-                    event_date: !isNaN(startDateTime) ? startDateTime.toISOString().split('T')[0] : "",
-                    event_start_time: !isNaN(startDateTime) ? startDateTime.toTimeString().slice(0, 5) : "",
-                    event_end_time: !isNaN(endDateTime) ? endDateTime.toTimeString().slice(0, 5) : ""
+                    event_start_date: !isNaN(startDT) ? startDT.toLocaleDateString('en-CA') : "",
+                    event_end_date: !isNaN(endDT) ? endDT.toLocaleDateString('en-CA') : "",
+                    event_start_time: !isNaN(startDT) ? startDT.toTimeString().slice(0, 5) : "",
+                    event_end_time: !isNaN(endDT) ? endDT.toTimeString().slice(0, 5) : ""
                 });
             } else {
                 const date = selectedDate ? new Date(selectedDate) : new Date();
                 const dateStr = date.toLocaleDateString('en-CA');
-                let startTime = "09:00";
-                let endTime = "10:00";
+                let startTime = "08:00";
+                let endTime = "09:00";
                 if (selectedHour !== undefined && selectedHour !== null) {
                     startTime = `${selectedHour.toString().padStart(2, '0')}:00`;
                     endTime = `${(selectedHour + 1).toString().padStart(2, '0')}:00`;
                 }
                 setEventData({
                     event_name: "",
-                    event_date: dateStr,
+                    event_start_date: dateStr,
+                    event_end_date: dateStr,
                     event_start_time: startTime,
                     event_end_time: endTime
                 });
@@ -52,36 +55,14 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
             return;
         }
 
-    // Use ISO-like local datetime (with 'T') to avoid ambiguous parsing
-    const startDateTime = `${eventData.event_date}T${eventData.event_start_time}:00`;
-    const endDateTime = `${eventData.event_date}T${eventData.event_end_time}:00`;
-    const newStart = new Date(startDateTime);
-    const newEnd = new Date(endDateTime);
+        const startDateTime = `${eventData.event_start_date}T${eventData.event_start_time}:00`;
+        const endDateTime = `${eventData.event_end_date}T${eventData.event_end_time}:00`;
+        const newStart = new Date(startDateTime);
+        const newEnd = new Date(endDateTime);
 
         if (newStart >= newEnd) {
             showToast("A kezdési időnek korábbinak kell lennie, mint a befejezésnek!", "error");
             return;
-        }
-
-    // Compare local calendar dates (en-CA yields YYYY-MM-DD) to avoid timezone shifts
-    const startDay = newStart.toLocaleDateString('en-CA');
-    const endDay = newEnd.toLocaleDateString('en-CA');
-        if (startDay !== endDay) {
-            showToast("Az esemény nem nyúlhat át több napra!", "error");
-            return;
-        }
-
-        if (Array.isArray(eventsForDay)) {
-            const overlap = eventsForDay.some(ev => {
-                if (existingEvent && ev.event_id === existingEvent.event_id) return false;
-                const evStart = new Date(ev.event_start_time);
-                const evEnd = new Date(ev.event_end_time);
-                return newStart < evEnd && newEnd > evStart;
-            });
-            if (overlap) {
-                showToast("Ebben az időzónában már van egy esemény. Kérlek válassz másik időt!", "error");
-                return;
-            }
         }
 
         let eventToSave;
@@ -106,12 +87,14 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
 
     if (!isOpen) return null;
 
-
     return (
         <div className="popup-overlay" onClick={onClose}>
             <div className="popup-content" onClick={(e) => e.stopPropagation()}>
                 <div className="popup-header">
-                    <h2>{existingEvent ? "Esemény szerkesztése" : "Új esemény"}</h2>
+                    <div>
+                        <h2>{existingEvent ? "Esemény szerkesztése" : "Esemény hozzáadása"}</h2>
+                        <p className="popup-subtitle">Add meg az esemény részleteit, időpontját és dátumát.</p>
+                    </div>
                     <button className="close-btn" onClick={onClose}>
                         <X size={24} />
                     </button>
@@ -119,52 +102,53 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
 
                 <form onSubmit={handleSubmit} className="popup-form">
                     <div className="form-group">
-                        <label htmlFor="event-name">Esemény neve *</label>
                         <input
                             type="text"
-                            id="event-name"
                             value={eventData.event_name}
                             onChange={(e) => setEventData({ ...eventData, event_name: e.target.value })}
-                            placeholder="pl. Mozizás, Találkozó..."
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="event-date">Dátum *</label>
-                        <input
-                            type="date"
-                            id="event-date"
-                            value={eventData.event_date}
-                            onChange={(e) => setEventData({ ...eventData, event_date: e.target.value })}
+                            placeholder="Esemény címe"
                             required
                         />
                     </div>
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="start-time">Kezdés *</label>
+                            <input
+                                type="date"
+                                value={eventData.event_start_date}
+                                onChange={(e) => setEventData({ ...eventData, event_start_date: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input
+                                type="date"
+                                value={eventData.event_end_date}
+                                min={eventData.event_start_date}
+                                onChange={(e) => setEventData({ ...eventData, event_end_date: e.target.value })}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
                             <input
                                 type="time"
-                                id="start-time"
                                 value={eventData.event_start_time}
                                 onChange={(e) => setEventData({ ...eventData, event_start_time: e.target.value })}
                                 required
                             />
                         </div>
-
                         <div className="form-group">
-                            <label htmlFor="end-time">Befejezés *</label>
                             <input
                                 type="time"
-                                id="end-time"
                                 value={eventData.event_end_time}
                                 onChange={(e) => setEventData({ ...eventData, event_end_time: e.target.value })}
                                 required
                             />
                         </div>
                     </div>
-
 
                     <div className="form-actions">
                         <button type="button" onClick={onClose} className="btn-cancel">
