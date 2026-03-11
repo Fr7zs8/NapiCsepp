@@ -256,10 +256,74 @@ export function WeeklyView(){
                                     {day.events.map((event, eventIdx) => {
                                         const startTime = new Date(event.startTime);
                                         const endTime = new Date(event.endTime);
+                                        const startDay = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
+                                        const endDay = new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate());
+                                        const isMultiDay = startDay.getTime() !== endDay.getTime();
+
                                         const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
                                         const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
                                         const top = Math.max(startMinutes + 72, 0);
                                         const height = Math.max(endMinutes - startMinutes, 15);
+
+                                        if (isMultiDay) {
+                                            const thisDayStart = new Date(day.date.getFullYear(), day.date.getMonth(), day.date.getDate());
+                                            const weekFirstDay = new Date(weekDays[0].date.getFullYear(), weekDays[0].date.getMonth(), weekDays[0].date.getDate());
+                                            const isFirstInWeek =
+                                                startDay.getTime() === thisDayStart.getTime() ||
+                                                (startDay < weekFirstDay && thisDayStart.getTime() === weekFirstDay.getTime());
+
+                                            if (!isFirstInWeek) return null;
+
+                                            let numCols = 0;
+                                            for (let i = dayIndex; i < weekDays.length; i++) {
+                                                const wd = weekDays[i].date;
+                                                const wdDay = new Date(wd.getFullYear(), wd.getMonth(), wd.getDate());
+                                                if (wdDay <= endDay) numCols++;
+                                                else break;
+                                            }
+
+                                            const weekLastDay = new Date(weekDays[6].date.getFullYear(), weekDays[6].date.getMonth(), weekDays[6].date.getDate());
+                                            const continuesLeft = startDay < weekFirstDay;
+                                            const continuesRight = endDay > weekLastDay;
+                                            const rl = continuesLeft ? '0' : '8px';
+                                            const rr = continuesRight ? '0' : '8px';
+                                            const extraClasses = [
+                                                continuesLeft ? 'event-continues-left' : '',
+                                                continuesRight ? 'event-continues-right' : '',
+                                            ].filter(Boolean).join(' ');
+
+                                            return (
+                                                <div
+                                                    key={`event-${event.event_id || event.eventId || eventIdx}-${day.date.toISOString()}`}
+                                                    className={`event-block event-absolute${extraClasses ? ' ' + extraClasses : ''}`}
+                                                    style={{
+                                                        top: `${top}px`,
+                                                        height: `${height}px`,
+                                                        left: '4px',
+                                                        right: 'auto',
+                                                        width: `calc(${numCols} * 100% - 8px)`,
+                                                        backgroundColor: event.event_color || '#0090ff',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        overflow: 'visible',
+                                                        zIndex: 10,
+                                                        cursor: 'pointer',
+                                                        position: 'absolute',
+                                                        borderRadius: `${rl} ${rr} ${rr} ${rl}`,
+                                                    }}
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        setMiniPopup({ show: true, event, position: { x: e.clientX, y: e.clientY } });
+                                                    }}
+                                                >
+                                                    <div className="event-name" style={{ overflow: 'hidden', maxWidth: '100%' }}>{event.eventName}</div>
+                                                    <div className="event-time" style={{ overflow: 'hidden', maxWidth: '100%' }}>{event.formatTime()}</div>
+                                                </div>
+                                            );
+                                        }
+
                                         return (
                                             <div
                                                 key={`event-${event.event_id || event.eventId || eventIdx}-${day.date.toISOString()}`}
@@ -286,9 +350,7 @@ export function WeeklyView(){
                                                 }}
                                             >
                                                 <div className="event-name">{event.eventName}</div>
-                                                <div className="event-time">
-                                                    {event.formatTime()}
-                                                </div>
+                                                <div className="event-time">{event.formatTime()}</div>
                                             </div>
                                         );
                                     })}

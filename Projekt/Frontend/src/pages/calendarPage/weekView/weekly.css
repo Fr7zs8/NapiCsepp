@@ -29,6 +29,34 @@
     transition: height 0.2s;
 }
 
+/* Serrated/zigzag edge when event continues to next week */
+.event-continues-right::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 9px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='10'%3E%3Cpolygon points='9,0 0,5 9,10' fill='white'/%3E%3C/svg%3E");
+    background-repeat: repeat-y;
+    background-size: 9px 10px;
+    pointer-events: none;
+}
+
+/* Serrated/zigzag edge when event continues from previous week */
+.event-continues-left::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 9px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='10'%3E%3Cpolygon points='0,0 9,5 0,10' fill='white'/%3E%3C/svg%3E");
+    background-repeat: repeat-y;
+    background-size: 9px 10px;
+    pointer-events: none;
+}
+
 .weekly-view-section {
     padding: 2rem;
     display: flex;
@@ -200,7 +228,7 @@
     flex: 1;
     min-width: 0;
     border-left: 1px solid #e0e0e0;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .day-column:first-child {

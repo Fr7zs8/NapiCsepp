@@ -6,6 +6,7 @@
   background: #fff;
   border-radius: 0;
   box-shadow: none;
+  overflow-x: hidden;
 }
 
 body{

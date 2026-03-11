@@ -1,11 +1,12 @@
 import "./monthly.css"
 import { ArrowLeft, ArrowRight } from "lucide-react"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom'
 import { activityService } from "../../../router/apiRouter";
 import CalendarManager from "../../../classes/Views/calendarManager";
 import { EventPopup } from "../../../components/EventPopup/EventPopup";
 import { EventMiniPopup } from "../../../components/EventPopup/EventMiniPopup";
+import "../../../components/EventPopup/EventMiniPopup.css";
 import { AddTaskPopup } from "../../../components/AddTaskPopup/AddTaskPopup";
 import { eventService } from "../../../router/apiRouter";
 import { showToast } from "../../../components/Toast/showToast";
@@ -27,7 +28,7 @@ export function MonthlyView(){
     const [habits, setHabits] = useState([]);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
     const [calendarManager, setCalendarManager] = useState(null);
-    
+
     const daysOfWeek = ['H', 'K', 'Sz', 'Cs', 'P', 'Sz', 'V'];
 
     useEffect(() => {
@@ -38,11 +39,9 @@ export function MonthlyView(){
                 navigate('/calendar/monthly');
             }
         };
-            window.addEventListener('resize', handleResize);
-            return () => window.removeEventListener('resize', handleResize);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, [isMobile, navigate]);
-
-    
 
     const fetchData = async () => {
         try {
@@ -55,9 +54,25 @@ export function MonthlyView(){
             setActivities(activitiesData || []);
             setHabits(habitsData || []);
             setCalendarManager(new CalendarManager(currentMonth, 'monthly', activitiesData || [], eventsData || []));
+            return { eventsData: eventsData || [], activitiesData: activitiesData || [], habitsData: habitsData || [] };
         } catch (err) {
             console.error("Error fetching data:", err);
+            return null;
         }
+    };
+
+    const refreshDayTasks = (activitiesData) => {
+        if (!selectedDate) return;
+        const dateStr = selectedDate.toLocaleDateString('en-CA');
+        const tasksForDay = activitiesData.filter(a => {
+            const typeName = (a.type_name || '').toLowerCase();
+            if (typeName === 'szokás') return false;
+            const actDate = a.activity_start_date
+                ? new Date(a.activity_start_date).toLocaleDateString('en-CA')
+                : null;
+            return actDate === dateStr;
+        });
+        setDayTasks(tasksForDay);
     };
 
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -115,6 +130,7 @@ export function MonthlyView(){
         setActiveTab('events');
         setShowDayEventsPopup(true);
     };
+
     const handleAddEvent = () => {
         setShowDayEventsPopup(false);
         setShowEventPopup(true);
@@ -141,6 +157,8 @@ export function MonthlyView(){
 
     const [editingEvent, setEditingEvent] = useState(null);
     const [showAddTaskPopup, setShowAddTaskPopup] = useState(false);
+    const [editingTask, setEditingTask] = useState(null);
+    const [taskMiniPopup, setTaskMiniPopup] = useState({ show: false, task: null, position: { x: 0, y: 0 } });
 
     const handleSaveEvent = async (eventData) => {
         try {
@@ -159,19 +177,131 @@ export function MonthlyView(){
             showToast("Hiba történt az esemény mentésekor!", "error");
         }
     };
+
     const handleEventClick = (event, e) => {
         e.stopPropagation();
-        setMiniPopup({
-            show: true,
-            event,
-            position: { x: e.clientX, y: e.clientY }
-        });
+        setMiniPopup({ show: true, event, position: { x: e.clientX, y: e.clientY } });
     };
 
     const closeMiniPopup = () => setMiniPopup({ show: false, event: null, position: { x: 0, y: 0 } });
 
+    const taskMiniPopupRef = useRef(null);
+    useEffect(() => {
+        if (!taskMiniPopup.show) return;
+        if (taskMiniPopupRef.current) {
+            const rect = taskMiniPopupRef.current.getBoundingClientRect();
+            if (rect.right > window.innerWidth) {
+                taskMiniPopupRef.current.style.left = `${taskMiniPopup.position.x - rect.width}px`;
+            }
+            if (rect.bottom > window.innerHeight) {
+                taskMiniPopupRef.current.style.top = `${taskMiniPopup.position.y - rect.height}px`;
+            }
+        }
+        const handler = (e) => {
+            if (taskMiniPopupRef.current && !taskMiniPopupRef.current.contains(e.target)) {
+                setTaskMiniPopup({ show: false, task: null, position: { x: 0, y: 0 } });
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [taskMiniPopup.show, taskMiniPopup.position]);
+
+    const handleDeleteTask = async (taskId) => {
+        try {
+            await activityService.deleteTask(taskId);
+            showToast("Feladat sikeresen törölve!", "success");
+            setTaskMiniPopup({ show: false, task: null, position: { x: 0, y: 0 } });
+            const result = await fetchData();
+            if (result) refreshDayTasks(result.activitiesData);
+        } catch (err) {
+            console.error(err);
+            showToast("Hiba történt a feladat törlésekor!", "error");
+        }
+    };
+
+    // --- Multi-day event helpers ---
+
+    const isSingleDayEvent = (event) => {
+        const s = new Date(event.startTime);
+        const e = new Date(event.endTime);
+        return s.getFullYear() === e.getFullYear() &&
+               s.getMonth() === e.getMonth() &&
+               s.getDate() === e.getDate();
+    };
+
+    const getRawEvent = (event) => {
+        const id = event.eventId || event.event_id;
+        return events.find(e => (e.event_id || e.eventId) === id) || event;
+    };
+
+    const getMultiDayEventLayout = (week) => {
+        const seen = new Set();
+        const items = [];
+
+        week.forEach((day) => {
+            day.events.forEach(event => {
+                const id = event.eventId || event.event_id;
+                if (seen.has(id)) return;
+                if (isSingleDayEvent(event)) return;
+                seen.add(id);
+
+                const startDay = new Date(event.startTime);
+                startDay.setHours(0, 0, 0, 0);
+                const endDay = new Date(event.endTime);
+                endDay.setHours(0, 0, 0, 0);
+
+                let startCol = 7, endCol = -1;
+                week.forEach((d, idx) => {
+                    const dDay = new Date(d.date.getFullYear(), d.date.getMonth(), d.date.getDate());
+                    if (dDay >= startDay && dDay <= endDay) {
+                        if (idx < startCol) startCol = idx;
+                        if (idx > endCol) endCol = idx;
+                    }
+                });
+
+                if (endCol === -1) return;
+                items.push({ event, startCol, endCol });
+            });
+        });
+
+        // Greedy lane assignment
+        const laneEnds = [];
+        items.forEach(item => {
+            let laneIdx = laneEnds.findIndex(endCol => endCol < item.startCol);
+            if (laneIdx === -1) laneIdx = laneEnds.length;
+            laneEnds[laneIdx] = item.endCol;
+            item.lane = laneIdx;
+        });
+
+        return items;
+    };
+
     const calendarDays = calendarManager ? calendarManager.getMonthView(currentMonth, activities, habits) : [];
     const monthName = currentMonth.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long' });
+
+    // Pre-compute multi-day event layout per week
+    const calendarWeeks = [];
+    for (let i = 0; i < calendarDays.length; i += 7) {
+        calendarWeeks.push(calendarDays.slice(i, i + 7));
+    }
+    const weekLayouts = calendarWeeks.map(week => getMultiDayEventLayout(week));
+
+    // Build lookup: flatIndex -> { bars, numLanes }
+    const barsByIndex = calendarDays.map((_, flatIdx) => {
+        const wIdx = Math.floor(flatIdx / 7);
+        const dIdx = flatIdx % 7;
+        const layout = weekLayouts[wIdx] || [];
+        const numLanes = layout.length > 0 ? Math.max(...layout.map(e => e.lane)) + 1 : 0;
+        const bars = layout
+            .filter(item => dIdx >= item.startCol && dIdx <= item.endCol)
+            .map(item => ({
+                event: item.event,
+                lane: item.lane,
+                isStart: dIdx === item.startCol,
+                isEnd: dIdx === item.endCol,
+            }));
+        return { bars, numLanes };
+    });
 
     return(
         <section className="monthly-calendar-view">
@@ -216,21 +346,30 @@ export function MonthlyView(){
                         </div>
                     ))}
                     {calendarDays.map((day, index) => {
-                        const eventCount = day.events.length;
+                        const { bars, numLanes } = barsByIndex[index];
                         const taskCount = day.taskCount || 0;
                         const habitCount = day.habits.length;
+                        const singleDayEventCount = day.isCurrentMonth
+                            ? day.events.filter(e => isSingleDayEvent(e)).length
+                            : 0;
+                        const extraPb = numLanes > 0 ? 6 + numLanes * 22 : 0;
+
                         return (
                             <div
                                 key={index}
                                 className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isSunday ? 'sunday' : ''} ${day.isToday ? 'current-day' : ''}`}
                                 onClick={() => handleDayClick(day.date.getDate(), day.isCurrentMonth)}
-                                style={{ cursor: day.isCurrentMonth ? 'pointer' : 'default' }}
+                                style={{
+                                    cursor: day.isCurrentMonth ? 'pointer' : 'default',
+                                    position: 'relative',
+                                    paddingBottom: extraPb > 0 ? `${extraPb}px` : undefined,
+                                }}
                             >
                                 <span className="day-number">{day.date.getDate()}</span>
-                                {day.isCurrentMonth && (eventCount > 0 || taskCount > 0 || habitCount > 0) && (
+                                {day.isCurrentMonth && (singleDayEventCount > 0 || taskCount > 0 || habitCount > 0) && (
                                     <div className="day-counters">
-                                        {eventCount > 0 && (
-                                            <span className="counter-badge events">🔔 {eventCount}</span>
+                                        {singleDayEventCount > 0 && (
+                                            <span className="counter-badge events">🔔 {singleDayEventCount}</span>
                                         )}
                                         {taskCount > 0 && (
                                             <span className="counter-badge tasks">📓 {taskCount}</span>
@@ -240,6 +379,31 @@ export function MonthlyView(){
                                         )}
                                     </div>
                                 )}
+                                {day.isCurrentMonth && bars.map(bar => {
+                                    const pos = bar.isStart && bar.isEnd ? 'single'
+                                        : bar.isStart ? 'start'
+                                        : bar.isEnd ? 'end'
+                                        : 'middle';
+                                    const rawEvent = getRawEvent(bar.event);
+                                    return (
+                                        <div
+                                            key={`bar-${bar.event.eventId || bar.event.event_id}-${index}`}
+                                            className={`event-bar-inline event-bar-${pos}`}
+                                            style={{
+                                                bottom: `${4 + bar.lane * 22}px`,
+                                                backgroundColor: rawEvent.event_color || '#0090ff',
+                                            }}
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                setMiniPopup({ show: true, event: rawEvent, position: { x: e.clientX, y: e.clientY } });
+                                            }}
+                                        >
+                                            {bar.isStart && (
+                                                <span className="event-bar-name">🔔 {bar.event.eventName}</span>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         );
                     })}
@@ -303,7 +467,15 @@ export function MonthlyView(){
                                         <p className="popup-empty">Nincs feladat ezen a napon.</p>
                                     ) : (
                                         dayTasks.map((task, i) => (
-                                            <div key={task.activity_id || i} className="popup-item-row">
+                                            <div
+                                                key={task.activity_id || i}
+                                                className="popup-item-row"
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    setTaskMiniPopup({ show: true, task, position: { x: e.clientX, y: e.clientY } });
+                                                }}
+                                            >
                                                 <span className={`popup-status-dot ${(task.activity_achive === 1 || task.activity_achive === true || task.activity_achive === '1') ? 'done' : 'pending'}`}></span>
                                                 <span>{task.activity_name}</span>
                                             </div>
@@ -358,11 +530,29 @@ export function MonthlyView(){
                 eventsForDay={dayEvents}
             />
 
+            {taskMiniPopup.show && (
+                <div
+                    ref={taskMiniPopupRef}
+                    className="mini-popup"
+                    style={{ top: taskMiniPopup.position.y, left: taskMiniPopup.position.x }}
+                    onClick={e => e.stopPropagation()}
+                >
+                    <button onClick={() => {
+                        setEditingTask(taskMiniPopup.task);
+                        setTaskMiniPopup({ show: false, task: null, position: { x: 0, y: 0 } });
+                        setShowAddTaskPopup(true);
+                    }}>Szerkesztés</button>
+                    <button onClick={() => handleDeleteTask(taskMiniPopup.task.activity_id)}>Törlés</button>
+                    <button onClick={() => setTaskMiniPopup({ show: false, task: null, position: { x: 0, y: 0 } })}>Mégse</button>
+                </div>
+            )}
+
             <AddTaskPopup
                 isOpen={showAddTaskPopup}
-                onClose={() => setShowAddTaskPopup(false)}
-                onSuccess={() => { fetchData(); setShowDayEventsPopup(false); }}
+                onClose={() => { setShowAddTaskPopup(false); setEditingTask(null); }}
+                onSuccess={async () => { const result = await fetchData(); if (result) refreshDayTasks(result.activitiesData); setEditingTask(null); }}
                 selectedDate={selectedDate}
+                existingTask={editingTask}
             />
         </section>
     )

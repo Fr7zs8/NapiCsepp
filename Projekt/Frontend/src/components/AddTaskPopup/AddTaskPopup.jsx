@@ -5,7 +5,7 @@ import "./AddTaskPopup.css";
 import { activityService } from "../../router/apiRouter";
 import { showToast } from "../Toast/showToast";
 
-export function AddTaskPopup({ isOpen, onClose, onSuccess, selectedDate }) {
+export function AddTaskPopup({ isOpen, onClose, onSuccess, selectedDate, existingTask }) {
     const [taskName, setTaskName] = useState("");
     const [typeName, setTypeName] = useState("");
     const [difficultyName, setDifficultyName] = useState("");
@@ -16,24 +16,40 @@ export function AddTaskPopup({ isOpen, onClose, onSuccess, selectedDate }) {
 
     useEffect(() => {
         if (!isOpen) return;
-        const dateStr = selectedDate
-            ? new Date(selectedDate).toLocaleDateString("en-CA")
-            : new Date().toLocaleDateString("en-CA");
-        setStartDate(dateStr);
-        setTaskName("");
-        setTypeName("");
-        setDifficultyName("");
 
         activityService.getAllTypes().then(data => {
             const filtered = data.filter(t => t.type_name !== "Szokás");
             setTypes(filtered);
-            if (filtered.length > 0) setTypeName(filtered[0].type_name);
+            if (existingTask) {
+                setTypeName(existingTask.type_name || (filtered[0]?.type_name ?? ""));
+            } else if (filtered.length > 0) {
+                setTypeName(filtered[0].type_name);
+            }
         });
         activityService.getAllDifficulties().then(data => {
             setDifficulties(data);
-            if (data.length > 0) setDifficultyName(data[0].difficulty_name);
+            if (existingTask) {
+                setDifficultyName(existingTask.difficulty_name || (data[0]?.difficulty_name ?? ""));
+            } else if (data.length > 0) {
+                setDifficultyName(data[0].difficulty_name);
+            }
         });
-    }, [isOpen, selectedDate]);
+
+        if (existingTask) {
+            setTaskName(existingTask.activity_name || "");
+            setStartDate(existingTask.activity_start_date
+                ? new Date(existingTask.activity_start_date).toLocaleDateString("en-CA")
+                : new Date().toLocaleDateString("en-CA"));
+        } else {
+            const dateStr = selectedDate
+                ? new Date(selectedDate).toLocaleDateString("en-CA")
+                : new Date().toLocaleDateString("en-CA");
+            setStartDate(dateStr);
+            setTaskName("");
+            setTypeName("");
+            setDifficultyName("");
+        }
+    }, [isOpen, selectedDate, existingTask]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -47,15 +63,26 @@ export function AddTaskPopup({ isOpen, onClose, onSuccess, selectedDate }) {
         }
         setLoading(true);
         try {
-            await activityService.createTask({
-                activity_name: taskName.trim(),
-                activity_type_name: typeName,
-                activity_difficulty_name: difficultyName,
-                activity_start_date: startDate,
-                activity_end_date: startDate,
-                activity_achive: 0,
-            });
-            showToast("Feladat sikeresen létrehozva!", "success");
+            if (existingTask) {
+                await activityService.updateTask(existingTask.activity_id, {
+                    activity_name: taskName.trim(),
+                    activity_type_name: typeName,
+                    activity_difficulty_name: difficultyName,
+                    activity_start_date: startDate,
+                    activity_end_date: startDate,
+                });
+                showToast("Feladat sikeresen módosítva!", "success");
+            } else {
+                await activityService.createTask({
+                    activity_name: taskName.trim(),
+                    activity_type_name: typeName,
+                    activity_difficulty_name: difficultyName,
+                    activity_start_date: startDate,
+                    activity_end_date: startDate,
+                    activity_achive: 0,
+                });
+                showToast("Feladat sikeresen létrehozva!", "success");
+            }
             onSuccess?.();
             onClose();
         } catch (err) {
@@ -72,7 +99,7 @@ export function AddTaskPopup({ isOpen, onClose, onSuccess, selectedDate }) {
         <div className="popup-overlay" onClick={onClose}>
             <div className="popup-content" onClick={e => e.stopPropagation()}>
                 <div className="popup-header">
-                    <h2>Új feladat</h2>
+                    <h2>{existingTask ? "Feladat szerkesztése" : "Új feladat"}</h2>
                     <button className="close-btn" onClick={onClose}>
                         <X size={24} />
                     </button>
@@ -137,7 +164,7 @@ export function AddTaskPopup({ isOpen, onClose, onSuccess, selectedDate }) {
                             Mégse
                         </button>
                         <button type="submit" className="btn-save" disabled={loading}>
-                            {loading ? "Mentés..." : "Létrehozás"}
+                            {loading ? "Mentés..." : existingTask ? "Mentés" : "Létrehozás"}
                         </button>
                     </div>
                 </form>

@@ -14,6 +14,17 @@ export function EventMiniPopup({ event, position, onEdit, onDelete, onClose }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [onClose]);
 
+    useEffect(() => {
+        if (!ref.current) return;
+        const rect = ref.current.getBoundingClientRect();
+        if (rect.right > window.innerWidth) {
+            ref.current.style.left = `${position.x - rect.width}px`;
+        }
+        if (rect.bottom > window.innerHeight) {
+            ref.current.style.top = `${position.y - rect.height}px`;
+        }
+    }, [position]);
+
     if (!event) return null;
     const handleEdit = () => {
         onEdit(event);

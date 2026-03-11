@@ -193,18 +193,28 @@
 .btn-save:hover {
     opacity: 0.88;
 }
+/* Day counter row inside each calendar cell */
+.day-counters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-top: 2px;
+    justify-content: flex-end;
+}
+
 /* Calendar counter badges */
 .counter-badge {
     display: inline-block;
     min-width: 18px;
     padding: 1px 5px;
-    margin: 1px 2px;
+    margin: 0;
     border-radius: 6px;
     font-size: 0.75em;
     font-weight: 600;
     color: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     text-align: center;
+    white-space: nowrap;
 }
 .counter-badge.events {
     background: rgba(33, 150, 243, 0.75);
@@ -382,6 +392,64 @@
     min-height: 630px;
 }
 
+/* Multi-day event bars — absolutely positioned inside each day cell */
+.event-bar-inline {
+    position: absolute;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    font-size: 0.7em;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    z-index: 2;
+    transition: opacity 0.15s;
+}
+
+.event-bar-inline:hover {
+    opacity: 0.82;
+}
+
+/* Start of span: inset left, flush right */
+.event-bar-start {
+    left: 12px;
+    right: -1px;
+    border-radius: 6px 0 0 6px;
+}
+
+/* Middle of span: flush both sides */
+.event-bar-middle {
+    left: -1px;
+    right: -1px;
+    border-radius: 0;
+    padding: 0;
+}
+
+/* End of span: flush left, inset right */
+.event-bar-end {
+    left: -1px;
+    right: 12px;
+    border-radius: 0 6px 6px 0;
+    padding: 0;
+}
+
+/* Single day: inset both sides, fully rounded */
+.event-bar-single {
+    left: 6px;
+    right: 6px;
+    border-radius: 6px;
+}
+
+.event-bar-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
 @media (max-width: 1200px) {
     .month-view-div {
         max-width: 100%;
@@ -440,13 +508,19 @@
     background: #fff;
     color: #2d2d2d;
     font-weight: 700;
-    border: 3px solid #22c55e;
-    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+    outline: 3px solid #22c55e;
+    outline-offset: -3px;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.15);
     position: relative;
+    z-index: 1;
 }
 
 .calendar-day.current-day .day-number {
     color: #22c55e;
+}
+
+.calendar-day.current-day .day-counters {
+    font-weight: 600;
 }
 
 .explanation-div {
@@ -564,6 +638,12 @@
 
 @media (max-width: 480px) {
 
+    .calendar-day.current-day {
+        outline-width: 2px;
+        outline-offset: -2px;
+        box-shadow: none;
+    }
+
     .header-div {
         gap: 0.75rem;
         margin-bottom: 1rem;
@@ -617,7 +697,11 @@
         font-size: 0.62em;
         padding: 1px 3px;
         min-width: 14px;
-        margin: 1px 1px;
+        margin: 0;
+    }
+
+    .day-counters {
+        gap: 1px;
     }
 
     .explanation-div {
