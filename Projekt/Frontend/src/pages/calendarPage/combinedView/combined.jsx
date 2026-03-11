@@ -172,11 +172,14 @@ export function CombinedView(){
         // Compare local calendar dates to avoid timezone shifts (00:00 issues)
         const dateStr = new Date(fullDate).toLocaleDateString('en-CA');
         const weekData = calendarManager.getCombinedView(currentWeek);
+        const targetDay = new Date(dateStr);
         const dayEvents = (weekData?.events || []).filter(ev => {
             const evStart = ev.startTime || ev.event_start_time || ev.eventStartTime;
             if (!evStart) return false;
-            const evDate = new Date(evStart).toLocaleDateString('en-CA');
-            return evDate === dateStr;
+            const evEnd = ev.endTime || ev.event_end_time || ev.eventEndTime;
+            const startDay = new Date(new Date(evStart).toLocaleDateString('en-CA'));
+            const endDay = evEnd ? new Date(new Date(evEnd).toLocaleDateString('en-CA')) : startDay;
+            return targetDay >= startDay && targetDay <= endDay;
         });
         setEventsListForDay(dayEvents);
         setEventsListDate(new Date(fullDate));

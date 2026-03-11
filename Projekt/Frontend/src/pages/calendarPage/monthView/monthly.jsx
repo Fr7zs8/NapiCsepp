@@ -81,9 +81,12 @@ export function MonthlyView(){
         setSelectedDate(clickedDate);
         const dateStr = clickedDate.toLocaleDateString('en-CA');
 
+        const targetDay = new Date(dateStr);
         const eventsForDay = events.filter(e => {
-            const eventDate = new Date(e.event_start_time).toLocaleDateString('en-CA');
-            return eventDate === dateStr;
+            if (!e.event_start_time) return false;
+            const startDay = new Date(new Date(e.event_start_time).toLocaleDateString('en-CA'));
+            const endDay = e.event_end_time ? new Date(new Date(e.event_end_time).toLocaleDateString('en-CA')) : startDay;
+            return targetDay >= startDay && targetDay <= endDay;
         });
 
         const tasksForDay = activities.filter(a => {

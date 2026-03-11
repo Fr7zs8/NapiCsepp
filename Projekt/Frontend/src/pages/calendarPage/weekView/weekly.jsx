@@ -124,14 +124,21 @@ export function WeeklyView(){
         `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
     const getEventsForMinute = (date, minuteOfDay) => {
-        const dateStr = localDateStr(date);
+        const targetDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         return events.filter(event => {
             const startTime = new Date(event.event_start_time);
             const endTime = new Date(event.event_end_time);
-            if (localDateStr(startTime) !== dateStr) return false;
+            const startDay = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
+            const endDay = new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate());
+            if (targetDay < startDay || targetDay > endDay) return false;
             const startMinute = startTime.getHours() * 60 + startTime.getMinutes();
             const endMinute = endTime.getHours() * 60 + endTime.getMinutes();
-            return minuteOfDay >= startMinute && minuteOfDay < endMinute;
+            const isFirstDay = targetDay.getTime() === startDay.getTime();
+            const isLastDay = targetDay.getTime() === endDay.getTime();
+            if (isFirstDay && isLastDay) return minuteOfDay >= startMinute && minuteOfDay < endMinute;
+            if (isFirstDay) return minuteOfDay >= startMinute;
+            if (isLastDay) return minuteOfDay < endMinute;
+            return true;
         });
     };
 
