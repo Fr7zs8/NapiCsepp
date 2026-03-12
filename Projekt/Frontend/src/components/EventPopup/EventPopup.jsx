@@ -71,6 +71,10 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
                 if (editingId != null && evId == editingId) return false;
                 const evStart = new Date(ev.event_start_time || ev.startTime);
                 const evEnd = new Date(ev.event_end_time || ev.endTime);
+                // Több napos eventek nem blokkolják a közbülső napok időslotjait
+                const evStartDay = new Date(evStart); evStartDay.setHours(0,0,0,0);
+                const evEndDay = new Date(evEnd); evEndDay.setHours(0,0,0,0);
+                if (evStartDay < evEndDay) return false;
                 return newStart < evEnd && newEnd > evStart;
             });
             if (overlapping.length > 0) {

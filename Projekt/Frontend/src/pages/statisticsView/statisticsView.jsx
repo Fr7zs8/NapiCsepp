@@ -74,16 +74,6 @@ export function StatisticsView(){
                 }
             });
 
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            (allHabits || []).forEach(h => {
-                try {
-                    const sd = h.activity_start_date ? new Date(h.activity_start_date + 'T00:00:00') : null;
-                    const ed = h.activity_end_date ? new Date(h.activity_end_date + 'T23:59:59') : sd;
-                    if (!sd || !ed) return false;
-                    return sd <= today && ed >= today;
-                } catch (err) { console.warn(err); return false }
-            });
             const activeHabits = Statistics.getActiveHabitsCount(allHabits);
             statsInstance.setExtra('activeHabitsCount', activeHabits);
             statsInstance.setExtra('weeklyPerDay', perDay);

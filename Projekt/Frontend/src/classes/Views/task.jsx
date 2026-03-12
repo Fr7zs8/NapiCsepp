@@ -1,12 +1,12 @@
-export default class Task{
-    constructor(taskId, taskName,typeName,difficultyName, isCompleted, startDate,  endDate,  isActive, ){
-        this.taskId = taskId,
-        this.taskName = taskName,
-        this.typeName = typeName,
-        this.difficultyName = difficultyName,
-        this.startDate = startDate,
-        this.endDate = endDate,
-        this.isCompleted = isCompleted,
+export default class Task {
+    constructor(taskId, taskName, typeName, difficultyName, isCompleted, startDate, endDate, isActive) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.typeName = typeName;
+        this.difficultyName = difficultyName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isCompleted = isCompleted;
         this.isActive = isActive;
     }
 

@@ -2,9 +2,9 @@ import "./habit.css";
 import { Plus, Pencil, Trash2, Calendar, Loader2, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Habit from "../../../classes/Views/habit.jsx";
 import { activityService } from "../../../router/apiRouter.jsx";
 import { showToast } from "../../../components/Toast/showToast";
+import { mapHabitItem, dispatchActivityEvents } from "../../../utils/activityUtils";
 
 export function HabitView() {
   const navigate = useNavigate();
@@ -43,65 +43,33 @@ export function HabitView() {
     setEditId(null);
   }
 
+  function calcEndDate(start, days) {
+    return new Date(
+      new Date(start).getTime() + (Math.max(1, parseInt(days, 10)) - 1) * 24 * 60 * 60 * 1000
+    ).toISOString().split("T")[0];
+  }
+
+  async function loadHabits() {
+    const data = await activityService.getAllHabits();
+    setHabits(data.map(mapHabitItem));
+  }
+
   async function addHabit() {
     if (!habitName || !difficultyName || !targetDays || !startDate) return;
-
     try {
-      const habitData = {
+      await activityService.createHabit({
         activity_name: habitName,
         activity_type_name: "Szokás",
         activity_difficulty_name: difficultyName,
         activity_start_date: startDate,
-        activity_end_date: new Date(
-          new Date(startDate).getTime() +
-            (Math.max(1, parseInt(targetDays, 10)) - 1) * 24 * 60 * 60 * 1000,
-        )
-          .toISOString()
-          .split("T")[0],
+        activity_end_date: calcEndDate(startDate, targetDays),
         activity_achive: 0,
         progress_counter: 0,
-      };
-      await activityService.createHabit(habitData);
-      const data = await activityService.getAllHabits();
-      const habitObj = data.map((item) => {
-        let targetDaysVal = null;
-        if (item.target_days || item.target_days === 0) {
-          targetDaysVal = Number(item.target_days);
-          } else if (item.activity_start_date && item.activity_end_date) {
-          try {
-            const sd = new Date(item.activity_start_date);
-            const ed = new Date(item.activity_end_date);
-            sd.setHours(0,0,0,0);
-            ed.setHours(0,0,0,0);
-            const diff = Math.floor((ed - sd) / (1000*60*60*24));
-            targetDaysVal = Math.max(0, diff + 1);
-          } catch (err) {
-            console.warn(err);
-            targetDaysVal = 0;
-          }
-        } else {
-          targetDaysVal = 0;
-        }
-
-        return new Habit(
-          item.activity_id,
-          item.activity_name,
-          item.type_name,
-          item.difficulty_name,
-          targetDaysVal,
-          item.activity_start_date,
-          item.activity_end_date,
-          null,
-          item.progress_counter,
-        );
       });
-      setHabits(habitObj);
+      await loadHabits();
       resetForm();
       showToast("Szokás sikeresen hozzáadva!", "success");
-      try { 
-        window.dispatchEvent(new Event('activitiesUpdated'));
-        window.dispatchEvent(new Event('itemSaved'));
-      } catch (err) { console.warn(err); }
+      dispatchActivityEvents();
     } catch (err) {
       showToast(err.message || "Hiba a szokás hozzáadása során!", "error");
       setError(err.message || "Hiba a szokás hozzáadása során!");
@@ -112,7 +80,6 @@ export function HabitView() {
   function editHabit(id) {
     const h = habits.find((h) => h.habitId === id);
     if (!h) return;
-
     setHabitName(h.habitName);
     setDifficultyName(h.difficultyName);
     const td = h.targetDays ?? h.totalDays ?? "";
@@ -125,59 +92,17 @@ export function HabitView() {
 
   async function saveHabit() {
     try {
-      const updateData = {
+      await activityService.updateHabit(editId, {
         activity_name: habitName,
         activity_type_name: "Szokás",
         activity_difficulty_name: difficultyName,
         activity_start_date: startDate,
-        activity_end_date: new Date(
-          new Date(startDate).getTime() +
-            (Math.max(1, parseInt(targetDays, 10)) - 1) * 24 * 60 * 60 * 1000,
-        )
-          .toISOString()
-          .split("T")[0],
-      };
-      await activityService.updateHabit(editId, updateData);
-      const data = await activityService.getAllHabits();
-      const habitObj = data.map((item) => {
-        let targetDaysVal = null;
-        if (item.target_days || item.target_days === 0) {
-          targetDaysVal = Number(item.target_days);
-        } else if (item.activity_start_date && item.activity_end_date) {
-          try {
-            const sd = new Date(item.activity_start_date);
-            const ed = new Date(item.activity_end_date);
-            sd.setHours(0,0,0,0);
-            ed.setHours(0,0,0,0);
-            const diff = Math.floor((ed - sd) / (1000*60*60*24));
-            targetDaysVal = Math.max(0, diff + 1);
-          } catch (err) {
-            console.warn(err);
-            targetDaysVal = 0;
-          }
-        } else {
-          targetDaysVal = 0;
-        }
-
-        return new Habit(
-          item.activity_id,
-          item.activity_name,
-          item.type_name,
-          item.difficulty_name,
-          targetDaysVal,
-          item.activity_start_date,
-          item.activity_end_date,
-          null,
-          item.progress_counter,
-        );
+        activity_end_date: calcEndDate(startDate, targetDays),
       });
-      setHabits(habitObj);
+      await loadHabits();
       resetForm();
       showToast("Szokás sikeresen módosítva!", "success");
-      try { 
-        window.dispatchEvent(new Event('activitiesUpdated'));
-        window.dispatchEvent(new Event('itemSaved'));
-      } catch (err) { console.warn(err); }
+      dispatchActivityEvents();
     } catch (err) {
       showToast(err.message || "Hiba a szokás szerkesztése során!", "error");
       setError(err.message || "Hiba a szokás szerkesztése során!");
@@ -188,45 +113,9 @@ export function HabitView() {
   async function deleteHabit(id) {
     try {
       await activityService.deleteHabit(id);
-      const data = await activityService.getAllHabits();
-      const habitObj = data.map((item) => {
-        let targetDaysVal = null;
-        if (item.target_days || item.target_days === 0) {
-          targetDaysVal = Number(item.target_days);
-        } else if (item.activity_start_date && item.activity_end_date) {
-          try {
-            const sd = new Date(item.activity_start_date);
-            const ed = new Date(item.activity_end_date);
-            sd.setHours(0,0,0,0);
-            ed.setHours(0,0,0,0);
-            const diff = Math.floor((ed - sd) / (1000*60*60*24));
-            targetDaysVal = Math.max(0, diff + 1);
-          } catch (err) {
-            console.warn(err);
-            targetDaysVal = 0;
-          }
-        } else {
-          targetDaysVal = 0;
-        }
-
-        return new Habit(
-          item.activity_id,
-          item.activity_name,
-          item.type_name,
-          item.difficulty_name,
-          targetDaysVal,
-          item.activity_start_date,
-          item.activity_end_date,
-          null,
-          item.progress_counter,
-        );
-      });
-      setHabits(habitObj);
+      await loadHabits();
       showToast("Szokás sikeresen törölve!", "success");
-      try { 
-        window.dispatchEvent(new Event('activitiesUpdated'));
-        window.dispatchEvent(new Event('itemSaved'));
-      } catch (err) { console.warn(err); }
+      dispatchActivityEvents();
     } catch (err) {
       showToast(err.message || "Hiba a szokás törlése során!", "error");
       setError(err.message || "Hiba a szokás törlése során!");
@@ -238,41 +127,7 @@ export function HabitView() {
     async function fetchHabits() {
       try {
         setLoading(true);
-        const data = await activityService.getAllHabits();
-
-        const habitObj = data.map((item) => {
-          let targetDaysVal = null;
-          if (item.target_days || item.target_days === 0) {
-            targetDaysVal = Number(item.target_days);
-          } else if (item.activity_start_date && item.activity_end_date) {
-            try {
-              const sd = new Date(item.activity_start_date);
-              const ed = new Date(item.activity_end_date);
-              sd.setHours(0,0,0,0);
-              ed.setHours(0,0,0,0);
-              const diff = Math.floor((ed - sd) / (1000*60*60*24));
-              targetDaysVal = Math.max(0, diff + 1);
-            } catch (err) {
-              console.warn(err);
-              targetDaysVal = 0;
-            }
-          } else {
-            targetDaysVal = 0;
-          }
-
-          return new Habit(
-            item.activity_id,
-            item.activity_name,
-            item.type_name,
-            item.difficulty_name,
-            targetDaysVal,
-            item.activity_start_date,
-            item.activity_end_date,
-            null,
-            item.progress_counter,
-          );
-        });
-        setHabits(habitObj);
+        await loadHabits();
       } catch (err) {
         setError(err.message || "Hiba az adatok betöltése során!");
         console.error(err);
@@ -280,11 +135,9 @@ export function HabitView() {
         setLoading(false);
       }
     }
-
     fetchHabits();
-    const handler = () => fetchHabits();
-    window.addEventListener('activitiesUpdated', handler);
-    return () => window.removeEventListener('activitiesUpdated', handler);
+    window.addEventListener("activitiesUpdated", fetchHabits);
+    return () => window.removeEventListener("activitiesUpdated", fetchHabits);
   }, []);
 
   const difficultyColor = (name) => {
@@ -311,6 +164,80 @@ export function HabitView() {
       </div>
     );
   }
+
+  const today = new Date().toISOString().split("T")[0];
+  const activeHabits = sortHabits(habits.filter((h) => !h.endDate || h.endDate >= today), activeSortBy);
+  const expiredHabits = sortHabits(habits.filter((h) => h.endDate && h.endDate < today), expiredSortBy);
+
+  const renderHabitItem = (habit, isExpired) => (
+    <div
+      className={`task-item ${isExpired ? "expired" : habit.isCompleted() ? "completed" : ""}`}
+      key={habit.habitId}
+    >
+      <div className="left-section">
+        <div className="color-bar" style={{ background: difficultyColor(habit.difficultyName) }}></div>
+        <div className="task-texts">
+          <p className={`task-name ${!isExpired && habit.isCompleted() ? "completed" : ""}`}>{habit.habitName}</p>
+          <div className="labels">
+            <span className="label">{habit.typeName}</span>
+            <span className="label">{habit.difficultyName}</span>
+            <span className="label date-label">
+              <Calendar size={12} style={{ marginRight: "4px" }} />
+              {habit.startDate}
+            </span>
+          </div>
+          <div className="progress-container">
+            <div className="progress-info">
+              <span className="progress-text">
+                {habit.getCheckedDays()} / {habit.totalDays || habit.targetDays} nap
+              </span>
+              <span className="progress-percent">{habit.getProgress()}%</span>
+            </div>
+            <div className="progress-bar">
+              <div
+                className={`progress-fill ${habit.isCompleted() ? "completed" : ""}`}
+                style={{ width: `${habit.getProgress()}%` }}
+              ></div>
+            </div>
+            {habit.isCompleted() && <span className="completed-badge">✓ Teljesítve!</span>}
+            {!habit.isCompleted() && habit.getDaysRemaining() > 0 && (
+              <span className="remaining-days">{habit.getDaysRemaining()} nap van hátra</span>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="right-section">
+        <button className="edit-btn" onClick={() => editHabit(habit.habitId)}>
+          <Pencil size={16} /><span className="btn-text"> Szerkesztés</span>
+        </button>
+        <button className="delete-btn" onClick={() => deleteHabit(habit.habitId)}>
+          <Trash2 size={16} /><span className="btn-text"> Törlés</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderListHeader = (title, sortBy, setSortBy) => (
+    <div className="habit-list-header">
+      <h3 className="habit-list-title">{title}</h3>
+      <div className="sort-btns">
+        <button
+          className={`sort-btn ${sortBy === "date" ? "active" : ""}`}
+          onClick={() => setSortBy("date")}
+        >
+          Alkotási idő
+        </button>
+        <button
+          className={`sort-btn ${sortBy === "difficulty" ? "active" : ""}`}
+          onClick={() => setSortBy("difficulty")}
+        >
+          Nehézség
+        </button>
+      </div>
+    </div>
+  );
+
+  const isNoDataError = error && /nincs.*(habit|szoká|szokas|feladat|task)/i.test(error);
 
   return (
     <section className="tasks-section">
@@ -342,14 +269,9 @@ export function HabitView() {
           value={difficultyName}
           onChange={(e) => setDifficultyName(e.target.value)}
         >
-          <option value="" disabled hidden>
-            Nehézség típusa
-          </option>
+          <option value="" disabled hidden>Nehézség típusa</option>
           {difficulties.map((difficulty) => (
-            <option
-              key={difficulty.difficulty_id}
-              value={difficulty.difficulty_name}
-            >
+            <option key={difficulty.difficulty_id} value={difficulty.difficulty_name}>
               {difficulty.difficulty_name}
             </option>
           ))}
@@ -360,13 +282,11 @@ export function HabitView() {
           value={targetDays}
           onChange={(e) => setTargetDays(e.target.value)}
         >
-          <option value="" disabled hidden>
-            Időtartam
-          </option>
+          <option value="" disabled hidden>Időtartam</option>
           <option value="7">1 hét</option>
           <option value="30">1 hónap</option>
           <option value="365">1 év</option>
-          {targetDays && !["7","30","365"].includes(String(targetDays)) && (
+          {targetDays && !["7", "30", "365"].includes(String(targetDays)) && (
             <option value={String(targetDays)}>{String(targetDays)} nap</option>
           )}
         </select>
@@ -377,142 +297,41 @@ export function HabitView() {
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
           placeholder="Kezdés dátuma"
-        />  
+        />
 
-        <button className={`add-btn ${flashSave ? 'flash' : ''}`} onClick={editId ? saveHabit : addHabit}>
+        <button className={`add-btn ${flashSave ? "flash" : ""}`} onClick={editId ? saveHabit : addHabit}>
           <Plus size={20} />
           {editId ? "Mentés" : "Hozzáadás"}
         </button>
       </div>
 
-      {(() => {
-        const today = new Date().toISOString().split("T")[0];
-        const activeHabits = sortHabits(
-          habits.filter((h) => !h.endDate || h.endDate >= today),
-          activeSortBy
-        );
-        const expiredHabits = sortHabits(
-          habits.filter((h) => h.endDate && h.endDate < today),
-          expiredSortBy
-        );
-
-        const renderHabitItem = (habit, isExpired) => (
-          <div
-            className={`task-item ${isExpired ? "expired" : habit.isCompleted() ? "completed" : ""}`}
-            key={habit.habitId}
-          >
-            <div className="left-section">
-              <div className="color-bar" style={{ background: difficultyColor(habit.difficultyName) }}></div>
-
-              <div className="task-texts">
-                <p className={`task-name ${!isExpired && habit.isCompleted() ? "completed" : ""}`}>{habit.habitName}</p>
-
-                <div className="labels">
-                  <span className="label">{habit.typeName}</span>
-                  <span className="label">{habit.difficultyName}</span>
-                  <span className="label date-label">
-                    <Calendar size={12} style={{ marginRight: "4px" }} />
-                    {habit.startDate}
-                  </span>
-                </div>
-
-                <div className="progress-container">
-                  <div className="progress-info">
-                    <span className="progress-text">
-                      {habit.getCheckedDays()} / {habit.totalDays || habit.targetDays} nap
-                    </span>
-                    <span className="progress-percent">
-                      {habit.getProgress()}%
-                    </span>
-                  </div>
-                  <div className="progress-bar">
-                    <div
-                      className={`progress-fill ${habit.isCompleted() ? "completed" : ""}`}
-                      style={{ width: `${habit.getProgress()}%` }}
-                    ></div>
-                  </div>
-                  {habit.isCompleted() && (
-                    <span className="completed-badge">✓ Teljesítve!</span>
-                  )}
-                  {!habit.isCompleted() && habit.getDaysRemaining() > 0 && (
-                    <span className="remaining-days">
-                      {habit.getDaysRemaining()} nap van hátra
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="right-section">
-              <button className="edit-btn" onClick={() => editHabit(habit.habitId)}>
-                <Pencil size={16} /><span className="btn-text"> Szerkesztés</span>
-              </button>
-              <button className="delete-btn" onClick={() => deleteHabit(habit.habitId)}>
-                <Trash2 size={16} /><span className="btn-text"> Törlés</span>
-              </button>
-            </div>
+      <div className="habits-lists-wrapper">
+        <div className="habit-list-section">
+          {renderListHeader("Aktuális szokások", activeSortBy, setActiveSortBy)}
+          <div className={`task-list-div ${activeHabits.length > 6 ? "scrollable-list" : ""}`}>
+            {activeHabits.length === 0 && (
+              <p style={{ textAlign: "center", color: "#777", padding: "1rem" }}>
+                Nincsenek aktuális szokások.
+              </p>
+            )}
+            {activeHabits.map((habit) => renderHabitItem(habit, false))}
           </div>
-        );
+        </div>
 
-        const renderListHeader = (title, sortBy, setSortBy) => (
-          <div className="habit-list-header">
-            <h3 className="habit-list-title">{title}</h3>
-            <div className="sort-btns">
-              <button
-                className={`sort-btn ${sortBy === "date" ? "active" : ""}`}
-                onClick={() => setSortBy("date")}
-              >
-                Alkotási idő
-              </button>
-              <button
-                className={`sort-btn ${sortBy === "difficulty" ? "active" : ""}`}
-                onClick={() => setSortBy("difficulty")}
-              >
-                Nehézség
-              </button>
-            </div>
+        <div className="habit-list-section">
+          {renderListHeader("Lejárt szokások", expiredSortBy, setExpiredSortBy)}
+          <div className={`task-list-div ${expiredHabits.length > 6 ? "scrollable-list" : ""}`}>
+            {expiredHabits.length === 0 && (
+              <p style={{ textAlign: "center", color: "#777", padding: "1rem" }}>
+                Nincsenek lejárt szokások.
+              </p>
+            )}
+            {expiredHabits.map((habit) => renderHabitItem(habit, true))}
           </div>
-        );
-
-        return (
-          <div className="habits-lists-wrapper">
-            <div className="habit-list-section">
-              {renderListHeader("Aktuális szokások", activeSortBy, setActiveSortBy)}
-              <div className={`task-list-div ${activeHabits.length > 6 ? "scrollable-list" : ""}`}>
-                {activeHabits.length === 0 && (
-                  <p style={{ textAlign: "center", color: "#777", padding: "1rem" }}>
-                    Nincsenek aktuális szokások.
-                  </p>
-                )}
-                {activeHabits.map((habit) => renderHabitItem(habit, false))}
-              </div>
-            </div>
-
-            <div className="habit-list-section">
-              {renderListHeader("Lejárt szokások", expiredSortBy, setExpiredSortBy)}
-              <div className={`task-list-div ${expiredHabits.length > 6 ? "scrollable-list" : ""}`}>
-                {expiredHabits.length === 0 && (
-                  <p style={{ textAlign: "center", color: "#777", padding: "1rem" }}>
-                    Nincsenek lejárt szokások.
-                  </p>
-                )}
-                {expiredHabits.map((habit) => renderHabitItem(habit, true))}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-      <div>
-        {(() => {
-          const isNoDataError =
-            error && /nincs.*(habit|szoká|szokas|feladat|task)/i.test(error);
-          return isNoDataError ? (
-            ""
-          ) : (
-            <div className="error-state">{error}</div>
-          );
-        })()}
+        </div>
       </div>
+
+      {!isNoDataError && <div className="error-state">{error}</div>}
     </section>
   );
 }

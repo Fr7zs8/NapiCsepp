@@ -11,11 +11,9 @@ export default class UserService{
         const data = await this.apiService.post("/napicsepp/login", {email, password});
         if (data.token){
             localStorage.setItem("authToken", data.token);
-            
+
             try {
                 const profile = await this.getProfile();
-                console.log("Profil lekérése sikeres:", profile);
-                
                 if (profile && profile.user_id) {
                     localStorage.setItem("user", JSON.stringify(profile.toJSON()));
                     return profile;

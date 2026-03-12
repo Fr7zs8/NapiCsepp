@@ -6,6 +6,7 @@ import Habit from "../../../classes/Views/habit.jsx";
 import { activityService } from "../../../router/apiRouter.jsx";
 import { useNavigate } from "react-router-dom";
 import { showToast } from "../../../components/Toast/showToast";
+import { isAchieved, buildHabitMap, dispatchActivityEvents } from "../../../utils/activityUtils";
 
 export function TaskView() {
   const [tasks, setTasks] = useState([]);
@@ -25,55 +26,16 @@ export function TaskView() {
   async function refreshActivities() {
     try {
       setLoading(true);
-      const data = await activityService.getAllActivities();
-      const habitsData = await activityService.getAllHabits();
+      const [allActivities, habitsData] = await Promise.all([
+        activityService.getAllActivities(),
+        activityService.getAllHabits(),
+      ]);
 
-      const habitMap = {};
-      habitsData.forEach((h) => {
-        const checkedCount = data.filter(
-          (a) =>
-            a.type_name === "Szokás" &&
-            a.activity_name === h.activity_name &&
-            (a.activity_achive === 1 ||
-              a.activity_achive === true ||
-              a.activity_achive === "1"),
-        ).length;
-        let targetDaysVal = null;
-        if (h.target_days || h.target_days === 0) {
-          targetDaysVal = Number(h.target_days);
-        } else if (h.activity_start_date && h.activity_end_date) {
-          try {
-            const sd = new Date(h.activity_start_date);
-            const ed = new Date(h.activity_end_date);
-            sd.setHours(0, 0, 0, 0);
-            ed.setHours(0, 0, 0, 0);
-            const diff = Math.floor((ed - sd) / (1000 * 60 * 60 * 24));
-            targetDaysVal = Math.max(0, diff + 1);
-          } catch (err) {
-            console.warn(err);
-            targetDaysVal = 0;
-          }
-        } else {
-          targetDaysVal = 0;
-        }
-
-        const habitObj = new Habit(
-          h.activity_id,
-          h.activity_name,
-          h.type_name,
-          h.difficulty_name,
-          targetDaysVal,
-          h.activity_start_date,
-          h.activity_end_date,
-          checkedCount,
-          h.progress_counter,
-        );
-        habitMap[h.activity_name] = habitObj;
-      });
-
+      const habitMap = buildHabitMap(allActivities, habitsData);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const taskObject = data
+
+      const taskObjects = allActivities
         .filter((item) => {
           if (item.activity_start_date) {
             const startDate = new Date(item.activity_start_date + "T00:00:00");
@@ -84,25 +46,24 @@ export function TaskView() {
           }
           if (item.type_name === "Szokás") {
             const hm = habitMap[item.activity_name];
-            if (hm && hm.isCompleted()) return false;
+            if (hm && hm.targetDays > 0 && hm.daysElapsed >= hm.targetDays) return false;
           }
           return true;
         })
         .map(
-          (item) =>
-            new Task(
-              item.activity_id || Math.random(),
-              item.activity_name,
-              item.type_name,
-              item.difficulty_name,
-              item.activity_achive === 1,
-              item.activity_start_date,
-              item.activity_end_date,
-              true,
-            ),
+          (item) => new Task(
+            item.activity_id || Math.random(),
+            item.activity_name,
+            item.type_name,
+            item.difficulty_name,
+            isAchieved(item),
+            item.activity_start_date,
+            item.activity_end_date,
+            true,
+          )
         );
 
-      setTasks(taskObject);
+      setTasks(taskObjects);
     } catch (err) {
       setError(err.message || "Hiba az adatok betöltése során!");
       console.error(err);
@@ -113,9 +74,8 @@ export function TaskView() {
 
   useEffect(() => {
     refreshActivities();
-    const handler = () => refreshActivities();
-    window.addEventListener("activitiesUpdated", handler);
-    return () => window.removeEventListener("activitiesUpdated", handler);
+    window.addEventListener("activitiesUpdated", refreshActivities);
+    return () => window.removeEventListener("activitiesUpdated", refreshActivities);
   }, []);
 
   useEffect(() => {
@@ -137,21 +97,20 @@ export function TaskView() {
 
   async function addTask() {
     if (!taskName || !typeName || !difficultyName) return;
-
     try {
+      const today = new Date().toISOString().split("T")[0];
       await activityService.createTask({
         activity_name: taskName,
         activity_type_name: typeName,
         activity_difficulty_name: difficultyName,
-        activity_start_date: new Date().toISOString().split("T")[0],
-        activity_end_date: new Date().toISOString().split("T")[0],
+        activity_start_date: today,
+        activity_end_date: today,
         activity_achive: 0,
       });
       resetForm();
       await refreshActivities();
       showToast("Feladat sikeresen hozzáadva!", "success");
-      window.dispatchEvent(new Event("activitiesUpdated"));
-      window.dispatchEvent(new Event("itemSaved"));
+      dispatchActivityEvents();
     } catch (err) {
       showToast(err.message || "Hiba a feladat hozzáadása során!", "error");
       setError(err.message || "Hiba a feladat hozzáadása során!");
@@ -171,8 +130,7 @@ export function TaskView() {
       await activityService.deleteTask(id);
       await refreshActivities();
       showToast("Feladat sikeresen törölve!", "success");
-      window.dispatchEvent(new Event("activitiesUpdated"));
-      window.dispatchEvent(new Event("itemSaved"));
+      dispatchActivityEvents();
     } catch (err) {
       showToast(err.message || "Hiba a feladat törlése során!", "error");
       setError(err.message || "Hiba a feladat törlése során!");
@@ -199,8 +157,7 @@ export function TaskView() {
       resetForm();
       await refreshActivities();
       showToast("Feladat sikeresen módosítva!", "success");
-      window.dispatchEvent(new Event("activitiesUpdated"));
-      window.dispatchEvent(new Event("itemSaved"));
+      dispatchActivityEvents();
     } catch (err) {
       showToast(err.message || "Hiba a feladat szerkesztése során!", "error");
       setError(err.message || "Hiba a feladat szerkesztése során!");
@@ -214,12 +171,11 @@ export function TaskView() {
       await activityService.updateTask(taskId, { activity_achive: newVal });
       await refreshActivities();
       showToast(newVal ? "Feladat teljesítve!" : "Feladat visszavonva!", "success");
-      window.dispatchEvent(new Event("activitiesUpdated"));
-      window.dispatchEvent(new Event("itemSaved"));
-    } catch (e) {
-      console.error(e);
-      showToast(e.message || "Hiba a feladat státuszának frissítése során", "error");
-      setError(e.message || "Hiba a feladat státuszának frissítése során");
+      dispatchActivityEvents();
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || "Hiba a feladat státuszának frissítése során", "error");
+      setError(err.message || "Hiba a feladat státuszának frissítése során");
     }
   }
 
@@ -247,6 +203,8 @@ export function TaskView() {
       </div>
     );
   }
+
+  const isNoDataError = error && /nincs.*(task|feladat|nincsenek|nincs)/i.test(error);
 
   return (
     <section className="tasks-section">
@@ -277,15 +235,11 @@ export function TaskView() {
           value={typeName}
           onChange={(e) => setTypeName(e.target.value)}
         >
-          <option value="" disabled hidden>
-            Feladat típusa
-          </option>
+          <option value="" disabled hidden>Feladat típusa</option>
           {types
             .filter((type) => type.type_name !== "Szokás")
             .map((type) => (
-              <option key={type.type_id} value={type.type_name}>
-                {type.type_name}
-              </option>
+              <option key={type.type_id} value={type.type_name}>{type.type_name}</option>
             ))}
         </select>
 
@@ -294,14 +248,9 @@ export function TaskView() {
           value={difficultyName}
           onChange={(e) => setDifficultyName(e.target.value)}
         >
-          <option value="" disabled hidden>
-            Nehézség típusa
-          </option>
+          <option value="" disabled hidden>Nehézség típusa</option>
           {difficulties.map((difficulty) => (
-            <option
-              key={difficulty.difficulty_id}
-              value={difficulty.difficulty_name}
-            >
+            <option key={difficulty.difficulty_id} value={difficulty.difficulty_name}>
               {difficulty.difficulty_name}
             </option>
           ))}
@@ -313,10 +262,7 @@ export function TaskView() {
             Hozzáadás
           </button>
         ) : (
-          <button
-            className={`add-btn ${flashSave ? "flash" : ""}`}
-            onClick={saveTask}
-          >
+          <button className={`add-btn ${flashSave ? "flash" : ""}`} onClick={saveTask}>
             <Check size={20} />
             Mentés
           </button>
@@ -358,20 +304,13 @@ export function TaskView() {
                 className="task-checkbox"
                 type="checkbox"
                 checked={!!task.isCompleted}
-                onChange={() =>
-                  toggleTaskAchieved(task.taskId, task.isCompleted)
-                }
+                onChange={() => toggleTaskAchieved(task.taskId, task.isCompleted)}
               />
-
               <div className="color-bar" style={{ background: difficultyColor(task.difficultyName) }}></div>
-
               <div className="task-texts">
-                <p
-                  className={`task-name ${task.isCompleted ? "completed" : ""}`}
-                >
+                <p className={`task-name ${task.isCompleted ? "completed" : ""}`}>
                   {task.taskName}
                 </p>
-
                 <div className="labels">
                   <span className="label">{task.typeName}</span>
                   <span className="label">{task.difficultyName}</span>
@@ -385,19 +324,12 @@ export function TaskView() {
 
             <div className="right-section">
               {task.typeName !== "Szokás" && (
-                <button
-                  className="edit-btn"
-                  onClick={() => startEditTask(task)}
-                >
+                <button className="edit-btn" onClick={() => startEditTask(task)}>
                   <Pencil size={16} /> Szerkesztés
                 </button>
               )}
-
               {task.typeName !== "Szokás" && (
-                <button
-                  className="delete-btn"
-                  onClick={() => deleteTask(task.taskId)}
-                >
+                <button className="delete-btn" onClick={() => deleteTask(task.taskId)}>
                   <Trash2 size={16} /> Törlés
                 </button>
               )}
@@ -405,17 +337,8 @@ export function TaskView() {
           </div>
         ))}
       </div>
-      <div>
-        {(() => {
-          const isNoDataError =
-            error && /nincs.*(task|feladat|nincsenek|nincs)/i.test(error);
-          return isNoDataError ? (
-            ""
-          ) : (
-            <div className="error-state">{error}</div>
-          );
-        })()}
-      </div>
+
+      {!isNoDataError && <div className="error-state">{error}</div>}
     </section>
   );
 }

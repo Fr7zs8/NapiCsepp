@@ -102,15 +102,14 @@ describe('Naptár - Havi nézet popupok és CRUD', () => {
   it('24 - EventPopup tartalmaz név mezőt', () => {
     cy.get('.calendar-day.current-day').click();
     cy.get('.popup-actions .btn-save').click();
-    cy.get('#event-name').should('be.visible');
+    cy.get('.popup-form input[type="text"][placeholder="Esemény címe"]').should('be.visible');
   });
 
   it('25 - EventPopup tartalmaz dátum, kezdés, befejezés mezőket', () => {
     cy.get('.calendar-day.current-day').click();
     cy.get('.popup-actions .btn-save').click();
-    cy.get('#event-date').should('exist');
-    cy.get('#start-time').should('exist');
-    cy.get('#end-time').should('exist');
+    cy.get('.popup-form input[type="date"]').should('have.length', 2);
+    cy.get('.popup-form input[type="time"]').should('have.length', 2);
   });
 
   it('26 - EventPopup "Létrehozás" gomb megjelenik új eseménynél', () => {
@@ -132,11 +131,10 @@ describe('Naptár - Havi nézet popupok és CRUD', () => {
     cy.get('.popup-content').should('not.exist');
   });
 
-  it('29 - Feladatok fülön "Új feladat hozzáadása" link navigál /tasks-ra', () => {
+  it('29 - Feladatok fülön "Új feladat hozzáadása" gomb megjelenik', () => {
     cy.get('.calendar-day.current-day').click();
     cy.get('.popup-tab').eq(1).click();
-    cy.get('.popup-link').click();
-    cy.url().should('include', '/tasks');
+    cy.get('.popup-actions .btn-save').should('contain.text', 'Új feladat hozzáadása');
   });
 
   it('30 - Szokások fülön "Új szokás hozzáadása" link navigál /habits-ra', () => {

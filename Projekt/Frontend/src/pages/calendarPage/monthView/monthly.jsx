@@ -391,7 +391,7 @@ export function MonthlyView(){
                                             className={`event-bar-inline event-bar-${pos}`}
                                             style={{
                                                 bottom: `${4 + bar.lane * 22}px`,
-                                                backgroundColor: rawEvent.event_color || '#0090ff',
+                                                backgroundColor: '#8b5cf6',
                                             }}
                                             onClick={e => {
                                                 e.stopPropagation();

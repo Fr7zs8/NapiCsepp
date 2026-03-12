@@ -1,12 +1,12 @@
-    export default class Statistics {
-        static getActiveHabitsCount(habits) {
-            if (!Array.isArray(habits)) return 0;
-            const today = new Date().toISOString().split("T")[0];
-            return habits.filter(h => {
-                const endDate = h.activity_end_date;
-                return !endDate || endDate >= today;
-            }).length;
-        }
+export default class Statistics {
+    static getActiveHabitsCount(habits) {
+        if (!Array.isArray(habits)) return 0;
+        const today = new Date().toISOString().split("T")[0];
+        return habits.filter(h => {
+            const endDate = h.activity_end_date;
+            return !endDate || endDate >= today;
+        }).length;
+    }
 
     constructor(data = {}) {
         this.totalActivities = data.total_activity || 0;
@@ -18,8 +18,6 @@
         this.easyTasks = data.easy_tasks || 0;
         this.weeklyTasks = data.weekly_tasks || 0;
         this.weeklyCompleted = data.weekly_tasks_completed || 0;
-
-        //frontend
         this.extra = {};
     }
 

@@ -13,11 +13,6 @@ const EVENT_COLOR_PALETTE = [
     '#84cc16',
 ];
 
-/**
- * Determinisztikusan választ színt egy eseményhez az event_id alapján.
- * Ha az eseménynek van saját event_color-ja, azt használja.
- * Frissítéskor ugyanaz az event_id ugyanazt a színt adja vissza.
- */
 export function getEventColor(ev, fallbackIndex = 0) {
     if (ev?.event_color) return ev.event_color;
     const id = ev?.event_id ?? fallbackIndex;
