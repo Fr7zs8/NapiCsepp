@@ -1,16 +1,16 @@
 const EVENT_COLOR_PALETTE = [
-    '#3b82f6', // kék
-    '#8b5cf6', // lila
-    '#10b981', // zöld
-    '#f59e0b', // sárga-narancs
-    '#ef4444', // piros
-    '#ec4899', // pink
-    '#06b6d4', // cyan
-    '#f97316', // narancs
-    '#6366f1', // indigo
-    '#14b8a6', // teal
-    '#a855f7', // viola
-    '#84cc16', // lime-zöld
+    '#3b82f6', 
+    '#8b5cf6', 
+    '#10b981', 
+    '#f59e0b', 
+    '#ef4444', 
+    '#ec4899', 
+    '#06b6d4', 
+    '#f97316', 
+    '#6366f1',
+    '#14b8a6', 
+    '#a855f7',
+    '#84cc16',
 ];
 
 /**

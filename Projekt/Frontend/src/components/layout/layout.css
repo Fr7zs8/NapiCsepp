@@ -20,16 +20,14 @@
     margin-left: 0;
 }
 
-/* A hamburger breakpointtal (960px) szinkronban */
+
 @media (max-width: 960px) {
     .main-content {
         margin-left: 0;
-        /* top: hamburger gomb (~56px) + extra tér; left: hamburger gomb (~60px) + tér */
         padding: 4rem 1.25rem 1.25rem 1.25rem;
     }
 }
 
-/* Habit oldalon a main-content margin korábban eltűnik (1280px) */
 @media (max-width: 1280px) {
     .habit-layout .main-content {
         margin-left: 0;

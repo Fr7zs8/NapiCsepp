@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-/* eslint-disable react-hooks/set-state-in-effect */
 import { X } from "lucide-react";
 import "./EventPopup.css";
 import { showToast } from "../Toast/showToast";
