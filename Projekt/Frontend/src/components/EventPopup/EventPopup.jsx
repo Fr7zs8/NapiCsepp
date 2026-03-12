@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import "./EventPopup.css";
 import { showToast } from "../Toast/showToast";
 
-export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour, existingEvent, eventsForDay }) {
+export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour, existingEvent, allEvents }) {
     const [eventData, setEventData] = useState({
         event_name: "",
         event_start_date: "",
@@ -63,6 +63,22 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
         if (newStart >= newEnd) {
             showToast("A kezdési időnek korábbinak kell lennie, mint a befejezésnek!", "error");
             return;
+        }
+
+        if (allEvents && allEvents.length > 0) {
+            const editingId = existingEvent ? (existingEvent.event_id || existingEvent.eventId) : null;
+            const overlapping = allEvents.filter(ev => {
+                const evId = ev.event_id || ev.eventId;
+                if (editingId != null && evId == editingId) return false;
+                const evStart = new Date(ev.event_start_time || ev.startTime);
+                const evEnd = new Date(ev.event_end_time || ev.endTime);
+                return newStart < evEnd && newEnd > evStart;
+            });
+            if (overlapping.length > 0) {
+                const conflictName = overlapping[0].event_name || overlapping[0].eventName || "egy másik esemény";
+                showToast(`Az esemény ütközik ezzel: "${conflictName}"`, "error");
+                return;
+            }
         }
 
         let eventToSave;

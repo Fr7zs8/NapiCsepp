@@ -369,6 +369,7 @@ export function WeeklyView(){
                 selectedDate={selectedDate}
                 selectedHour={selectedHour}
                 existingEvent={editingEvent}
+                allEvents={events}
             />
             {miniPopup.show && (
                 <EventMiniPopup

@@ -527,7 +527,7 @@ export function MonthlyView(){
                 onSave={handleSaveEvent}
                 selectedDate={selectedDate}
                 existingEvent={editingEvent}
-                eventsForDay={dayEvents}
+                allEvents={events}
             />
 
             {taskMiniPopup.show && (

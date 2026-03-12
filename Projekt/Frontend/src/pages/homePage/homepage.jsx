@@ -17,6 +17,7 @@ export function HomepageView(){
     const [statsObj, setStatsObj] = useState(null);
     const [futureEvents, setFutureEvents] = useState([]);
     const [todayEvents, setTodayEvents] = useState([]);
+    const [allEvents, setAllEvents] = useState([]);
     const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
     const [showEventPopup, setShowEventPopup] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
@@ -41,6 +42,7 @@ export function HomepageView(){
             setStatsObj(statsInstance);
 
             const eventsData = await eventService.getOverview();
+            setAllEvents(eventsData || []);
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
             const upcoming = eventsData
@@ -345,7 +347,7 @@ export function HomepageView(){
                             selectedDate={editingEvent ? new Date(editingEvent.event_start_time) : null}
                             selectedHour={null}
                             existingEvent={editingEvent}
-                            eventsForDay={editingEvent ? [editingEvent] : []}
+                            allEvents={allEvents}
                         />
                     )}
         </section>

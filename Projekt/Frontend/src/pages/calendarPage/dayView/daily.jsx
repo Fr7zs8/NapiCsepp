@@ -21,6 +21,7 @@ export function DailyView(){
     const [editingEvent, setEditingEvent] = useState(null);
     const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
     const [futureEvents, setFutureEvents] = useState([]);
+    const [allEvents, setAllEvents] = useState([]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -37,6 +38,7 @@ export function DailyView(){
     const fetchEvents = async () => {
         try {
             const eventsData = await eventService.getOverview();
+            setAllEvents(eventsData || []);
             setCalendarManager(new CalendarManager(currentDay, 'daily', [], eventsData || []));
             const now = new Date();
             setFutureEvents(
@@ -288,7 +290,7 @@ export function DailyView(){
                 selectedDate={currentDay}
                 selectedHour={selectedHour}
                 existingEvent={editingEvent}
-                eventsForDay={dayData.events}
+                allEvents={allEvents}
             />
             {miniPopup.show && (
                 <EventMiniPopup

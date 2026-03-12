@@ -59,6 +59,7 @@ export function CombinedView(){
     const [eventsListForDay, setEventsListForDay] = useState([]);
     const [eventsListDate, setEventsListDate] = useState(null);
     const [miniPopup, setMiniPopup] = useState({ show: false, event: null, position: { x: 0, y: 0 } });
+    const [allEvents, setAllEvents] = useState([]);
 
     const handleEditEvent = (event) => {
         setEditingEvent(event);
@@ -131,6 +132,7 @@ export function CombinedView(){
     const fetchEvents = async () => {
         try {
             const data = await eventService.getOverview();
+            setAllEvents(data || []);
             setCalendarManager(new CalendarManager(currentWeek, 'combined', [], data || []));
         } catch (err) {
             console.error("Error fetching events:", err);
@@ -341,7 +343,7 @@ export function CombinedView(){
                                 selectedDate={selectedDay}
                                 selectedHour={selectedHour}
                                 existingEvent={editingEvent}
-                                eventsForDay={calendarManager ? calendarManager.getDayView(selectedDay).events : []}
+                                allEvents={allEvents}
                             />
                         )}
                         {miniPopup.show && (
