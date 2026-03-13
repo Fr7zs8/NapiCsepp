@@ -24,9 +24,6 @@ describe("TypeController", () => {
     };
   });
 
-  // -------------------------------------------------------
-  // GET TYPES
-  // -------------------------------------------------------
   test("getTypes returns 200 and data", async () => {
     const mockData = [
       { id: 1, name: "Cardio" },
@@ -62,5 +59,28 @@ describe("TypeController", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
+  });
+
+  test("getTypes handles 500 error without message", async () => {
+    mockService.getTypes.mockRejectedValue({});
+
+    await controller.getTypes(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
+  });
+
+  test("getTypes handles error with status and message", async () => {
+    mockService.getTypes.mockRejectedValue({
+      status: 400,
+      message: "Bad Request",
+    });
+
+    await controller.getTypes(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "Bad Request" });
   });
 });

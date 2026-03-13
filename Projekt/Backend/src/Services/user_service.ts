@@ -54,14 +54,37 @@ export class UserService {
   }
 
   async register(user: User): Promise<number> {
+    if (!user || !user.username || !user.email || !user.password) {
+      throw new HttpException(400, "Hiányzó kötelező mező(k).");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(user.email)) {
+      throw new HttpException(400, "Érvénytelen email formátum.");
+    }
+
+    if (user.password.length < 5) {
+      throw new HttpException(
+        400,
+        "A jelszónak legalább 6 karakter hosszúnak kell lennie.",
+      );
+    }
+
     const existingUser = await this.repository.findByEmail(user.email);
 
     if (existingUser) {
       throw new HttpException(409, "Az email cím már használatban van");
     }
+
     const date = new Date(Date.now()).toLocaleString("sv-SE");
     const role = "user";
-    const results = await this.repository.createUser(user, role, date);
+    const language = "hu";
+    const results = await this.repository.createUser(
+      user,
+      role,
+      date,
+      language,
+    );
 
     return results;
   }

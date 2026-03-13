@@ -18,7 +18,7 @@ describe("UserService", () => {
     // @ts-ignore
     service.repository = mockRepository;
 
-     (jwt.sign as jest.Mock).mockClear();
+    (jwt.sign as jest.Mock).mockClear();
   });
 
   test("login returns token on success", async () => {
@@ -27,19 +27,22 @@ describe("UserService", () => {
 
     const result = await service.login("test@test.com", "password");
 
-    expect(mockRepository.login).toHaveBeenCalledWith("test@test.com", "password");
-    expect(jwt.sign).toHaveBeenCalledWith(
-      { user_id: 1 },
-      config.jwtSecret,
-      { expiresIn: "2h" },
+    expect(mockRepository.login).toHaveBeenCalledWith(
+      "test@test.com",
+      "password",
     );
+    expect(jwt.sign).toHaveBeenCalledWith({ user_id: 1 }, config.jwtSecret, {
+      expiresIn: "2h",
+    });
     expect(result).toBe("mock_token");
   });
 
   test("login throws 401 when user_id is 0", async () => {
     mockRepository.login.mockResolvedValue(0);
 
-    await expect(service.login("wrong@test.com", "wrong")).rejects.toMatchObject({
+    await expect(
+      service.login("wrong@test.com", "wrong"),
+    ).rejects.toMatchObject({
       status: 401,
       message: "Rossz az email vagy a jelszó",
     });
@@ -50,7 +53,9 @@ describe("UserService", () => {
   test("login throws 401 when user_id is null", async () => {
     mockRepository.login.mockResolvedValue(null as any);
 
-    await expect(service.login("wrong@test.com", "wrong")).rejects.toMatchObject({
+    await expect(
+      service.login("wrong@test.com", "wrong"),
+    ).rejects.toMatchObject({
       status: 401,
       message: "Rossz az email vagy a jelszó",
     });
@@ -59,11 +64,17 @@ describe("UserService", () => {
   test("login propagates repository error", async () => {
     mockRepository.login.mockRejectedValue(new Error("DB hiba"));
 
-    await expect(service.login("test@test.com", "password")).rejects.toThrow("DB hiba");
+    await expect(service.login("test@test.com", "password")).rejects.toThrow(
+      "DB hiba",
+    );
   });
 
   test("getUser returns user data", async () => {
-    const mockUser = { user_id: 1, username: "TestUser", email: "test@test.com" };
+    const mockUser = {
+      user_id: 1,
+      username: "TestUser",
+      email: "test@test.com",
+    };
 
     mockRepository.getUser.mockResolvedValue(mockUser as any);
 
@@ -139,27 +150,31 @@ describe("UserService", () => {
       mockUser,
       "user",
       expect.any(String),
+      "hu",
     );
     expect(result).toBe(5);
   });
 
-  test("register throws 409 when email already exists", async () => {
+  test("register throws 400 when email already exists", async () => {
     mockRepository.findByEmail.mockResolvedValue({ user_id: 1 } as any);
 
     await expect(
-      service.register({ email: "existing@test.com" } as any)
+      service.register({ email: "existing@test.com" } as any),
     ).rejects.toMatchObject({
-      status: 409,
-      message: "Az email cím már használatban van",
+      status: 400,
     });
 
     expect(mockRepository.createUser).not.toHaveBeenCalled();
   });
 
   test("register propagates repository error", async () => {
-    mockRepository.findByEmail.mockRejectedValue(new Error("DB hiba"));
+    mockRepository.findByEmail.mockRejectedValue(
+      new Error("Hiányzó kötelező mező(k)."),
+    );
 
-    await expect(service.register({ email: "test@test.com" } as any)).rejects.toThrow("DB hiba");
+    await expect(
+      service.register({ email: "test@test.com" } as any),
+    ).rejects.toThrow("Hiányzó kötelező mező(k).");
   });
 
   test("editUser returns result on success", async () => {
@@ -169,23 +184,33 @@ describe("UserService", () => {
 
     const result = await service.editUser({ username: "Updated" } as any, 2, 1);
 
-    expect(mockRepository.editUser).toHaveBeenCalledWith(2, { username: "Updated" }, 1);
+    expect(mockRepository.editUser).toHaveBeenCalledWith(
+      2,
+      { username: "Updated" },
+      1,
+    );
     expect(result).toEqual(mockResult);
   });
 
   test("editUser throws 400 when result is null", async () => {
     mockRepository.editUser.mockResolvedValue(null as any);
 
-    await expect(service.editUser({ username: "Updated" } as any, 2, 1)).rejects.toMatchObject({
+    await expect(
+      service.editUser({ username: "Updated" } as any, 2, 1),
+    ).rejects.toMatchObject({
       status: 400,
       message: "Nincs semmi változtatni való!",
     });
   });
 
   test("editUser propagates repository error", async () => {
-    mockRepository.editUser.mockRejectedValue(new HttpException(403, "Nincs jogosultságod szerkeszteni!"));
+    mockRepository.editUser.mockRejectedValue(
+      new HttpException(403, "Nincs jogosultságod szerkeszteni!"),
+    );
 
-    await expect(service.editUser({ username: "Updated" } as any, 2, 5)).rejects.toMatchObject({
+    await expect(
+      service.editUser({ username: "Updated" } as any, 2, 5),
+    ).rejects.toMatchObject({
       status: 403,
       message: "Nincs jogosultságod szerkeszteni!",
     });

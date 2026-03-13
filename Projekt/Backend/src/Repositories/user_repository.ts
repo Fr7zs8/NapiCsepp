@@ -27,7 +27,6 @@ export class UserRepository {
     return results;
   }
 
-  //abi -kellet egy id
   async getAllUser(): Promise<User[]> {
     const connection = await mysql.createConnection(config.database);
 
@@ -39,11 +38,16 @@ export class UserRepository {
     return results;
   }
 
-  async createUser(user: User, role: string, date: string): Promise<number> {
+  async createUser(
+    user: User,
+    role: string,
+    date: string,
+    language: string,
+  ): Promise<number> {
     const connection = await mysql.createConnection(config.database);
     const [results] = (await connection.query(
       "INSERT INTO users (username, email, password, language, role, register_date) VALUES (?,?,?,?,?,?)",
-      [user.username, user.email, user.password, user.language, role, date],
+      [user.username, user.email, user.password, language, role, date],
     )) as Array<any>;
 
     return results.insertId;

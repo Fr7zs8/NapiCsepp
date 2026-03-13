@@ -76,7 +76,6 @@ describe("Testing User endpoints", () => {
       expect(res.body[0]).to.have.property("language");
       expect(res.body[0]).to.have.property("role");
       expect(res.body[0]).to.have.property("register_date");
-
     });
   });
 
@@ -96,7 +95,7 @@ describe("Testing User endpoints", () => {
     const newUser = {
       username: "NewUser",
       email: "newuser@gmail.com",
-      password: "1234",
+      password: "12345",
       language: "hu",
     };
 
@@ -114,7 +113,12 @@ describe("Testing User endpoints", () => {
     cy.request({
       method: "POST",
       url: "/napicsepp/regisztrate",
-      body: { username: "User2", email: "abcd@gmail.com", password: "1234", language: "hu" },
+      body: {
+        username: "User2",
+        email: "abcd@gmail.com",
+        password: "12345",
+        language: "hu",
+      },
       failOnStatusCode: false,
     }).then((res) => {
       expect(res.status).to.eq(409);
@@ -151,11 +155,11 @@ describe("Testing User endpoints", () => {
     });
   });
 
-    it("PUT - /users/:id - 200 - Admin can update user", () => {
+  it("PUT - /users/:id - 200 - Admin can update user", () => {
     const updatedData = {
       username: "updatedUser",
       language: "en",
-      role: "moderator"
+      role: "moderator",
     };
 
     cy.request({
@@ -206,7 +210,7 @@ describe("Testing User endpoints", () => {
       body: {},
       failOnStatusCode: false,
     }).then((res) => {
-      expect(res.status).to.eq(404); 
+      expect(res.status).to.eq(404);
       expect(res.body.message).to.eq("Nincs frissítendő adat!");
     });
   });
@@ -240,7 +244,7 @@ describe("Testing User endpoints", () => {
     const newUser = {
       username: "deleteMe",
       email: "deleteme@gmail.com",
-      password: "1234",
+      password: "12346",
       language: "hu",
     };
 
@@ -251,7 +255,7 @@ describe("Testing User endpoints", () => {
         headers: { "x-access-token": moderatorToken },
       }).then((res) => {
         expect(res.status).to.eq(200);
-        expect(res.body).to.eq("Sikeres törlés.")
+        expect(res.body).to.eq("Sikeres törlés.");
       });
     });
   });

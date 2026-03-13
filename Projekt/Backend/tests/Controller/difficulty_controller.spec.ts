@@ -59,4 +59,30 @@ describe("DifficultyController", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
   });
+
+  test("getDifficulties handles 500 error without message", async () => {
+    mockService.getDifficulties.mockRejectedValue({
+      status: undefined,
+      message: undefined,
+    });
+
+    await controller.getDifficulties(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
+  });
+
+  test("getDifficulties handles error with status and message", async () => {
+    mockService.getDifficulties.mockRejectedValue({
+      status: 400,
+      message: "Bad Request",
+    });
+
+    await controller.getDifficulties(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "Bad Request" });
+  });
 });

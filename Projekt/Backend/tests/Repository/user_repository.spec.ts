@@ -41,18 +41,22 @@ describe("UserRepository", () => {
   test("login throws error on query failure", async () => {
     mockConnection.query.mockRejectedValue(new Error("DB hiba"));
 
-    await expect(repository.login("test@test.com", "password")).rejects.toThrow("DB hiba");
+    await expect(repository.login("test@test.com", "password")).rejects.toThrow(
+      "DB hiba",
+    );
   });
 
   test("getUser returns user data", async () => {
-    const mockData = [{
-      user_id: 1,
-      username: "TestUser",
-      email: "test@test.com",
-      language: "hu",
-      role: "user",
-      register_date: "2024-01-01",
-    }];
+    const mockData = [
+      {
+        user_id: 1,
+        username: "TestUser",
+        email: "test@test.com",
+        language: "hu",
+        role: "user",
+        register_date: "2024-01-01",
+      },
+    ];
 
     mockConnection.query.mockResolvedValue([mockData]);
 
@@ -108,11 +112,23 @@ describe("UserRepository", () => {
       language: "hu",
     };
 
-    const result = await repository.createUser(mockUser as any, "user", "2024-01-01");
+    const result = await repository.createUser(
+      mockUser as any,
+      "user",
+      "2024-01-01",
+      "hu",
+    );
 
     expect(mockConnection.query).toHaveBeenCalledWith(
       expect.stringContaining("INSERT INTO users"),
-      [mockUser.username, mockUser.email, mockUser.password, mockUser.language, "user", "2024-01-01"],
+      [
+        mockUser.username,
+        mockUser.email,
+        mockUser.password,
+        mockUser.language,
+        "user",
+        "2024-01-01",
+      ],
     );
     expect(result).toBe(5);
   });
@@ -121,7 +137,12 @@ describe("UserRepository", () => {
     mockConnection.query.mockRejectedValue(new Error("DB hiba"));
 
     await expect(
-      repository.createUser({ username: "User" } as any, "user", "2024-01-01")
+      repository.createUser(
+        { username: "User" } as any,
+        "user",
+        "2024-01-01",
+        "hu",
+      ),
     ).rejects.toThrow("DB hiba");
   });
 
@@ -130,8 +151,8 @@ describe("UserRepository", () => {
     const mockResult = { affectedRows: 1 };
 
     mockConnection.query
-      .mockResolvedValueOnce([mockModerators])  // getModerators
-      .mockResolvedValueOnce([mockResult]);      // UPDATE query
+      .mockResolvedValueOnce([mockModerators]) // getModerators
+      .mockResolvedValueOnce([mockResult]); // UPDATE query
 
     const result = await repository.editUser(2, { username: "UpdatedUser" }, 1);
 
@@ -149,10 +170,12 @@ describe("UserRepository", () => {
   });
 
   test("editUser throws 403 when not admin or moderator", async () => {
-    mockConnection.query.mockResolvedValueOnce([[{ user_id: 99, role: "user" }]]);
+    mockConnection.query.mockResolvedValueOnce([
+      [{ user_id: 99, role: "user" }],
+    ]);
 
     await expect(
-      repository.editUser(2, { username: "UpdatedUser" }, 5)
+      repository.editUser(2, { username: "UpdatedUser" }, 5),
     ).rejects.toMatchObject({
       status: 403,
       message: "Nincs jogosultságod szerkeszteni!",
@@ -169,7 +192,7 @@ describe("UserRepository", () => {
       .mockResolvedValueOnce([{ affectedRows: 0 }]);
 
     await expect(
-      repository.editUser(99, { username: "UpdatedUser" }, 1)
+      repository.editUser(99, { username: "UpdatedUser" }, 1),
     ).rejects.toMatchObject({
       status: 404,
       message: "Nincs ilyen user!",
@@ -184,7 +207,7 @@ describe("UserRepository", () => {
       .mockRejectedValueOnce(new Error("DB hiba"));
 
     await expect(
-      repository.editUser(2, { username: "UpdatedUser" }, 1)
+      repository.editUser(2, { username: "UpdatedUser" }, 1),
     ).rejects.toThrow("DB hiba");
 
     expect(mockConnection.end).toHaveBeenCalled();
@@ -217,7 +240,11 @@ describe("UserRepository", () => {
   });
 
   test("findByEmail returns user when found", async () => {
-    const mockUser = { user_id: 1, email: "test@test.com", username: "TestUser" };
+    const mockUser = {
+      user_id: 1,
+      email: "test@test.com",
+      username: "TestUser",
+    };
 
     mockConnection.query.mockResolvedValue([[mockUser]]);
 
@@ -241,7 +268,9 @@ describe("UserRepository", () => {
   test("findByEmail throws error on query failure", async () => {
     mockConnection.query.mockRejectedValue(new Error("DB hiba"));
 
-    await expect(repository.findByEmail("test@test.com")).rejects.toThrow("DB hiba");
+    await expect(repository.findByEmail("test@test.com")).rejects.toThrow(
+      "DB hiba",
+    );
   });
 
   test("deletUser returns result on success", async () => {

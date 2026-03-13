@@ -61,4 +61,27 @@ describe("OverviewController", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
   });
+
+  test("getOverview handles 500 error without message", async () => {
+    mockService.getOverview.mockRejectedValue({});
+
+    await controller.getOverview(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
+  });
+
+  test("getOverview handles error with status and message", async () => {
+    mockService.getOverview.mockRejectedValue({
+      status: 400,
+      message: "Bad Request",
+    });
+
+    await controller.getOverview(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "Bad Request" });
+  });
 });

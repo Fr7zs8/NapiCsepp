@@ -47,7 +47,9 @@ describe("UserController", () => {
 
     expect(mockService.login).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith({ error: "Nem megfelelők az adatok." });
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Nem megfelelők az adatok.",
+    });
   });
 
   test("login returns 400 when body is empty", async () => {
@@ -70,7 +72,9 @@ describe("UserController", () => {
     await controller.login(req, res);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.send).toHaveBeenCalledWith({ message: "Rossz az email vagy a jelszó" });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Rossz az email vagy a jelszó",
+    });
   });
 
   test("login handles 500 error without status", async () => {
@@ -84,8 +88,37 @@ describe("UserController", () => {
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
   });
 
+  test("login returns default message when error has no message", async () => {
+    mockService.login.mockRejectedValue({ status: 503 });
+
+    req.body = { email: "test@test.com", password: "password" };
+
+    await controller.login(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
+  });
+
+  test("login returns 500 and default message when error is empty object", async () => {
+    mockService.login.mockRejectedValue({});
+
+    req.body = { email: "test@test.com", password: "password" };
+
+    await controller.login(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
+  });
   test("getUser returns 200 and user data", async () => {
-    const mockUser = { user_id: 1, username: "TestUser", email: "test@test.com" };
+    const mockUser = {
+      user_id: 1,
+      username: "TestUser",
+      email: "test@test.com",
+    };
 
     mockService.getUser.mockResolvedValue(mockUser as any);
 
@@ -105,7 +138,9 @@ describe("UserController", () => {
     await controller.getUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.send).toHaveBeenCalledWith({ message: "Nincs egy db user ezzel a névvel." });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Nincs egy db user ezzel a névvel.",
+    });
   });
 
   test("getUser handles 500 error without status", async () => {
@@ -115,6 +150,17 @@ describe("UserController", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
+  });
+
+  test("getUser returns 500 and default message when error is empty object", async () => {
+    mockService.getUser.mockRejectedValue({});
+
+    await controller.getUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
   });
 
   test("getAllUser returns 200 and list of users", async () => {
@@ -141,7 +187,9 @@ describe("UserController", () => {
     await controller.getAllUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.send).toHaveBeenCalledWith({ message: "Csak a moderátor kérheti le!" });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Csak a moderátor kérheti le!",
+    });
   });
 
   test("getAllUser handles 500 error without status", async () => {
@@ -151,6 +199,17 @@ describe("UserController", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
+  });
+
+  test("getAllUser returns 500 and default message when error is empty object", async () => {
+    mockService.getAllUser.mockRejectedValue({});
+
+    await controller.getAllUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
   });
 
   test("register returns 201 on success", async () => {
@@ -181,7 +240,9 @@ describe("UserController", () => {
     await controller.register(req, res);
 
     expect(res.status).toHaveBeenCalledWith(409);
-    expect(res.send).toHaveBeenCalledWith({ message: "Az email cím már használatban van" });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Az email cím már használatban van",
+    });
   });
 
   test("register handles 500 error without status", async () => {
@@ -195,6 +256,29 @@ describe("UserController", () => {
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
   });
 
+  test("register returns 500 and default message when error is empty object", async () => {
+    mockService.register.mockRejectedValue({});
+
+    req.body = { email: "test@test.com", password: "password" };
+
+    await controller.register(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
+  });
+
+  test("register returns 400 if no body", async () => {
+    req.body = null;
+
+    await controller.register(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith("Érvénytelen bemeneti adatok.");
+    expect(mockService.register).not.toHaveBeenCalled();
+  });
+
   test("putUser returns 200 on success", async () => {
     mockService.editUser.mockResolvedValue({ affectedRows: 1 } as any);
 
@@ -203,7 +287,11 @@ describe("UserController", () => {
 
     await controller.putUser(req, res);
 
-    expect(mockService.editUser).toHaveBeenCalledWith({ username: "UpdatedUser" }, "2", 1);
+    expect(mockService.editUser).toHaveBeenCalledWith(
+      { username: "UpdatedUser" },
+      "2",
+      1,
+    );
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith("Sikeres modositás!");
   });
@@ -220,7 +308,9 @@ describe("UserController", () => {
     await controller.putUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.send).toHaveBeenCalledWith({ message: "Nincs jogosultságod szerkeszteni!" });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Nincs jogosultságod szerkeszteni!",
+    });
   });
 
   test("putUser handles 404 error", async () => {
@@ -248,6 +338,20 @@ describe("UserController", () => {
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
   });
 
+  test("putUser returns 500 and default message when error is empty object", async () => {
+    mockService.editUser.mockRejectedValue({});
+
+    req.params.id = "2";
+    req.body = { username: "UpdatedUser" };
+
+    await controller.putUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
+  });
+
   test("getModerators returns 200 and list", async () => {
     const mockData = [{ user_id: 2, role: "moderator" }];
 
@@ -269,7 +373,9 @@ describe("UserController", () => {
     await controller.getModerators(req, res);
 
     expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.send).toHaveBeenCalledWith({ message: "Csak az admin kérheti le." });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Csak az admin kérheti le.",
+    });
   });
 
   test("getModerators handles 500 error without status", async () => {
@@ -279,6 +385,17 @@ describe("UserController", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
+  });
+
+  test("getModerators returns 500 and default message when error is empty object", async () => {
+    mockService.getmoderators.mockRejectedValue({});
+
+    await controller.getModerators(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
   });
 
   test("deletUser returns 200 on success", async () => {
@@ -304,7 +421,9 @@ describe("UserController", () => {
     await controller.deletUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.send).toHaveBeenCalledWith({ message: "Csak a moderátor kérheti le!" });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Csak a moderátor kérheti le!",
+    });
   });
 
   test("deletUser handles 404 error", async () => {
@@ -318,7 +437,9 @@ describe("UserController", () => {
     await controller.deletUser(req, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.send).toHaveBeenCalledWith({ message: "Az user nem található." });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Az user nem található.",
+    });
   });
 
   test("deletUser handles 500 error without status", async () => {
@@ -330,5 +451,18 @@ describe("UserController", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
+  });
+
+  test("deletUser returns 500 and default message when error is empty object", async () => {
+    mockService.deleteUser.mockRejectedValue({});
+
+    req.params.id = "2";
+
+    await controller.deletUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
   });
 });
