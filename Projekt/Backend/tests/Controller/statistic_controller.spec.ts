@@ -76,6 +76,17 @@ describe("StatisticController", () => {
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
   });
 
+  test("systemStatistic returns 500 and default message when error is empty object", async () => {
+    mockService.systemStatistic.mockRejectedValue({});
+
+    await controller.systemStatistic(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
+  });
+
   test("profileStatistic returns 200 and data", async () => {
     const mockData = [{ id: 1, activity_name: "Futás", count: 10 }];
 
@@ -111,6 +122,17 @@ describe("StatisticController", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
+  });
+
+  test("profileStatistic returns 500 and default message when error is empty object", async () => {
+    mockService.profileStatistic.mockRejectedValue({});
+
+    await controller.profileStatistic(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
   });
 
   test("userProfileStatistic returns 200 and data", async () => {
@@ -170,5 +192,18 @@ describe("StatisticController", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
+  });
+
+  test("userProfileStatistic returns 500 and default message when error is empty object", async () => {
+    mockService.userProfileStatistic.mockRejectedValue({});
+
+    req.params.userId = "2";
+
+    await controller.userProfileStatistic(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
   });
 });
