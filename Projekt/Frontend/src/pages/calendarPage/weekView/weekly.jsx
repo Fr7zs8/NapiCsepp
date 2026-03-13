@@ -131,14 +131,11 @@ export function WeeklyView(){
             const startDay = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
             const endDay = new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate());
             if (targetDay < startDay || targetDay > endDay) return false;
+            const isFirstDay = targetDay.getTime() === startDay.getTime();
+            if (!isFirstDay) return false;
             const startMinute = startTime.getHours() * 60 + startTime.getMinutes();
             const endMinute = endTime.getHours() * 60 + endTime.getMinutes();
-            const isFirstDay = targetDay.getTime() === startDay.getTime();
-            const isLastDay = targetDay.getTime() === endDay.getTime();
-            if (isFirstDay && isLastDay) return minuteOfDay >= startMinute && minuteOfDay < endMinute;
-            if (isFirstDay) return minuteOfDay >= startMinute;
-            if (isLastDay) return minuteOfDay < endMinute;
-            return true;
+            return minuteOfDay >= startMinute && minuteOfDay < endMinute;
         });
     };
 

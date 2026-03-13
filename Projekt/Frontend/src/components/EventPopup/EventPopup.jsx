@@ -66,12 +66,18 @@ export function EventPopup({ isOpen, onClose, onSave, selectedDate, selectedHour
 
         if (allEvents && allEvents.length > 0) {
             const editingId = existingEvent ? (existingEvent.event_id || existingEvent.eventId) : null;
+            const getTimeMinutes = (dt) => dt.getHours() * 60 + dt.getMinutes();
             const overlapping = allEvents.filter(ev => {
                 const evId = ev.event_id || ev.eventId;
                 if (editingId != null && evId == editingId) return false;
                 const evStart = new Date(ev.event_start_time || ev.startTime);
                 const evEnd = new Date(ev.event_end_time || ev.endTime);
-                return newStart < evEnd && newEnd > evStart;
+                if (!(newStart < evEnd && newEnd > evStart)) return false;
+                const newStartMin = getTimeMinutes(newStart);
+                const newEndMin = getTimeMinutes(newEnd);
+                const evStartMin = getTimeMinutes(evStart);
+                const evEndMin = getTimeMinutes(evEnd);
+                return newStartMin < evEndMin && newEndMin > evStartMin;
             });
             if (overlapping.length > 0) {
                 const conflictName = overlapping[0].event_name || overlapping[0].eventName || "egy másik esemény";
