@@ -32,7 +32,10 @@ describe("EventRepository", () => {
     const result = await repository.getEvent(1);
 
     expect(mysql.createConnection).toHaveBeenCalledWith(expect.any(Object));
-    expect(mockConnection.query).toHaveBeenCalledWith("CALL pr_pullevent(?)", [1]);
+    expect(mockConnection.query).toHaveBeenCalledWith(
+      "CALL pr_pullevent(?)",
+      [1],
+    );
     expect(mockConnection.end).toHaveBeenCalled();
     expect(result).toEqual(mockData);
   });
@@ -61,24 +64,21 @@ describe("EventRepository", () => {
 
     mockConnection.query.mockResolvedValue([{ insertId: 5 }]);
 
-    const result = await repository.insertEvent(mockConnection, mockEvent as any);
+    const result = await repository.insertEvent(
+      mockConnection,
+      mockEvent as any,
+      2,
+    );
 
     expect(mockConnection.query).toHaveBeenCalledWith(
       "INSERT INTO events (event_name, event_start_time, event_end_time) VALUES (?, ?, ?)",
-      [mockEvent.event_name, mockEvent.event_start_time, mockEvent.event_end_time],
+      [
+        mockEvent.event_name,
+        mockEvent.event_start_time,
+        mockEvent.event_end_time,
+      ],
     );
     expect(result).toBe(5);
-  });
-
-  test("linkUserToEvent executes correct query", async () => {
-    mockConnection.query.mockResolvedValue([{}]);
-
-    await repository.linkUserToEvent(mockConnection, 1, 5);
-
-    expect(mockConnection.query).toHaveBeenCalledWith(
-      "INSERT INTO users_events (user_id, event_id) VALUES (?, ?)",
-      [1, 5],
-    );
   });
 
   test("postEvent commits transaction and returns eventId", async () => {
@@ -110,7 +110,9 @@ describe("EventRepository", () => {
       event_end_time: "2024-01-02",
     };
 
-    await expect(repository.postEvent(mockEvent as any, 1)).rejects.toThrow("DB hiba");
+    await expect(repository.postEvent(mockEvent as any, 1)).rejects.toThrow(
+      "DB hiba",
+    );
 
     expect(mockConnection.beginTransaction).toHaveBeenCalled();
     expect(mockConnection.rollback).toHaveBeenCalled();
@@ -144,7 +146,7 @@ describe("EventRepository", () => {
 
     mockConnection.query.mockResolvedValue([mockResult]);
 
-    const result = await repository.updateEvent(1, { event_name: "Új név" });
+    const result = await repository.updateEvent(1, { event_name: "Új név" }, 2);
 
     expect(mockConnection.query).toHaveBeenCalledWith(
       "UPDATE events SET event_name = ? WHERE event_id = ?",
@@ -159,10 +161,14 @@ describe("EventRepository", () => {
 
     mockConnection.query.mockResolvedValue([mockResult]);
 
-    await repository.updateEvent(1, {
-      event_name: "Új név",
-      invalid_field: "érték",
-    } as any);
+    await repository.updateEvent(
+      1,
+      {
+        event_name: "Új név",
+        invalid_field: "érték",
+      } as any,
+      2,
+    );
 
     const callArgs = mockConnection.query.mock.calls[0];
     expect(callArgs[0]).not.toContain("invalid_field");
@@ -172,7 +178,9 @@ describe("EventRepository", () => {
   test("updateEvent closes connection on error", async () => {
     mockConnection.query.mockRejectedValue(new Error("DB hiba"));
 
-    await expect(repository.updateEvent(1, { event_name: "Új név" })).rejects.toThrow("DB hiba");
+    await expect(
+      repository.updateEvent(1, { event_name: "Új név" }, 2),
+    ).rejects.toThrow("DB hiba");
 
     expect(mockConnection.end).toHaveBeenCalled();
   });

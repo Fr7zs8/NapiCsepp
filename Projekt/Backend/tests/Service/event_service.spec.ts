@@ -91,7 +91,9 @@ describe("EventService", () => {
       event_end_time: "2024-01-02",
     };
 
-    await expect(service.postEvent(mockEvent as any, 1)).rejects.toThrow("DB hiba");
+    await expect(service.postEvent(mockEvent as any, 1)).rejects.toThrow(
+      "DB hiba",
+    );
   });
 
   test("deleteEvent returns result on success", async () => {
@@ -139,14 +141,18 @@ describe("EventService", () => {
   test("putEvent returns result on success", async () => {
     mockRepository.updateEvent.mockResolvedValue({ affectedRows: 1 } as any);
 
-    const result = await service.putEvent(1, { event_name: "Új név" });
+    const result = await service.putEvent(1, { event_name: "Új név" }, 2);
 
-    expect(mockRepository.updateEvent).toHaveBeenCalledWith(1, { event_name: "Új név" });
+    expect(mockRepository.updateEvent).toHaveBeenCalledWith(1, {
+      event_name: "Új név",
+    });
     expect(result).toEqual({ affectedRows: 1 });
   });
 
   test("putEvent throws 400 when id is NaN", async () => {
-    await expect(service.putEvent(NaN, { event_name: "Új név" })).rejects.toMatchObject({
+    await expect(
+      service.putEvent(NaN, { event_name: "Új név" }, 2),
+    ).rejects.toMatchObject({
       status: 400,
       message: "Hibás formátumú azonosító!",
     });
@@ -155,7 +161,7 @@ describe("EventService", () => {
   });
 
   test("putEvent throws 400 when event is empty object", async () => {
-    await expect(service.putEvent(1, {})).rejects.toMatchObject({
+    await expect(service.putEvent(1, {}, 2)).rejects.toMatchObject({
       status: 400,
       message: "Nem küldte el az adatokat megfelelően!",
     });
@@ -165,7 +171,7 @@ describe("EventService", () => {
 
   test("putEvent throws 400 when no valid fields", async () => {
     await expect(
-      service.putEvent(1, { invalid_field: "érték" } as any)
+      service.putEvent(1, { invalid_field: "érték" } as any, 2),
     ).rejects.toMatchObject({
       status: 400,
       message: "Nincs frissíthető mező!",
@@ -177,7 +183,9 @@ describe("EventService", () => {
   test("putEvent throws 404 when no rows affected", async () => {
     mockRepository.updateEvent.mockResolvedValue({ affectedRows: 0 } as any);
 
-    await expect(service.putEvent(1, { event_name: "Új név" })).rejects.toMatchObject({
+    await expect(
+      service.putEvent(1, { event_name: "Új név" }, 2),
+    ).rejects.toMatchObject({
       status: 404,
       message: "Nincs frissítendő mező vagy nem található az esemény!",
     });
@@ -186,6 +194,8 @@ describe("EventService", () => {
   test("putEvent propagates repository error", async () => {
     mockRepository.updateEvent.mockRejectedValue(new Error("DB hiba"));
 
-    await expect(service.putEvent(1, { event_name: "Új név" })).rejects.toThrow("DB hiba");
+    await expect(
+      service.putEvent(1, { event_name: "Új név" }, 2),
+    ).rejects.toThrow("DB hiba");
   });
 });

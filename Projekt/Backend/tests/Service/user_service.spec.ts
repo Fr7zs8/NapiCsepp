@@ -220,14 +220,14 @@ describe("UserService", () => {
 
     mockRepository.getModerators.mockResolvedValue(mockData as any);
 
-    const result = await service.getmoderators(1);
+    const result = await service.getModerators(1);
 
     expect(mockRepository.getModerators).toHaveBeenCalled();
     expect(result).toEqual(mockData);
   });
 
   test("getmoderators throws 403 when not admin", async () => {
-    await expect(service.getmoderators(2)).rejects.toMatchObject({
+    await expect(service.getModerators(2)).rejects.toMatchObject({
       status: 403,
       message: "Csak az admin kérheti le.",
     });
@@ -238,19 +238,19 @@ describe("UserService", () => {
   test("getmoderators propagates repository error", async () => {
     mockRepository.getModerators.mockRejectedValue(new Error("DB hiba"));
 
-    await expect(service.getmoderators(1)).rejects.toThrow("DB hiba");
+    await expect(service.getModerators(1)).rejects.toThrow("DB hiba");
   });
 
   test("deleteUser returns result for moderator", async () => {
     const mockResult = { affectedRows: 1 };
 
     mockRepository.getModerators.mockResolvedValue([{ user_id: 1 }] as any);
-    mockRepository.deletUser.mockResolvedValue(mockResult as any);
+    mockRepository.deleteUser.mockResolvedValue(mockResult as any);
 
     const result = await service.deleteUser(2, 1);
 
     expect(mockRepository.getModerators).toHaveBeenCalled();
-    expect(mockRepository.deletUser).toHaveBeenCalledWith(2);
+    expect(mockRepository.deleteUser).toHaveBeenCalledWith(2);
     expect(result).toEqual(mockResult);
   });
 
@@ -262,12 +262,12 @@ describe("UserService", () => {
       message: "Csak a moderátor kérheti le!",
     });
 
-    expect(mockRepository.deletUser).not.toHaveBeenCalled();
+    expect(mockRepository.deleteUser).not.toHaveBeenCalled();
   });
 
   test("deleteUser throws 404 when no rows affected", async () => {
     mockRepository.getModerators.mockResolvedValue([{ user_id: 1 }] as any);
-    mockRepository.deletUser.mockResolvedValue({ affectedRows: 0 } as any);
+    mockRepository.deleteUser.mockResolvedValue({ affectedRows: 0 } as any);
 
     await expect(service.deleteUser(99, 1)).rejects.toMatchObject({
       status: 404,
@@ -277,7 +277,7 @@ describe("UserService", () => {
 
   test("deleteUser propagates repository error", async () => {
     mockRepository.getModerators.mockResolvedValue([{ user_id: 1 }] as any);
-    mockRepository.deletUser.mockRejectedValue(new Error("DB hiba"));
+    mockRepository.deleteUser.mockRejectedValue(new Error("DB hiba"));
 
     await expect(service.deleteUser(2, 1)).rejects.toThrow("DB hiba");
   });

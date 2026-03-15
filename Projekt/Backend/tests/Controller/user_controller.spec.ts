@@ -355,17 +355,17 @@ describe("UserController", () => {
   test("getModerators returns 200 and list", async () => {
     const mockData = [{ user_id: 2, role: "moderator" }];
 
-    mockService.getmoderators.mockResolvedValue(mockData as any);
+    mockService.getModerators.mockResolvedValue(mockData as any);
 
     await controller.getModerators(req, res);
 
-    expect(mockService.getmoderators).toHaveBeenCalledWith(1);
+    expect(mockService.getModerators).toHaveBeenCalledWith(1);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith(mockData);
   });
 
   test("getModerators handles 403 error", async () => {
-    mockService.getmoderators.mockRejectedValue({
+    mockService.getModerators.mockRejectedValue({
       status: 403,
       message: "Csak az admin kérheti le.",
     });
@@ -379,7 +379,7 @@ describe("UserController", () => {
   });
 
   test("getModerators handles 500 error without status", async () => {
-    mockService.getmoderators.mockRejectedValue(new Error("Ismeretlen hiba"));
+    mockService.getModerators.mockRejectedValue(new Error("Ismeretlen hiba"));
 
     await controller.getModerators(req, res);
 
@@ -388,7 +388,7 @@ describe("UserController", () => {
   });
 
   test("getModerators returns 500 and default message when error is empty object", async () => {
-    mockService.getmoderators.mockRejectedValue({});
+    mockService.getModerators.mockRejectedValue({});
 
     await controller.getModerators(req, res);
 

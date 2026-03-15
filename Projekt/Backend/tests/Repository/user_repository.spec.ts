@@ -278,7 +278,7 @@ describe("UserRepository", () => {
 
     mockConnection.query.mockResolvedValue([mockResult]);
 
-    const result = await repository.deletUser(1);
+    const result = await repository.deleteUser(1);
 
     expect(mockConnection.query).toHaveBeenCalledWith(
       "DELETE FROM users WHERE users.user_id = ?",
@@ -291,6 +291,6 @@ describe("UserRepository", () => {
   test("deletUser throws error on query failure", async () => {
     mockConnection.query.mockRejectedValue(new Error("DB hiba"));
 
-    await expect(repository.deletUser(1)).rejects.toThrow("DB hiba");
+    await expect(repository.deleteUser(1)).rejects.toThrow("DB hiba");
   });
 });
