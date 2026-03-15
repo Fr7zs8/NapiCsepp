@@ -347,3 +347,56 @@ INSERT INTO `users_events` (`user_id`, `event_id`) VALUES
 (2, 15);
 
 
+SELECT
+         (SELECT COUNT(a.activity_id)
+         FROM activities a
+         WHERE a.user_id = 2
+           AND CURDATE() BETWEEN DATE(a.activity_start_date) AND DATE(a.activity_end_date)) AS total_activity,
+
+        (SELECT COUNT(a.activity_id)
+         FROM activities a
+         WHERE a.user_id = 2
+           AND a.activity_achive = 1
+           AND CURDATE() BETWEEN DATE(a.activity_start_date) AND DATE(a.activity_end_date)) AS completed,
+
+        (SELECT COUNT(a.activity_id)
+         FROM activities a
+         WHERE a.user_id = 2
+           AND a.activity_type_id != 4
+           AND DATE(a.activity_start_date) = CURDATE()) AS daily_tasks_count,
+
+        (SELECT COUNT(e.event_id)
+         FROM events e
+         WHERE e.user_id = 2 AND MONTH(e.event_start_time) = MONTH(CURDATE())) AS monthly_events_count,
+
+        (SELECT COUNT(a.activity_id)
+         FROM activities a
+         JOIN difficulties d ON a.activity_difficulty_id = d.difficulty_id
+         WHERE a.user_id = 2
+           AND d.difficulty_name = 'Nehéz'
+           AND DATE(a.activity_start_date) = CURDATE()) AS hard_tasks,
+
+        (SELECT COUNT(a.activity_id)
+         FROM activities a
+         JOIN difficulties d ON a.activity_difficulty_id = d.difficulty_id
+         WHERE a.user_id = 2
+           AND d.difficulty_name = 'Közepes'
+           AND DATE(a.activity_start_date) = CURDATE()) AS middle_tasks,
+
+        (SELECT COUNT(a.activity_id)
+         FROM activities a
+         JOIN difficulties d ON a.activity_difficulty_id = d.difficulty_id
+         WHERE a.user_id = 2
+           AND d.difficulty_name = 'Könnyű'
+           AND DATE(a.activity_start_date) = CURDATE()) AS easy_tasks,
+
+        (SELECT COUNT(a.activity_id)
+         FROM activities a
+         WHERE a.user_id = 2
+           AND YEARWEEK(a.activity_start_date, 1) = YEARWEEK(CURDATE(), 1)) AS weekly_tasks,
+
+        (SELECT COUNT(a.activity_id)
+         FROM activities a
+         WHERE a.user_id = 2
+           AND YEARWEEK(a.activity_start_date, 1) = YEARWEEK(CURDATE(), 1)
+           AND a.activity_achive = 1) AS weekly_tasks_completed;

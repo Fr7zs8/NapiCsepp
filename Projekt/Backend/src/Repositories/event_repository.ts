@@ -17,31 +17,36 @@ export class EventRepository {
   async insertEvent(
     connection: mysql.Connection,
     newelem: Event,
+    user_id: number,
   ): Promise<number> {
     const [result]: any = await connection.query(
-      "INSERT INTO events (event_name, event_start_time, event_end_time) VALUES (?, ?, ?)",
-      [newelem.event_name, newelem.event_start_time, newelem.event_end_time],
+      "INSERT INTO events (user_id, event_name, event_start_time, event_end_time) VALUES (?, ?, ?, ?)",
+      [
+        user_id,
+        newelem.event_name,
+        newelem.event_start_time,
+        newelem.event_end_time,
+      ],
     );
     return result.insertId;
   }
 
-  async linkUserToEvent(
-    connection: mysql.Connection,
-    userId: number,
-    eventId: number,
-  ): Promise<void> {
-    await connection.query(
-      "INSERT INTO users_events (user_id, event_id) VALUES (?, ?)",
-      [userId, eventId],
-    );
-  }
+  // async linkUserToEvent(
+  //   connection: mysql.Connection,
+  //   userId: number,
+  //   eventId: number,
+  // ): Promise<void> {
+  //   await connection.query(
+  //     "INSERT INTO users_events (user_id, event_id) VALUES (?, ?)",
+  //     [userId, eventId],
+  //   );
+  // }
 
   async postEvent(newelem: Event, userId: number): Promise<number> {
     const connection = await mysql.createConnection(config.database);
     try {
       await connection.beginTransaction();
-      const eventId = await this.insertEvent(connection, newelem);
-      await this.linkUserToEvent(connection, userId, eventId);
+      const eventId = await this.insertEvent(connection, newelem, userId);
       await connection.commit();
       return eventId;
     } catch (err) {
@@ -67,6 +72,7 @@ export class EventRepository {
   async updateEvent(
     id: number,
     event: Partial<IEvent>,
+    userId: number,
   ): Promise<ResultSetHeader> {
     const allowedFields: (keyof IEvent)[] = [
       "event_name",
@@ -80,8 +86,9 @@ export class EventRepository {
     const updateString = keys.map((key) => `${key} = ?`).join(", ");
     const values = keys.map((key) => event[key]);
     values.push(id);
+    values.push(userId);
 
-    const sql = `UPDATE events SET ${updateString} WHERE event_id = ?`;
+    const sql = `UPDATE events SET ${updateString} WHERE event_id = ? AND events.user_id = ?`;
 
     const connection = await mysql.createConnection(config.database);
     try {

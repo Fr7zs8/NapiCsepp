@@ -41,7 +41,11 @@ export class EventService {
     return results;
   }
 
-  async putEvent(id: number, event: Partial<IEvent>): Promise<ResultSetHeader> {
+  async putEvent(
+    id: number,
+    event: Partial<IEvent>,
+    userId: number,
+  ): Promise<ResultSetHeader> {
     if (isNaN(id)) {
       throw new HttpException(400, "Hibás formátumú azonosító!");
     }
@@ -57,7 +61,7 @@ export class EventService {
       throw new HttpException(400, "Nincs frissíthető mező!");
     }
 
-    const result = await this.repository.updateEvent(id, event);
+    const result = await this.repository.updateEvent(id, event, userId);
 
     if (result.affectedRows === 0) {
       throw new HttpException(

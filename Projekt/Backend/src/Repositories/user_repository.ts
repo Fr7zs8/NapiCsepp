@@ -18,24 +18,23 @@ export class UserRepository {
   async getUser(user_id: number): Promise<User> {
     const connection = await mysql.createConnection(config.database);
 
-    const [results] = (await connection.query(
-      "SELECT users.user_id, users.username, users.email, users.language, users.role, DATE_FORMAT(users.register_date, '%Y-%m-%d') AS register_date FROM users WHERE users.user_id = ?",
-      [user_id],
-    )) as Array<any>;
+    const [results] = (await connection.query("CALL pr_pullprofile(?)", [
+      user_id,
+    ])) as Array<any>;
 
     await connection.end();
-    return results;
+    return results[0];
   }
 
   async getAllUser(): Promise<User[]> {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query(
-      "SELECT users.user_id, users.username, users.email, users.language, users.role, DATE_FORMAT(users.register_date, '%Y-%m-%d') AS register_date FROM users",
+      "CALL pr_pullallusers()",
     )) as Array<any>;
 
     await connection.end();
-    return results;
+    return results[0];
   }
 
   async createUser(

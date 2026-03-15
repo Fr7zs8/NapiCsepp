@@ -1,8 +1,6 @@
 import { EventService } from "../Services/event_service";
 import { Response } from "express";
 
-
-
 export class EventController {
   private service: EventService = new EventService();
   async getEvent(req: any, res: Response) {
@@ -45,8 +43,9 @@ export class EventController {
   async putEvent(req: any, res: Response) {
     try {
       const activityId = Number(req.params.id);
+      const user_id = req.user.user_id;
       const updateData = req.body;
-      await this.service.putEvent(activityId, updateData);
+      await this.service.putEvent(activityId, updateData, user_id);
       res.status(200).send("Sikeres módosítás!");
     } catch (err: any) {
       res

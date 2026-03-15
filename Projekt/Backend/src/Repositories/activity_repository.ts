@@ -68,29 +68,20 @@ export class ActivityRepository {
     return rows[0].difficulty_id;
   }
 
-  private async linkUserToActivity(
-    connection: mysql.Connection,
-    userId: number,
-    activityId: number,
-  ): Promise<void> {
-    await connection.query(
-      "INSERT INTO users_activities (user_id, activity_id) VALUES (?, ?)",
-      [userId, activityId],
-    );
-  }
-
   private async insertActivity(
     connection: mysql.Connection,
     newelem: Activity,
     typeId: number,
     difficultyId: number,
+    user_id: number,
   ): Promise<number> {
     const [result]: any = await connection.query(
       `INSERT INTO activities 
-       (activity_name, activity_type_id, activity_difficulty_id, activity_achive, activity_start_date, activity_end_date, progress_counter)
-       VALUES (?, ?, ?, ?, ?, ?,?)`,
+       (activity_name, user_id, activity_type_id, activity_difficulty_id, activity_achive, activity_start_date, activity_end_date, progress_counter)
+       VALUES (?, ?, ?, ?, ?, ?, ?,?)`,
       [
         newelem.activity_name,
+        user_id,
         typeId,
         difficultyId,
         newelem.activity_achive,
@@ -123,9 +114,8 @@ export class ActivityRepository {
         newelem,
         typeId,
         difficultyId,
+        userId,
       );
-
-      await this.linkUserToActivity(connection, userId, activityId);
 
       await connection.commit();
 
@@ -205,9 +195,8 @@ export class ActivityRepository {
 
       const sql = `
         UPDATE activities
-        JOIN users_activities ON users_activities.activity_id = activities.activity_id
         SET ${updateFields.join(", ")}
-        WHERE activities.activity_id = ? AND users_activities.user_id = ?
+        WHERE activities.activity_id = ? AND activities.user_id = ?
       `;
 
       const [result]: any = await connection.query(sql, values);
