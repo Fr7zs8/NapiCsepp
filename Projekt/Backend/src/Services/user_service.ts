@@ -103,7 +103,7 @@ export class UserService {
     return results;
   }
 
-  async getmoderators(user_id: number): Promise<User[]> {
+  async getModerators(user_id: number): Promise<User[]> {
     if (user_id !== 1) {
       throw new HttpException(403, "Csak az admin kérheti le.");
     }
@@ -130,7 +130,7 @@ export class UserService {
       throw new HttpException(403, "Csak a moderátor kérheti le!");
     }
 
-    const result = await this.repository.deletUser(user_id);
+    const result = await this.repository.deleteUser(user_id);
 
     if (!result || result.affectedRows <= 0) {
       throw new HttpException(404, "Az user nem található.");

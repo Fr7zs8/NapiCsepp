@@ -6,7 +6,6 @@ export interface IUser {
   language: string;
   role: string;
   register_date: Date;
-  token: string | null;
 }
 
 export class User implements IUser {
@@ -17,7 +16,6 @@ export class User implements IUser {
   language: string;
   role: string;
   register_date: Date;
-  token: string | null = null;
 
   constructor(init: IUser) {
     ((this.user_id = init.user_id),

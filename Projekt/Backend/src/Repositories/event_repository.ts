@@ -31,17 +31,6 @@ export class EventRepository {
     return result.insertId;
   }
 
-  // async linkUserToEvent(
-  //   connection: mysql.Connection,
-  //   userId: number,
-  //   eventId: number,
-  // ): Promise<void> {
-  //   await connection.query(
-  //     "INSERT INTO users_events (user_id, event_id) VALUES (?, ?)",
-  //     [userId, eventId],
-  //   );
-  // }
-
   async postEvent(newelem: Event, userId: number): Promise<number> {
     const connection = await mysql.createConnection(config.database);
     try {

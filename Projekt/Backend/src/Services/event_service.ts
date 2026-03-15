@@ -1,5 +1,5 @@
 import { EventRepository } from "../Repositories/event_repository";
-import { Event, IEvent } from "../Models/event_model";
+import { Event } from "../Models/event_model";
 import { ResultSetHeader } from "mysql2";
 import { HttpException } from "../middleware/error";
 
@@ -10,7 +10,7 @@ export class EventService {
     this.repository = new EventRepository();
   }
 
-  async getEvent(userId: number): Promise<IEvent[]> {
+  async getEvent(userId: number): Promise<Event[]> {
     const results = await this.repository.getEvent(userId);
 
     return results;
@@ -39,7 +39,7 @@ export class EventService {
 
   async putEvent(
     id: number,
-    event: Partial<IEvent>,
+    event: Partial<Event>,
     userId: number,
   ): Promise<ResultSetHeader> {
     if (isNaN(id)) {

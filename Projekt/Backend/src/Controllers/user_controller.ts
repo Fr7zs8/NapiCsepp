@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 export class UserController {
   private service: UserService = new UserService();
 
-  async login(req: Request, res: Response) {
+  async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
 
@@ -22,7 +22,7 @@ export class UserController {
     }
   }
 
-  async getUser(req: any, res: Response) {
+  async getUser(req: any, res: Response): Promise<void> {
     const id = req.user.user_id;
     try {
       const results = await this.service.getUser(id);
@@ -34,7 +34,7 @@ export class UserController {
     }
   }
 
-  async getAllUser(req: any, res: Response) {
+  async getAllUser(req: any, res: Response): Promise<void> {
     const id = req.user.user_id;
     try {
       const results = await this.service.getAllUser(id);
@@ -46,7 +46,7 @@ export class UserController {
     }
   }
 
-  async register(req: Request, res: Response) {
+  async register(req: Request, res: Response): Promise<void> {
     try {
       const newUser: User = req.body;
       if (!newUser) {
@@ -63,7 +63,7 @@ export class UserController {
     }
   }
 
-  async putUser(req: any, res: Response) {
+  async putUser(req: any, res: Response): Promise<void> {
     try {
       const user_id = req.params.id;
       const user = req.body;
@@ -80,11 +80,11 @@ export class UserController {
     }
   }
 
-  async getModerators(req: any, res: Response) {
+  async getModerators(req: any, res: Response): Promise<void> {
     try {
       const admin_id: number = req.user.user_id;
 
-      const success = await this.service.getmoderators(admin_id);
+      const success = await this.service.getModerators(admin_id);
 
       if (success) {
         res.status(200).send(success);
@@ -95,7 +95,7 @@ export class UserController {
         .send({ message: err.message || "Hiba történt a lekérés során." });
     }
   }
-  async deletUser(req: any, res: Response) {
+  async deletUser(req: any, res: Response): Promise<void> {
     try {
       const user_id = req.params.id;
       const moderator_id = req.user.user_id;

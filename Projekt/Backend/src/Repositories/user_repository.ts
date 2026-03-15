@@ -152,7 +152,7 @@ export class UserRepository {
     return rows[0] as User;
   }
 
-  async deletUser(user_id: number): Promise<ResultSetHeader> {
+  async deleteUser(user_id: number): Promise<ResultSetHeader> {
     const connection = await mysql.createConnection(config.database);
 
     const [results] = (await connection.query(
