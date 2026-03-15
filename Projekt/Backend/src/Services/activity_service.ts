@@ -35,25 +35,27 @@ export class ActivityService {
 
   async postActivity(newelem: Activity, userId: number): Promise<number> {
     if (!userId || isNaN(userId)) {
-      throw new HttpException(401, "Érvénytelen user azonosító.");
+      throw new HttpException(
+        401,
+        "Érvénytelen vagy hiányzó felhasználó azonosító!",
+      );
     }
 
     if (!newelem) {
-      throw new HttpException(400, "Hiányzó activity adat.");
+      throw new HttpException(400, "Érvénytelen bemeneti adatok.");
     }
 
     const result = await this.repository.postActivity(newelem, userId);
-
-    if (!result || result <= 0) {
-      throw new HttpException(500, "Az activity mentése sikertelen.");
-    }
 
     return result;
   }
 
   async deleteActivity(activity_id: number): Promise<ResultSetHeader> {
     if (!activity_id || isNaN(activity_id)) {
-      throw new HttpException(400, "Nem megfelelő az activity ID.");
+      throw new HttpException(
+        401,
+        "Érvénytelen vagy hiányzó felhasználó azonosító!",
+      );
     }
 
     const result = await this.repository.deleteActivity(activity_id);
@@ -70,7 +72,10 @@ export class ActivityService {
     userId: number,
   ): Promise<ResultSetHeader> {
     if (!activityId || isNaN(activityId)) {
-      throw new HttpException(400, "Nem megfelelő az activity ID.");
+      throw new HttpException(
+        401,
+        "Érvénytelen vagy hiányzó felhasználó azonosító!",
+      );
     }
 
     if (!activity || Object.keys(activity).length === 0) {

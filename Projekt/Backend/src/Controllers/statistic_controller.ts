@@ -29,7 +29,7 @@ export class StatisticController {
 
   async userProfileStatistic(req: any, res: Response) {
     const adminId = req.user.user_id;
-    const targetUserId = Number(req.params.userId);
+    const targetUserId = Number(req.params.id);
     try {
       const results = await this.service.userProfileStatistic(
         adminId,

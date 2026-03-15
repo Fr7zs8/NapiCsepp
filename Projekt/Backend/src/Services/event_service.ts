@@ -18,25 +18,21 @@ export class EventService {
 
   async postEvent(newelem: Event, userId: number): Promise<number> {
     if (!newelem) {
-      throw new HttpException(400, "Hiányzó event adat.");
+      throw new HttpException(400, "Érvénytelen bemeneti adatok");
     }
     const results = await this.repository.postEvent(newelem, userId);
-
-    if (!results || results <= 0) {
-      throw new HttpException(500, "Az event mentése sikertelen.");
-    }
 
     return results;
   }
 
   async deleteEvent(event_id: number): Promise<ResultSetHeader> {
     if (!Number.isInteger(event_id) || event_id <= 0) {
-      throw new HttpException(400, "Nem megfelelő az id tipusa!");
+      throw new HttpException(400, "Hibás formátumú azonosító!");
     }
     const results = await this.repository.deleteEvent(event_id);
 
     if (results.affectedRows <= 0) {
-      throw new HttpException(404, "Nem volt változtatás.");
+      throw new HttpException(404, "Sikertelen törlés");
     }
     return results;
   }

@@ -19,7 +19,7 @@ router.get(
 );
 
 router.get(
-  "/napicsepp/stats/:userId",
+  "/napicsepp/stats/:id",
   verifyToken,
   controller.userProfileStatistic.bind(controller),
 );

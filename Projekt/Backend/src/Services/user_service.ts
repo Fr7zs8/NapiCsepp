@@ -20,7 +20,7 @@ export class UserService {
     }
 
     if (!config.jwtSecret) {
-      throw new HttpException(500, "Hiba van a titkos kulcsal");
+      throw new HttpException(401, "Hiba van a titkos kulcsal");
     }
 
     const token = jwt.sign({ user_id: user_id }, config.jwtSecret, {
