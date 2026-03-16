@@ -247,7 +247,7 @@ END$$
 
 CREATE PROCEDURE `pr_pullallusers` ()
 BEGIN
-    SELECT users.user_id, username, email, language, role, DATE_FORMAT(register_date, '%Y-%m-%d') AS register_date
+    SELECT user_id, username, email, language, role, DATE_FORMAT(register_date, '%Y-%m-%d') AS register_date
     FROM users;
 END$$
 
@@ -285,7 +285,7 @@ END$$
 
 CREATE PROCEDURE `pr_pullprofile` (IN `user_id` INT)
 BEGIN
-    SELECT username, email, language, role, DATE_FORMAT(register_date, '%Y-%m-%d') AS register_date
+    SELECT user_id, username, email, language, role, DATE_FORMAT(register_date, '%Y-%m-%d') AS register_date
     FROM users
     WHERE users.user_id = user_id;
 END$$
@@ -602,3 +602,45 @@ INSERT INTO activities (activity_id, user_id, activity_name, activity_type_id, a
 (293, 3, 'Futás 6km',                 5, 3, 1, '2026-09-22', '2026-09-22', 1),
 (294, 3, 'Mosás',                     1, 1, 0, '2026-09-24', '2026-09-24', 0),
 (295, 3, 'Munka – retro',             3, 1, 1, '2026-09-25', '2026-09-25', 1);
+
+INSERT INTO `events` (`event_id`, user_id, `event_name`, `event_start_time`, `event_end_time`) VALUES
+(16, 3, 'Szülinapi buli',               '2025-09-05 18:00:00', '2025-09-05 23:00:00'),
+(17, 3, 'Fogorvos',                      '2025-09-10 09:00:00', '2025-09-10 09:30:00'),
+(18, 3, 'Családi ebéd',                  '2025-09-14 12:00:00', '2025-09-14 14:00:00'),
+(19, 3, 'Koncert',                       '2025-09-20 20:00:00', '2025-09-20 23:00:00'),
+(20, 3, 'Orvosi kontroll',               '2025-10-03 08:30:00', '2025-10-03 09:00:00'),
+(21, 3, 'Egyetemi nyílt nap',            '2025-10-11 10:00:00', '2025-10-11 14:00:00'),
+(22, 3, 'Mozizás',                       '2025-10-18 19:00:00', '2025-10-18 21:30:00'),
+(23, 3, 'Bevásárlás IKEA',               '2025-10-25 15:00:00', '2025-10-25 18:00:00'),
+(24, 3, 'Baráti vacsora',                '2025-11-01 18:30:00', '2025-11-01 21:00:00'),
+(25, 3, 'Konferencia – Frontend Summit', '2025-11-08 09:00:00', '2025-11-08 17:00:00'),
+(26, 3, 'Autószerelő – fékcsere',        '2025-11-14 14:00:00', '2025-11-14 15:30:00'),
+(27, 3, 'Családi vacsora',               '2025-11-22 18:00:00', '2025-11-22 20:00:00'),
+(28, 3, 'Karácsonyi vásár',              '2025-12-06 16:00:00', '2025-12-06 19:00:00'),
+(29, 3, 'Szilveszteri buli',             '2025-12-31 20:00:00', '2026-01-01 02:00:00'),
+(30, 3, 'Karácsonyi ebéd',               '2025-12-25 12:00:00', '2025-12-25 15:00:00'),
+(31, 3, 'Újévi brunch',                  '2026-01-04 10:00:00', '2026-01-04 12:00:00'),
+(32, 3, 'Edzés – konditerem',            '2026-01-10 17:00:00', '2026-01-10 18:30:00'),
+(33, 3, 'Munka meeting – Q1 tervezés',   '2026-01-15 09:00:00', '2026-01-15 11:00:00'),
+(34, 3, 'Mozizás',                       '2026-01-24 20:00:00', '2026-01-24 22:00:00'),
+(35, 3, 'Valentin napi vacsora',         '2026-02-14 19:00:00', '2026-02-14 22:00:00'),
+(36, 3, 'Fogorvos kontroll',             '2026-02-18 10:00:00', '2026-02-18 10:30:00'),
+(37, 3, 'Baráti bowling',                '2026-02-22 16:00:00', '2026-02-22 18:00:00'),
+(38, 3, 'Tavaszi nagytakarítás',         '2026-03-07 09:00:00', '2026-03-07 13:00:00'),
+(39, 3, 'Családi ebéd',                  '2026-03-15 12:00:00', '2026-03-15 14:00:00'),
+(40, 3, 'Edzés – úszás',                 '2026-03-21 07:00:00', '2026-03-21 08:00:00'),
+(41, 3, 'Húsvéti ebéd',                  '2026-04-06 12:00:00', '2026-04-06 15:00:00'),
+(42, 3, 'Túra – Mátra',                  '2026-04-12 08:00:00', '2026-04-12 16:00:00'),
+(43, 3, 'Munka meetup',                  '2026-04-20 18:00:00', '2026-04-20 20:00:00'),
+(44, 3, 'Anyák napi ünnepség',           '2026-05-03 11:00:00', '2026-05-03 14:00:00'),
+(45, 3, 'Koncert – Akvárium',            '2026-05-16 20:00:00', '2026-05-16 23:30:00'),
+(46, 3, 'Barát szülinap',                '2026-05-23 18:00:00', '2026-05-23 22:00:00'),
+(47, 3, 'Nyári fesztivál nap 1',         '2026-06-12 14:00:00', '2026-06-12 23:00:00'),
+(48, 3, 'Nyári fesztivál nap 2',         '2026-06-13 14:00:00', '2026-06-13 23:00:00'),
+(49, 3, 'Edzés – outdoor',               '2026-06-20 07:00:00', '2026-06-20 08:30:00'),
+(50, 3, 'Balaton hétvége',               '2026-07-04 08:00:00', '2026-07-05 18:00:00'),
+(51, 3, 'Grillparti',                    '2026-07-18 16:00:00', '2026-07-18 21:00:00'),
+(52, 3, 'Sziget fesztivál',              '2026-08-10 12:00:00', '2026-08-13 23:00:00'),
+(53, 3, 'Családi nyaralás',              '2026-08-20 06:00:00', '2026-08-27 20:00:00'),
+(54, 3, 'Szüret – borvidék',             '2026-09-12 10:00:00', '2026-09-12 17:00:00'),
+(55, 3, 'Őszi konferencia – DevOps',     '2026-09-26 09:00:00', '2026-09-26 17:00:00');
