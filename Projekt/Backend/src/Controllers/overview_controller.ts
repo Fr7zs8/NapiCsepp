@@ -3,7 +3,7 @@ import { Response } from "express";
 
 export class OverviewController {
   private service: OverviewService = new OverviewService();
-  async getOverview(req: any, res: Response) {
+  async getOverview(req: any, res: Response):Promise<void> {
     const id = Number(req.user.user_id);
     try {
       const results = await this.service.getOverview(id);

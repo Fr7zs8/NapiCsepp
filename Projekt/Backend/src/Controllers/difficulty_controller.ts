@@ -3,7 +3,7 @@ import { Response } from "express";
 
 export class DifficultyController {
   private service: DifficultyService = new DifficultyService();
-  async getDifficulties(_req: any, res: Response) {
+  async getDifficulties(_req: any, res: Response):Promise<void> {
     try {
       const results = await this.service.getDifficulties();
       res.status(200).send(results);

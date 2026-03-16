@@ -3,7 +3,7 @@ import { ActivityService } from "../Services/activity_service";
 
 export class ActivityController {
   private service: ActivityService = new ActivityService();
-  async getAllActivities(req: any, res: Response) {
+  async getAllActivities(req: any, res: Response):Promise<void> {
     try {
       const userId = req.user.user_id;
       const results = await this.service.getAllActivities(userId);
@@ -15,7 +15,7 @@ export class ActivityController {
     }
   }
 
-  async getHabits(req: any, res: Response) {
+  async getHabits(req: any, res: Response):Promise<void> {
     try {
       const userId = req.user.user_id;
       const results = await this.service.getHabits(userId);
@@ -27,7 +27,7 @@ export class ActivityController {
     }
   }
 
-  async postActivity(req: any, res: Response) {
+  async postActivity(req: any, res: Response):Promise<void> {
     try {
       const userId = req.user.user_id;
       const newelem = req.body;
@@ -40,7 +40,7 @@ export class ActivityController {
     }
   }
 
-  async deleteActivity(req: any, res: Response) {
+  async deleteActivity(req: any, res: Response):Promise<void> {
     try {
       const activity_id = Number(req.params.id);
       await this.service.deleteActivity(activity_id);
@@ -52,7 +52,7 @@ export class ActivityController {
     }
   }
 
-  async putActivity(req: any, res: Response) {
+  async putActivity(req: any, res: Response):Promise<void> {
     try {
       const userId = req.user.user_id;
       const activityId = Number(req.params.id);

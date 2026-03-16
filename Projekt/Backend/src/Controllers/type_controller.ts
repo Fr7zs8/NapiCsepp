@@ -3,7 +3,7 @@ import { Response } from "express";
 
 export class TypeController {
   private service: TypeService = new TypeService();
-  async getTypes(_req: any, res: Response) {
+  async getTypes(_req: any, res: Response):Promise<void> {
     try {
       const results = await this.service.getTypes();
       res.status(200).send(results);

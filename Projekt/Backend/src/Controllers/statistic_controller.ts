@@ -3,7 +3,7 @@ import { Response } from "express";
 
 export class StatisticController {
   private service: StatisticService = new StatisticService();
-  async systemStatistic(req: any, res: Response) {
+  async systemStatistic(req: any, res: Response):Promise<void> {
     const id = req.user.user_id;
     try {
       const results = await this.service.systemStatistic(id);
@@ -15,7 +15,7 @@ export class StatisticController {
     }
   }
 
-  async profileStatistic(req: any, res: Response) {
+  async profileStatistic(req: any, res: Response):Promise<void> {
     const id = req.user.user_id;
     try {
       const results = await this.service.profileStatistic(id);
@@ -27,7 +27,7 @@ export class StatisticController {
     }
   }
 
-  async userProfileStatistic(req: any, res: Response) {
+  async userProfileStatistic(req: any, res: Response):Promise<void> {
     const adminId = req.user.user_id;
     const targetUserId = Number(req.params.id);
     try {
