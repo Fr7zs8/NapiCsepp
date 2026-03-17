@@ -399,7 +399,7 @@ export function MonthlyView(){
                                             }}
                                         >
                                             {bar.isStart && (
-                                                <span className="event-bar-name">🔔 {bar.event.eventName}</span>
+                                                <span className="event-bar-name">📅 {bar.event.eventName}</span>
                                             )}
                                         </div>
                                     );
@@ -415,6 +415,7 @@ export function MonthlyView(){
                     <span><span className="counter-badge events"></span> 🔔 Események</span>
                     <span><span className="counter-badge tasks"></span> 📓 Teendők</span>
                     <span><span className="counter-badge habits"></span> ⭐ Szokások</span>
+                    <span><span className="counter-badge multiday"></span> 📅 Több napos esemény</span>
                 </div>
             </div>
 

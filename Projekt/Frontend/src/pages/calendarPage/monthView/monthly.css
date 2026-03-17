@@ -226,6 +226,9 @@
     background: rgba(255, 214, 0, 0.85);
     color: #222;
 }
+.counter-badge.multiday {
+    background: #8b5cf6;
+}
 
 /* Legend for calendar counters */
 .calendar-legend {

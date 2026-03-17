@@ -92,13 +92,26 @@ export function HabitView() {
 
   async function saveHabit() {
     try {
-      await activityService.updateHabit(editId, {
+      const editingHabit = habits.find((h) => h.habitId === editId);
+      const todayStr = new Date().toISOString().split("T")[0];
+      const wasExpired = editingHabit && editingHabit.endDate && editingHabit.endDate < todayStr;
+      const newEndDate = calcEndDate(startDate, targetDays);
+      const becomesActive = newEndDate >= todayStr;
+
+      const updateData = {
         activity_name: habitName,
         activity_type_name: "Szokás",
         activity_difficulty_name: difficultyName,
         activity_start_date: startDate,
-        activity_end_date: calcEndDate(startDate, targetDays),
-      });
+        activity_end_date: newEndDate,
+      };
+
+      if (wasExpired && becomesActive) {
+        updateData.progress_counter = 0;
+        updateData.activity_achive = 0;
+      }
+
+      await activityService.updateHabit(editId, updateData);
       await loadHabits();
       resetForm();
       showToast("Szokás sikeresen módosítva!", "success");
