@@ -251,13 +251,13 @@ BEGIN
     FROM users;
 END$$
 
-CREATE PROCEDURE `pr_pullevent` (IN `user_id` INT)
+CREATE PROCEDURE `pr_pullevent` (IN `p_user_id` INT)
 BEGIN
     SELECT events.event_id, events.event_name,
            DATE_FORMAT(events.event_start_time, '%Y-%m-%d %H:%i') AS event_start_time,
            DATE_FORMAT(events.event_end_time, '%Y-%m-%d %H:%i') AS event_end_time
     FROM events
-    WHERE events.user_id = user_id;
+    WHERE events.user_id = p_user_id;
 END$$
 
 CREATE PROCEDURE pr_pullhabits (IN p_user_id INT)
@@ -283,11 +283,11 @@ BEGIN
 END$$
 
 
-CREATE PROCEDURE `pr_pullprofile` (IN `user_id` INT)
+CREATE PROCEDURE `pr_pullprofile` (IN `p_user_id` INT)
 BEGIN
     SELECT user_id, username, email, language, role, DATE_FORMAT(register_date, '%Y-%m-%d') AS register_date
     FROM users
-    WHERE users.user_id = user_id;
+    WHERE users.user_id = p_user_id;
 END$$
 
 DELIMITER ;

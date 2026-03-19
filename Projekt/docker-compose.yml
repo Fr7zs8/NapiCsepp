@@ -35,7 +35,7 @@ services:
       MYSQL_USER: napicsepp
       MYSQL_PASSWORD: jelszo
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./testinit.sql:/docker-entrypoint-initdb.d/testinit.sql
       - db-data:/var/lib/mysql
     networks:
       - napicsepp-net
