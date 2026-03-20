@@ -71,8 +71,9 @@ describe("EventRepository", () => {
     );
 
     expect(mockConnection.query).toHaveBeenCalledWith(
-      "INSERT INTO events (event_name, event_start_time, event_end_time) VALUES (?, ?, ?)",
+      "INSERT INTO events (user_id, event_name, event_start_time, event_end_time) VALUES (?, ?, ?, ?)",
       [
+        2,
         mockEvent.event_name,
         mockEvent.event_start_time,
         mockEvent.event_end_time,
@@ -149,8 +150,8 @@ describe("EventRepository", () => {
     const result = await repository.updateEvent(1, { event_name: "Új név" }, 2);
 
     expect(mockConnection.query).toHaveBeenCalledWith(
-      "UPDATE events SET event_name = ? WHERE event_id = ?",
-      ["Új név", 1],
+      "UPDATE events SET event_name = ? WHERE event_id = ? AND events.user_id = ?",
+      ["Új név", 1, 2],
     );
     expect(mockConnection.end).toHaveBeenCalled();
     expect(result).toEqual(mockResult);

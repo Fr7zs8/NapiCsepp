@@ -47,6 +47,10 @@ export class ActivityService {
 
     const result = await this.repository.postActivity(newelem, userId);
 
+    if (!result || result === 0) {
+      throw new HttpException(400, "Nem sikerült létrehozni az aktivitást.");
+    }
+
     return result;
   }
 

@@ -52,7 +52,11 @@ describe("EventController", () => {
   test("postEvent returns 200 on success", async () => {
     mockService.postEvent.mockResolvedValue(10);
 
-    req.body = { event_name: "Futóverseny", event_start_time: "2024-01-01", event_end_time: "2024-01-02" };
+    req.body = {
+      event_name: "Futóverseny",
+      event_start_time: "2024-01-01",
+      event_end_time: "2024-01-02",
+    };
 
     await controller.postEvent(req, res);
 
@@ -82,7 +86,9 @@ describe("EventController", () => {
     await controller.postEvent(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith({ message: "Az event mentése sikertelen." });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Az event mentése sikertelen.",
+    });
   });
 
   test("deleteEvent returns 200 on success", async () => {
@@ -108,7 +114,9 @@ describe("EventController", () => {
     await controller.deleteEvent(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith({ message: "Nem megfelelő az id tipusa!" });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Nem megfelelő az id tipusa!",
+    });
   });
 
   test("deleteEvent handles 404 error", async () => {
@@ -133,7 +141,11 @@ describe("EventController", () => {
 
     await controller.putEvent(req, res);
 
-    expect(mockService.putEvent).toHaveBeenCalledWith(1, { event_name: "Új név" });
+    expect(mockService.putEvent).toHaveBeenCalledWith(
+      1,
+      { event_name: "Új név" },
+      1,
+    );
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith("Sikeres módosítás!");
   });
@@ -149,7 +161,9 @@ describe("EventController", () => {
     await controller.putEvent(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith({ message: "Hibás formátumú azonosító!" });
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hibás formátumú azonosító!",
+    });
   });
 
   test("putEvent handles 404 error", async () => {

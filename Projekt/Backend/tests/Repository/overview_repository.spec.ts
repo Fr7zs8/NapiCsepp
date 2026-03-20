@@ -18,9 +18,6 @@ describe("OverviewRepository", () => {
     (mysql.createConnection as jest.Mock).mockResolvedValue(mockConnection);
   });
 
-  // -------------------------------------------------------
-  // GET OVERVIEW
-  // -------------------------------------------------------
   test("getOverview returns list of overview data", async () => {
     const mockData = [
       { id: 1, activity_name: "Futás", total: 5 },

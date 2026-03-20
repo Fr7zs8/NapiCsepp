@@ -58,12 +58,12 @@ describe("UserRepository", () => {
       },
     ];
 
-    mockConnection.query.mockResolvedValue([mockData]);
+    mockConnection.query.mockResolvedValue([[mockData]]);
 
     const result = await repository.getUser(1);
 
     expect(mockConnection.query).toHaveBeenCalledWith(
-      expect.stringContaining("WHERE users.user_id = ?"),
+      expect.stringContaining("CALL pr_pullprofile(?)"),
       [1],
     );
     expect(mockConnection.end).toHaveBeenCalled();
@@ -82,19 +82,19 @@ describe("UserRepository", () => {
       { user_id: 2, username: "User2", email: "user2@test.com" },
     ];
 
-    mockConnection.query.mockResolvedValue([mockData]);
+    mockConnection.query.mockResolvedValue([[mockData]]);
 
     const result = await repository.getAllUser();
 
     expect(mockConnection.query).toHaveBeenCalledWith(
-      expect.stringContaining("SELECT users.user_id"),
+      expect.stringContaining("CALL pr_pullallusers()"),
     );
     expect(mockConnection.end).toHaveBeenCalled();
     expect(result).toEqual(mockData);
   });
 
   test("getAllUser returns empty array when no users", async () => {
-    mockConnection.query.mockResolvedValue([[]]);
+    mockConnection.query.mockResolvedValue([[[]]]);
 
     const result = await repository.getAllUser();
 

@@ -140,7 +140,7 @@ describe("StatisticController", () => {
 
     mockService.userProfileStatistic.mockResolvedValue(mockData as any);
 
-    req.params.userId = "2";
+    req.params.id = "2";
 
     await controller.userProfileStatistic(req, res);
 
