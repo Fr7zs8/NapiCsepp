@@ -293,4 +293,102 @@ describe("UserRepository", () => {
 
     await expect(repository.deleteUser(1)).rejects.toThrow("DB hiba");
   });
+
+  test("editUser updates email field", async () => {
+    const mockModerators = [{ user_id: 1, role: "admin" }];
+    const mockResult = { affectedRows: 1 };
+
+    mockConnection.query
+      .mockResolvedValueOnce([mockModerators])
+      .mockResolvedValueOnce([mockResult]);
+
+    const result = await repository.editUser(2, { email: "new@test.com" }, 1);
+
+    expect(mockConnection.query).toHaveBeenCalledWith(
+      expect.stringContaining("email = ?"),
+      expect.arrayContaining(["new@test.com"]),
+    );
+    expect(result).toEqual(mockResult);
+  });
+
+  test("editUser updates language field", async () => {
+    const mockModerators = [{ user_id: 1, role: "admin" }];
+    const mockResult = { affectedRows: 1 };
+
+    mockConnection.query
+      .mockResolvedValueOnce([mockModerators])
+      .mockResolvedValueOnce([mockResult]);
+
+    const result = await repository.editUser(2, { language: "en" }, 1);
+
+    expect(mockConnection.query).toHaveBeenCalledWith(
+      expect.stringContaining("language = ?"),
+      expect.arrayContaining(["en"]),
+    );
+    expect(result).toEqual(mockResult);
+  });
+
+  test("editUser updates role field when admin", async () => {
+    const mockModerators = [{ user_id: 1, role: "admin" }];
+    const mockResult = { affectedRows: 1 };
+
+    mockConnection.query
+      .mockResolvedValueOnce([mockModerators])
+      .mockResolvedValueOnce([mockResult]);
+
+    const result = await repository.editUser(2, { role: "moderator" }, 1);
+
+    expect(mockConnection.query).toHaveBeenCalledWith(
+      expect.stringContaining("role = ?"),
+      expect.arrayContaining(["moderator"]),
+    );
+    expect(result).toEqual(mockResult);
+  });
+
+  test("editUser updates password field", async () => {
+    const mockModerators = [{ user_id: 1, role: "admin" }];
+    const mockResult = { affectedRows: 1 };
+
+    mockConnection.query
+      .mockResolvedValueOnce([mockModerators])
+      .mockResolvedValueOnce([mockResult]);
+
+    const result = await repository.editUser(2, { password: "newpassword" }, 1);
+
+    expect(mockConnection.query).toHaveBeenCalledWith(
+      expect.stringContaining("pwd_encrypt(?)"),
+      expect.arrayContaining(["newpassword"]),
+    );
+    expect(result).toEqual(mockResult);
+  });
+
+  test("editUser throws 404 when no valid fields provided", async () => {
+    const mockModerators = [{ user_id: 1, role: "admin" }];
+
+    mockConnection.query.mockResolvedValueOnce([mockModerators]);
+
+    await expect(
+      repository.editUser(2, { nemLetezőMező: "érték" } as any, 1),
+    ).rejects.toMatchObject({
+      status: 404,
+      message: "Nincs frissítendő mező!",
+    });
+  });
+
+  test("editUser updates role field when moderator", async () => {
+    const mockModerators = [{ user_id: 5, role: "moderator" }];
+    const mockResult = { affectedRows: 1 };
+
+    mockConnection.query
+      .mockResolvedValueOnce([mockModerators])
+      .mockResolvedValueOnce([mockResult]);
+
+    const result = await repository.editUser(2, { role: "user" }, 5);
+
+    expect(mockConnection.query).toHaveBeenCalledWith(
+      expect.stringContaining("role = ?"),
+      expect.arrayContaining(["user"]),
+    );
+    expect(result).toEqual(mockResult);
+  });
 });

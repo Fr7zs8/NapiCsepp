@@ -22,6 +22,10 @@ export class EventService {
     }
     const results = await this.repository.postEvent(newelem, userId);
 
+    if (!results || results === 0) {
+      throw new HttpException(400, "Az event mentése sikertelen.");
+    }
+
     return results;
   }
 

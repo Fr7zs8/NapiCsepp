@@ -69,6 +69,22 @@ describe("UserService", () => {
     );
   });
 
+  test("login throws 401 when jwtSecret is missing", async () => {
+    mockRepository.login.mockResolvedValue(1);
+
+    const originalSecret = config.jwtSecret;
+    (config as any).jwtSecret = undefined;
+
+    await expect(
+      service.login("test@test.com", "password"),
+    ).rejects.toMatchObject({
+      status: 401,
+      message: "Hiba van a titkos kulcsal",
+    });
+
+    (config as any).jwtSecret = originalSecret;
+  });
+
   test("getUser returns user data", async () => {
     const mockUser = {
       user_id: 1,
@@ -280,5 +296,89 @@ describe("UserService", () => {
     mockRepository.deleteUser.mockRejectedValue(new Error("DB hiba"));
 
     await expect(service.deleteUser(2, 1)).rejects.toThrow("DB hiba");
+  });
+
+  test("register throws 400 when user fields are missing", async () => {
+    await expect(
+      service.register({ email: "test@test.com" } as any),
+    ).rejects.toMatchObject({
+      status: 400,
+      message: "Hiányzó kötelező mező(k).",
+    });
+
+    expect(mockRepository.findByEmail).not.toHaveBeenCalled();
+  });
+
+  test("register throws 400 when email format is invalid", async () => {
+    await expect(
+      service.register({
+        username: "TestUser",
+        email: "nemvalidemail",
+        password: "password123",
+      } as any),
+    ).rejects.toMatchObject({
+      status: 400,
+      message: "Érvénytelen email formátum.",
+    });
+
+    expect(mockRepository.findByEmail).not.toHaveBeenCalled();
+  });
+
+  test("register throws 400 when password is too short", async () => {
+    await expect(
+      service.register({
+        username: "TestUser",
+        email: "test@test.com",
+        password: "abc",
+      } as any),
+    ).rejects.toMatchObject({
+      status: 400,
+      message: "A jelszónak legalább 6 karakter hosszúnak kell lennie.",
+    });
+
+    expect(mockRepository.findByEmail).not.toHaveBeenCalled();
+  });
+
+  test("register throws 409 when email already exists", async () => {
+    mockRepository.findByEmail.mockResolvedValue({ user_id: 1 } as any);
+
+    await expect(
+      service.register({
+        username: "TestUser",
+        email: "existing@test.com",
+        password: "password123",
+      } as any),
+    ).rejects.toMatchObject({
+      status: 409,
+      message: "Az email cím már használatban van",
+    });
+
+    expect(mockRepository.createUser).not.toHaveBeenCalled();
+  });
+
+  test("register throws 409 when email already exists", async () => {
+    mockRepository.findByEmail.mockResolvedValue({ user_id: 1 } as any);
+
+    await expect(
+      service.register({
+        username: "TestUser",
+        email: "existing@test.com",
+        password: "password123",
+      } as any),
+    ).rejects.toMatchObject({
+      status: 409,
+      message: "Az email cím már használatban van",
+    });
+
+    expect(mockRepository.createUser).not.toHaveBeenCalled();
+  });
+
+  test("getModerators throws 404 when no moderators found", async () => {
+    mockRepository.getModerators.mockResolvedValue([]);
+
+    await expect(service.getModerators(1)).rejects.toMatchObject({
+      status: 404,
+      message: "Nincs egy db moderátor se.",
+    });
   });
 });

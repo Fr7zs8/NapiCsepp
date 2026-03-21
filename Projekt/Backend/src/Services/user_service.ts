@@ -109,7 +109,7 @@ export class UserService {
     }
     const result = await this.repository.getModerators();
 
-    if (result.length < 0) {
+    if (result.length === 0) {
       throw new HttpException(404, "Nincs egy db moderátor se.");
     }
 

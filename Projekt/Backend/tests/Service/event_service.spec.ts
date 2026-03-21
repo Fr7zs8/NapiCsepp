@@ -61,7 +61,7 @@ describe("EventService", () => {
   test("postEvent throws 400 when newelem is null", async () => {
     await expect(service.postEvent(null as any, 1)).rejects.toMatchObject({
       status: 400,
-      message: "Hiányzó event adat.",
+      message: "Érvénytelen bemeneti adatok",
     });
 
     expect(mockRepository.postEvent).not.toHaveBeenCalled();
@@ -77,7 +77,7 @@ describe("EventService", () => {
     };
 
     await expect(service.postEvent(mockEvent as any, 1)).rejects.toMatchObject({
-      status: 500,
+      status: 400,
       message: "Az event mentése sikertelen.",
     });
   });
@@ -108,7 +108,7 @@ describe("EventService", () => {
   test("deleteEvent throws 400 when id is not valid", async () => {
     await expect(service.deleteEvent(0)).rejects.toMatchObject({
       status: 400,
-      message: "Nem megfelelő az id tipusa!",
+      message: "Hibás formátumú azonosító!",
     });
 
     expect(mockRepository.deleteEvent).not.toHaveBeenCalled();
@@ -117,7 +117,7 @@ describe("EventService", () => {
   test("deleteEvent throws 400 when id is negative", async () => {
     await expect(service.deleteEvent(-1)).rejects.toMatchObject({
       status: 400,
-      message: "Nem megfelelő az id tipusa!",
+      message: "Hibás formátumú azonosító!",
     });
 
     expect(mockRepository.deleteEvent).not.toHaveBeenCalled();
@@ -128,7 +128,7 @@ describe("EventService", () => {
 
     await expect(service.deleteEvent(1)).rejects.toMatchObject({
       status: 404,
-      message: "Nem volt változtatás.",
+      message: "Sikertelen törlés",
     });
   });
 
@@ -143,9 +143,13 @@ describe("EventService", () => {
 
     const result = await service.putEvent(1, { event_name: "Új név" }, 2);
 
-    expect(mockRepository.updateEvent).toHaveBeenCalledWith(1, {
-      event_name: "Új név",
-    });
+    expect(mockRepository.updateEvent).toHaveBeenCalledWith(
+      1,
+      {
+        event_name: "Új név",
+      },
+      2,
+    );
     expect(result).toEqual({ affectedRows: 1 });
   });
 

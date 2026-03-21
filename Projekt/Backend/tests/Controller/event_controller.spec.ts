@@ -49,6 +49,29 @@ describe("EventController", () => {
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
   });
 
+  test("getEvent handles error with status and message", async () => {
+    mockService.getEvent.mockRejectedValue({
+      status: 400,
+      message: "Bad Request",
+    });
+
+    await controller.getEvent(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "Bad Request" });
+  });
+
+  test("getEvent handles 500 error without message", async () => {
+    mockService.getEvent.mockRejectedValue({});
+
+    await controller.getEvent(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
+  });
+
   test("postEvent returns 200 on success", async () => {
     mockService.postEvent.mockResolvedValue(10);
 
@@ -88,6 +111,29 @@ describe("EventController", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({
       message: "Az event mentése sikertelen.",
+    });
+  });
+
+  test("postEvent handles error with status and message", async () => {
+    mockService.postEvent.mockRejectedValue({
+      status: 400,
+      message: "Bad Request",
+    });
+
+    await controller.postEvent(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "Bad Request" });
+  });
+
+  test("postEvent handles 500 error without message", async () => {
+    mockService.postEvent.mockRejectedValue({});
+
+    await controller.postEvent(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
     });
   });
 
@@ -131,6 +177,33 @@ describe("EventController", () => {
 
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledWith({ message: "Nem volt változtatás." });
+  });
+
+  test("deleteEvent handles error with status and message", async () => {
+    mockService.deleteEvent.mockRejectedValue({
+      status: 400,
+      message: "Bad Request",
+    });
+
+    req.params.id = "0";
+
+    await controller.deleteEvent(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "Bad Request" });
+  });
+
+  test("deleteEvent handles 500 error without message", async () => {
+    mockService.deleteEvent.mockRejectedValue({});
+
+    req.params.id = "1";
+
+    await controller.deleteEvent(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
   });
 
   test("putEvent returns 200 on success", async () => {
@@ -191,5 +264,32 @@ describe("EventController", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({ message: "Ismeretlen hiba" });
+  });
+
+  test("putEvent handles error with status and message", async () => {
+    mockService.putEvent.mockRejectedValue({
+      status: 400,
+      message: "Bad Request",
+    });
+
+    req.params.id = "1";
+
+    await controller.putEvent(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ message: "Bad Request" });
+  });
+
+  test("putEvent handles 500 error without message", async () => {
+    mockService.putEvent.mockRejectedValue({});
+
+    req.params.id = "1";
+
+    await controller.putEvent(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      message: "Hiba történt a lekérés során.",
+    });
   });
 });
