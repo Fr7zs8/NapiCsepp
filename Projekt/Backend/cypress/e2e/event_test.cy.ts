@@ -81,7 +81,7 @@ describe("Testing event endpoints", () => {
       failOnStatusCode: false,
     }).then((res) => {
       expect(res.status).to.eq(400);
-      expect(res.body.message).to.eq("Hiányzó event adat.");
+      expect(res.body.message).to.eq("Érvénytelen bemeneti adatok");
     });
   });
 
@@ -127,7 +127,7 @@ describe("Testing event endpoints", () => {
       failOnStatusCode: false,
     }).then((res) => {
       expect(res.status).to.eq(404);
-      expect(res.body.message).to.eq("Nem volt változtatás.");
+      expect(res.body.message).to.eq("Sikertelen törlés");
     });
   });
 
@@ -139,7 +139,7 @@ describe("Testing event endpoints", () => {
       failOnStatusCode: false,
     }).then((res) => {
       expect(res.status).to.eq(400);
-      expect(res.body.message).to.eq("Nem megfelelő az id tipusa!");
+      expect(res.body.message).to.eq("Hibás formátumú azonosító!");
     });
   });
 

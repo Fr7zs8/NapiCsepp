@@ -13,40 +13,40 @@ describe("Testing Statistic endpoints", () => {
       moderatorToken = t;
     });
 
-    cy.login("abcd@gmail.com", "1234").then((t) => {
+    cy.login("emptytest@gmail.com", "1234").then((t) => {
       userToken = t;
     });
   });
-    it("GET- /napicsepp/system-stats - 200 - Returns system statistics for moderator", () => {
-      cy.request({
-        method: "GET",
-        url: "/napicsepp/system-stats",
-        headers: {
-          "x-access-token": moderatorToken,
-        },
-      }).then((res) => {
-        expect(res.body[0]).to.have.property("total_users");
+  it("GET- /napicsepp/system-stats - 200 - Returns system statistics for moderator", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/system-stats",
+      headers: {
+        "x-access-token": moderatorToken,
+      },
+    }).then((res) => {
+      expect(res.body[0]).to.have.property("total_users");
       expect(res.body[0]).to.have.property("total_activity_today");
       expect(res.body[0]).to.have.property("total_activity");
       expect(res.body[0]).to.have.property("total_habits");
-      });
     });
+  });
 
-    it("GET - /napicsepp/system-stats - 405 - Returns error if user is not moderator", () => {
-      cy.request({
-        method: "GET",
-        url: "/napicsepp/system-stats",
-        headers: {
-          "x-access-token": userToken,
-        },
-        failOnStatusCode: false,
-      }).then((res) => {
-        expect(res.status).to.eq(405);
-        expect(res.body.message).to.eq("Csak a moderátor kérheti le!");
-      });
+  it("GET - /napicsepp/system-stats - 405 - Returns error if user is not moderator", () => {
+    cy.request({
+      method: "GET",
+      url: "/napicsepp/system-stats",
+      headers: {
+        "x-access-token": userToken,
+      },
+      failOnStatusCode: false,
+    }).then((res) => {
+      expect(res.status).to.eq(405);
+      expect(res.body.message).to.eq("Csak a moderátor kérheti le!");
     });
+  });
 
-    it("GET - /napicsepp/system-stats - 403 - Returns error when token is missing", () => {
+  it("GET - /napicsepp/system-stats - 403 - Returns error when token is missing", () => {
     cy.request({
       method: "GET",
       url: "/napicsepp/system-stats",
@@ -82,19 +82,16 @@ describe("Testing Statistic endpoints", () => {
       expect(res.status).to.eq(200);
       expect(res.body).to.be.an("array");
       expect(res.status).to.eq(200);
-        expect(res.body).to.be.an("array");
-        expect(res.body[0]).to.have.property("total_activity");
-        expect(res.body[0]).to.have.property("completed");
-        expect(res.body[0]).to.have.property("daily_tasks_count");
-        expect(res.body[0]).to.have.property("monthly_events_count");
-        expect(res.body[0]).to.have.property("hard_tasks");
-        expect(res.body[0]).to.have.property("middle_tasks");
-        expect(res.body[0]).to.have.property("easy_tasks");
-        expect(res.body[0]).to.have.property("weekly_tasks");
-        expect(res.body[0]).to.have.property("weekly_tasks_completed");
-
-      
-      
+      expect(res.body).to.be.an("array");
+      expect(res.body[0]).to.have.property("total_activity");
+      expect(res.body[0]).to.have.property("completed");
+      expect(res.body[0]).to.have.property("daily_tasks_count");
+      expect(res.body[0]).to.have.property("monthly_events_count");
+      expect(res.body[0]).to.have.property("hard_tasks");
+      expect(res.body[0]).to.have.property("middle_tasks");
+      expect(res.body[0]).to.have.property("easy_tasks");
+      expect(res.body[0]).to.have.property("weekly_tasks");
+      expect(res.body[0]).to.have.property("weekly_tasks_completed");
     });
   });
 
@@ -136,7 +133,7 @@ describe("Testing Statistic endpoints", () => {
       expect(res.body).to.eq("Az auth nem sikerült!");
     });
   });
-  
+
   it("GET - /napicsepp/stats/:id - 200 - Moderator can retrieve another user's profile statistics", () => {
     cy.request({
       method: "GET",
@@ -147,7 +144,6 @@ describe("Testing Statistic endpoints", () => {
     }).then((res) => {
       expect(res.status).to.eq(200);
       expect(res.body).to.be.an("array");
-      
     });
   });
 

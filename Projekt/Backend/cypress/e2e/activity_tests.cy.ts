@@ -288,8 +288,10 @@ describe("Testing Activity endpoints", () => {
       },
       failOnStatusCode: false,
     }).then((res) => {
-      expect(res.status).to.eq(400);
-      expect(res.body.message).to.eq("Nem megfelelő az activity ID.");
+      expect(res.status).to.eq(401);
+      expect(res.body.message).to.eq(
+        "Érvénytelen vagy hiányzó felhasználó azonosító!",
+      );
     });
   });
 
@@ -306,7 +308,6 @@ describe("Testing Activity endpoints", () => {
       expect(res.body).to.eq("Az auth nem sikerült!");
     });
   });
-
 
   it("PUT - /napicsepp/activities/:id - 200 - Successfully updates an existing activity", () => {
     cy.request({
@@ -367,8 +368,10 @@ describe("Testing Activity endpoints", () => {
       body: { activity_name: "Test" },
       failOnStatusCode: false,
     }).then((res) => {
-      expect(res.status).to.eq(400);
-      expect(res.body.message).to.eq("Nem megfelelő az activity ID.");
+      expect(res.status).to.eq(401);
+      expect(res.body.message).to.eq(
+        "Érvénytelen vagy hiányzó felhasználó azonosító!",
+      );
     });
   });
 
@@ -420,7 +423,7 @@ describe("Testing Activity endpoints", () => {
       failOnStatusCode: false,
     }).then((res) => {
       expect(res.status).to.eq(404);
-      expect(res.body.message).to.eq("Nincs ilyen típus")
+      expect(res.body.message).to.eq("Nincs ilyen típus");
     });
   });
 
@@ -438,7 +441,7 @@ describe("Testing Activity endpoints", () => {
       failOnStatusCode: false,
     }).then((res) => {
       expect(res.status).to.eq(404);
-      expect(res.body.message).to.eq("Nincs ilyen nehézség")
+      expect(res.body.message).to.eq("Nincs ilyen nehézség");
     });
   });
 

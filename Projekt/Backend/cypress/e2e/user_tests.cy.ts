@@ -10,6 +10,7 @@ describe("Testing User endpoints", () => {
   let userToken: string;
 
   before(() => {
+    cy.task("resetDb");
     cy.login("admin@gmail.com", "admin123").then((t) => {
       adminToken = t;
     });
@@ -18,7 +19,7 @@ describe("Testing User endpoints", () => {
       moderatorToken = t;
     });
 
-    cy.login("abcd@gmail.com", "1234").then((t) => {
+    cy.login("emptytest@gmail.com", "1234").then((t) => {
       userToken = t;
     });
   });
