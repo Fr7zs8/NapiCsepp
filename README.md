@@ -1,19 +1,96 @@
 # NapiCsepp Projekt
 
-Docker konténerben futtatható alkalmazás.
+Egy Docker konténerben futtatható full-stack alkalmazás (frontend + backend + adatbázis).
 
-## Futtatás
+---
 
-1. Telepítsd a Docker Desktopot.
-2. Klónozd a repót vagy töltsd le ZIP-ben:
+## 🚀 Gyors indítás (Dockerrel)
 
-git clone <A_PROJEKT_REPO_URL>
+### 1. Előfeltételek
 
-cd <letöltött-projekt-mappa>/napicsepp/projekt
+A futtatáshoz szükséges:
 
+- Docker Desktop (legújabb stabil verzió)
+- Git
+
+> Megjegyzés: Node.js csak lokális fejlesztéshez kell, Docker használatakor nem szükséges.
+
+---
+
+### 2. Projekt letöltése
+
+```bash
+git clone https://github.com/Fr7zs8/NapiCsepp.git
+cd NapiCsepp/Projekt
+```
+
+---
+
+### 3. Alkalmazás indítása
+
+```bash
 docker compose up --build
+```
 
-Várd meg mire betölt majd menj a chromba a localhost:5173 linkre.
+- Az első indítás több percet is igénybe vehet.
+- A Docker automatikusan letölti és felépíti a szükséges konténereket.
 
-Aztán amikor leállitanád a compost
+---
+
+### 4. Elérhető szolgáltatások
+
+Sikeres indítás után:
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000/napicsepp
+- MySQL adatbázis: localhost:3306
+
+---
+
+### 5. Alkalmazás leállítása
+
+```bash
 docker compose down
+```
+
+---
+
+## Tesztelés
+
+### Backend egységtesztek (Jest)
+
+```bash
+npm run test
+```
+
+---
+
+### E2E tesztek (Cypress)
+
+Az alkalmazásnak futnia kell Dockerrel!
+
+#### Headless mód:
+
+```bash
+npx cypress run
+```
+
+#### Interaktív mód (ajánlott fejlesztéshez):
+
+```bash
+npx cypress open
+```
+
+---
+
+## Fejlesztői megjegyzések
+
+- A Docker biztosítja az egységes fejlesztői környezetet
+- Nem szükséges külön adatbázis vagy backend konfiguráció
+- A frontend automatikusan újratölt fejlesztés közben
+
+---
+
+## Készítők
+
+Evbuomwan Abigél Osaretin és Sipos Fruzsina
