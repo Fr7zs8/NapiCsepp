@@ -4,7 +4,7 @@ Egy Docker konténerben futtatható full-stack alkalmazás (frontend + backend +
 
 ---
 
-## 🚀 Gyors indítás (Dockerrel)
+## Gyors indítás (Dockerrel)
 
 ### 1. Előfeltételek
 
