@@ -26,9 +26,6 @@ describe("OverviewController", () => {
     };
   });
 
-  // -------------------------------------------------------
-  // GET OVERVIEW
-  // -------------------------------------------------------
   test("getOverview returns 200 and data", async () => {
     const mockData = [
       { id: 1, activity_name: "Futás", total: 5 },
