@@ -80,7 +80,7 @@ Cypress.Commands.add('stubApi', () => {
         type_name: 'Szokás',
         difficulty_name: 'Közepes',
         activity_start_date: '2026-02-20',
-        activity_end_date: '2026-03-20',
+        activity_end_date: '2026-12-31',
         target_days: 28,
         progress_counter: 5,
       },
